@@ -16,11 +16,11 @@ const Home = () => {
             <TopCategories />
             <FeaturedCourses />
             <LearningOptions />
-            <AboutShort />           
+            <AboutShort />          
+            <Newsletter /> 
             <Instructors />
             <BlogUpdates />
             <Testimonials />        
-            <Newsletter />
 
     </>
   );

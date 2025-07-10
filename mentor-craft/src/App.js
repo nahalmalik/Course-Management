@@ -14,6 +14,7 @@ import StudentDashboard from "./pages/StudentDashboard";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import { CartProvider } from "./contexts/CartContext"; 
+import Receipt from "./pages/Receipt";
 
 function App() {
   return (
@@ -32,6 +33,8 @@ function App() {
             <Route path="/student-dashboard" element={<StudentDashboard />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<Checkout />} />
+            <Route path="/receipt/:orderId" element={<Receipt />} />
+
             {/* Do NOT render CartSidebar here directly */}
           </Routes>
         </main>

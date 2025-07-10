@@ -1,8 +1,7 @@
-// src/pages/StudentDashboard.jsx
-import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-import { getEnrolledCourses } from "../components/enrollmentUtils";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
+import { getEnrollments } from '../components/enrollmentUtils';
+import { Link } from 'react-router-dom';
 
 const PageWrapper = styled.div`
   padding: 50px 30px;
@@ -56,9 +55,14 @@ const Meta = styled.p`
   margin: 0;
 `;
 
-const ViewButton = styled(Link)`
-  display: inline-block;
+const ButtonGroup = styled.div`
   margin-top: 15px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+`;
+
+const ViewButton = styled(Link)`
   padding: 8px 14px;
   background: rgb(32, 125, 140);
   color: white;
@@ -74,11 +78,12 @@ const ViewButton = styled(Link)`
 
 const StudentDashboard = () => {
   const [courses, setCourses] = useState([]);
+  const email = localStorage.getItem('studentEmail');
 
   useEffect(() => {
-    const enrolled = getEnrolledCourses();
+    const enrolled = getEnrollments(email);
     setCourses(enrolled);
-  }, []);
+  }, [email]);
 
   return (
     <PageWrapper>
@@ -88,17 +93,23 @@ const StudentDashboard = () => {
         <p>You haven’t enrolled in any courses yet.</p>
       ) : (
         <CourseGrid>
-          {courses.map((course, idx) => (
-            <Card key={idx}>
-              <CourseImage src={course.image} alt={course.title} />
-              <CardBody>
-                <CourseTitle>{course.title}</CourseTitle>
-                <Meta>Instructor: {course.instructor}</Meta>
-                <Meta>Enrolled on: {new Date(course.enrolledAt).toLocaleDateString()}</Meta>
-                <ViewButton to={`/course/${course.id}`}>View Course</ViewButton>
-              </CardBody>
-            </Card>
-          ))}
+       {courses
+  .filter(course => course && course.image) // Skip null/invalid items
+  .map((course, idx) => (
+    <Card key={idx}>
+      <CourseImage src={course.image} alt={course.title} />
+      <CardBody>
+        <CourseTitle>{course.title}</CourseTitle>
+        <Meta>Instructor: {course.instructor}</Meta>
+        <Meta>Enrolled on: {new Date(course.enrolledAt).toLocaleDateString()}</Meta>
+        <ButtonGroup>
+          <ViewButton to={`/course/${course.id}`}>View Course</ViewButton>
+          <ViewButton to={`/receipt/${course.orderId}`}>View Receipt</ViewButton>
+        </ButtonGroup>
+      </CardBody>
+    </Card>
+))}
+
         </CourseGrid>
       )}
     </PageWrapper>

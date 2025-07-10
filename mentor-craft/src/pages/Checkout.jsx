@@ -97,8 +97,7 @@ const Checkout = () => {
 
   const hasPaidCourse = cartItems.some(
     (course) =>
-      isNaN(course.price) === false &&
-      course.price.toString().toLowerCase() !== "free"
+      !isNaN(course.price) && course.price.toString().toLowerCase() !== "free"
   );
 
   const total = cartItems.reduce((acc, item) => {
@@ -119,13 +118,11 @@ const Checkout = () => {
       return;
     }
 
-    // Enroll all courses
     cartItems.forEach((course) => {
       enrollCourse({
-        ...course,
+        course,
         student: name,
         email,
-        enrolledAt: new Date().toISOString(),
       });
     });
 

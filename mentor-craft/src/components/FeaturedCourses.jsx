@@ -1,9 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 import { FaStar } from "react-icons/fa";
-import course1 from "../assets/course1.jpeg"; // Add images to match template
-import course2 from "../assets/course2.jpeg";
-import course3 from "../assets/course3.jpg";
+import { Link } from "react-router-dom";
+import courseData from "../components/courseData";
 
 const Section = styled.section`
   padding: 60px 30px;
@@ -61,13 +60,16 @@ const Card = styled.div`
       margin-bottom: 10px;
     }
 
-    button {
+    a {
+      display: inline-block;
       background-color: rgb(32, 125, 140);
       color: white;
       border: none;
       padding: 10px 18px;
       border-radius: 5px;
-      cursor: pointer;
+      text-decoration: none;
+      font-weight: 500;
+      transition: background 0.3s ease;
 
       &:hover {
         background-color: rgb(42, 98, 113);
@@ -76,31 +78,15 @@ const Card = styled.div`
   }
 `;
 
-const courses = [
-  {
-    id: 1,
-    title: "Web Development Bootcamp",
-    image: course1,
-    rating: 5,
-    price: "$39.99",
-  },
-  {
-    id: 2,
-    title: "UI/UX Design Masterclass",
-    image: course2,
-    rating: 4,
-    price: "$29.99",
-  },
-  {
-    id: 3,
-    title: "Python for Beginners",
-    image: course3,
-    rating: 5,
-    price: "$24.99",
-  },
-];
+// ✅ Sort by highest rating, then pick top 3
+const getTopCourses = (data, count = 3) => {
+  const sorted = [...data].sort((a, b) => b.rating - a.rating);
+  return sorted.slice(0, count);
+};
 
 const FeaturedCourses = () => {
+  const courses = getTopCourses(courseData, 3);
+
   return (
     <Section>
       <Title>Explore Popular Courses</Title>
@@ -111,10 +97,12 @@ const FeaturedCourses = () => {
             <div className="content">
               <h3>{course.title}</h3>
               <div className="rating">
-                {Array(course.rating).fill(<FaStar />)}
+                {Array.from({ length: Math.round(course.rating) }).map((_, i) => (
+                  <FaStar key={i} />
+                ))}
               </div>
               <div className="price">{course.price}</div>
-              <button>Enroll Now</button>
+              <Link to={`/courses/${course.id}`}>Enroll Now</Link>
             </div>
           </Card>
         ))}
