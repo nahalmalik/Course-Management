@@ -1,11 +1,13 @@
-// src/utils/enrollmentUtils.js
-export const getEnrolledCourses = () => {
-  const stored = localStorage.getItem("enrolledCourses");
-  return stored ? JSON.parse(stored) : [];
-};
+// src/components/enrollmentUtils.js
 
-export const enrollCourse = (course) => {
-  const current = getEnrolledCourses();
-  const updated = [...current, course];
-  localStorage.setItem("enrolledCourses", JSON.stringify(updated));
+export const enrollCourse = ({ course, student, email, enrolledAt }) => {
+  const existing = JSON.parse(localStorage.getItem("enrolledCourses")) || [];
+  const newRecord = {
+    ...course,
+    student,
+    email,
+    enrolledAt,
+    id: `${course.id}-${Date.now()}` // unique enrollment ID
+  };
+  localStorage.setItem("enrolledCourses", JSON.stringify([...existing, newRecord]));
 };

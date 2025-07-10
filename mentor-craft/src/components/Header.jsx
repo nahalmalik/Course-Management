@@ -54,7 +54,8 @@ const Header = () => {
         <NavLink to="/student-dashboard">Dashboard</NavLink>
         <IconGroup>
           <FaSearch />
-          <FaShoppingCart />
+          <NavLink to="/cart">
+          <FaShoppingCart /></NavLink>
         </IconGroup>
       </Nav>
     </HeaderWrapper>
