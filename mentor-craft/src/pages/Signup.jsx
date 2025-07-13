@@ -4,23 +4,27 @@ import AuthTabs from '../components/AuthTabs';
 import { loginUser } from '../contexts/authUtils';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import logo from '../assets/logo.png'; // your logo image
+import logo from '../assets/logo.png';
 
-const Login = () => {
+const Signup = () => {
   const navigate = useNavigate();
-  const [student, setStudent] = useState({ email: '', password: '' });
-  const [instructor, setInstructor] = useState({ email: '', password: '' });
+  const [student, setStudent] = useState({ name: '', email: '', password: '', confirm: '' });
+  const [instructor, setInstructor] = useState({ name: '', email: '', password: '', confirm: '' });
   const [error, setError] = useState('');
 
-  const handleLogin = (userType, formData) => {
-    const { email, password } = formData;
-    if (!email || !password) {
+  const handleSignup = (userType, formData) => {
+    const { name, email, password, confirm } = formData;
+    if (!name || !email || !password || !confirm) {
       setError('Please fill all fields');
+      return;
+    }
+    if (password !== confirm) {
+      setError('Passwords do not match');
       return;
     }
 
     loginUser(userType, email);
-    toast.success(`Welcome ${userType === 'student' ? 'Student' : 'Instructor'}!`);
+    toast.success(`Welcome ${userType === 'student' ? 'Student' : 'Instructor'}! Account created`);
     setTimeout(() => navigate('/'), 1500);
   };
 
@@ -75,14 +79,6 @@ const Login = () => {
     display: 'block'
   };
 
-  const forgotStyle = {
-    fontSize: '13px',
-    color: '#777',
-    textDecoration: 'underline',
-    marginTop: '5px',
-    display: 'block'
-  };
-
   const errorStyle = {
     color: 'red',
     fontSize: '14px',
@@ -90,20 +86,22 @@ const Login = () => {
   };
 
   const studentForm = (
-    <form onSubmit={(e) => { e.preventDefault(); handleLogin('student', student); }}>
-      <input type="email" style={inputStyle} placeholder="Student Email" value={student.email} onChange={(e) => setStudent({ ...student, email: e.target.value })} />
+    <form onSubmit={(e) => { e.preventDefault(); handleSignup('student', student); }}>
+      <input type="text" style={inputStyle} placeholder="Name" value={student.name} onChange={(e) => setStudent({ ...student, name: e.target.value })} />
+      <input type="email" style={inputStyle} placeholder="Email" value={student.email} onChange={(e) => setStudent({ ...student, email: e.target.value })} />
       <input type="password" style={inputStyle} placeholder="Password" value={student.password} onChange={(e) => setStudent({ ...student, password: e.target.value })} />
-      <Link to="/forgot-password" style={forgotStyle}>Forgot password?</Link>
-      <button style={buttonStyle} type="submit">Login as Student</button>
+      <input type="password" style={inputStyle} placeholder="Confirm Password" value={student.confirm} onChange={(e) => setStudent({ ...student, confirm: e.target.value })} />
+      <button style={buttonStyle} type="submit">Signup as Student</button>
     </form>
   );
 
   const instructorForm = (
-    <form onSubmit={(e) => { e.preventDefault(); handleLogin('instructor', instructor); }}>
-      <input type="email" style={inputStyle} placeholder="Instructor Email" value={instructor.email} onChange={(e) => setInstructor({ ...instructor, email: e.target.value })} />
+    <form onSubmit={(e) => { e.preventDefault(); handleSignup('instructor', instructor); }}>
+      <input type="text" style={inputStyle} placeholder="Name" value={instructor.name} onChange={(e) => setInstructor({ ...instructor, name: e.target.value })} />
+      <input type="email" style={inputStyle} placeholder="Email" value={instructor.email} onChange={(e) => setInstructor({ ...instructor, email: e.target.value })} />
       <input type="password" style={inputStyle} placeholder="Password" value={instructor.password} onChange={(e) => setInstructor({ ...instructor, password: e.target.value })} />
-      <Link to="/forgot-password" style={forgotStyle}>Forgot password?</Link>
-      <button style={buttonStyle} type="submit">Login as Instructor</button>
+      <input type="password" style={inputStyle} placeholder="Confirm Password" value={instructor.confirm} onChange={(e) => setInstructor({ ...instructor, confirm: e.target.value })} />
+      <button style={buttonStyle} type="submit">Signup as Instructor</button>
     </form>
   );
 
@@ -111,14 +109,14 @@ const Login = () => {
     <>
       <div style={containerStyle}>
         <img src={logo} alt="Mentor Craft" style={logoStyle} />
-        <div style={titleStyle}>Login to Mentor Craft</div>
+        <div style={titleStyle}>Create your Mentor Craft account</div>
         {error && <p style={errorStyle}>{error}</p>}
         <AuthTabs studentForm={studentForm} instructorForm={instructorForm} />
-        <Link to="/signup" style={linkStyle}>Don’t have an account? Signup now</Link>
+        <Link to="/login" style={linkStyle}>Already have an account? Login</Link>
       </div>
       <ToastContainer position="top-center" />
     </>
   );
 };
 
-export default Login;
+export default Signup;

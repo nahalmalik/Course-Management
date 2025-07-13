@@ -70,7 +70,7 @@ const Header = () => {
         <NavLink to="/about">About</NavLink>
         <NavLink to="/contact">Contact</NavLink>
         <NavLink to="/login"><FaUser /></NavLink>
-        <NavLink to="/register">Register</NavLink>
+        <NavLink to="/instructor-dashboard">Instructor dashboard</NavLink>
         <NavLink to="/student-dashboard">Dashboard</NavLink>
         <IconGroup>
           <FaSearch />

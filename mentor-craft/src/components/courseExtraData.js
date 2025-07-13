@@ -903,7 +903,65 @@ const courseExtraData = {
         answer: "Yes, you’ll get speech templates and exercises to rehearse."
       }
     ]
-  }
+  },
+16: {
+  overview: `Learn how to build blazing-fast websites using Next.js.`,
+  curriculumIntro: "Master modern server-side rendering and routing with Next.js.",
+  curriculum: [
+    {
+      title: "Intro to Next.js",
+      description: "Learn why Next.js is powerful for SSR.",
+      duration: "20m",
+      icon: "⚡",
+      video: "https://www.youtube.com/embed/1WmNXEVia8I"
+    },
+    {
+      title: "Routing & Pages",
+      description: "Understand file-based routing in Next.",
+      duration: "25m",
+      icon: "🗺️",
+      video: "https://www.youtube.com/embed/a_lxZ1N6fAY"
+    }
+  ],
+  faqs: [
+    { question: "Is React knowledge required?", answer: "Yes, React basics are assumed." }
+  ]
+},
+
+17: {
+  overview: `Get started with 3D web experiences using Three.js.`,
+  curriculumIntro: "Build immersive browser-based visuals and interactions.",
+  curriculum: [
+    {
+      title: "Three.js Basics",
+      description: "Learn to render 3D cubes and scenes.",
+      duration: "30m",
+      icon: "🎮",
+      video: "https://www.youtube.com/embed/qkX8swcz5XA"
+    }
+  ],
+  faqs: [
+    { question: "Do I need a gaming PC?", answer: "No, modern browser is enough." }
+  ]
+},
+
+18: {
+  overview: `Master Tailwind CSS for rapid modern web development.`,
+  curriculumIntro: "Use utility-first CSS to build responsive sites quickly.",
+  curriculum: [
+    {
+      title: "Intro to Tailwind",
+      description: "Setup and basic utilities.",
+      duration: "20m",
+      icon: "🎯",
+      video: "https://www.youtube.com/embed/dFgzHOX84xQ"
+    }
+  ],
+  faqs: [
+    { question: "Do I need to know CSS?", answer: "Basic CSS helps but not required." }
+  ]
+}
+
 };
 
 export default courseExtraData;

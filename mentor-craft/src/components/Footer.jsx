@@ -138,7 +138,7 @@ const Footer = () => {
             <h4>Class</h4>
             <a href="/courses">Courses</a>
             <a href="/student-dashboard">Student Panel</a>
-            <a href="/instructor">Become Instructor</a>
+            <a href="/become-instructor">Become Instructor</a>
           </LinkGroup>
         </Column>
 
