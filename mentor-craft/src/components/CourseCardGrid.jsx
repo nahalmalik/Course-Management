@@ -64,7 +64,16 @@ const CourseCardGrid = ({ course }) => {
   return (
     <Link to={`/courses/${course.id}`} style={{ textDecoration: "none" }}>
       <Card>
-        <Image src={course.image} alt={course.title} />
+        <img
+  src={
+    course.thumbnail?.startsWith('data:image')
+      ? course.thumbnail
+      : course.image || course.thumbnail || '/assets/default-course.jpg'
+  }
+  alt={course.title}
+  style={{ width: '100%', height: '200px', objectFit: 'cover', borderRadius: '8px' }}
+/>
+
         <Content>
           <Badge>{course.category}</Badge>
           <Title>{course.title}</Title>

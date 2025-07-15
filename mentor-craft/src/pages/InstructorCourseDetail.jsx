@@ -1,199 +1,203 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import {
+  getCourses,
+  getExtraData,
+  saveExtraData
+} from '../contexts/courseStorage';
 import courseData from '../components/courseData';
 import courseExtraData from '../components/courseExtraData';
 import { getCurrentUser } from '../contexts/authUtils';
+import 'react-toastify/dist/ReactToastify.css';
+import '../styles/InstructorCourseDetail.css';
+
 
 const InstructorCourseDetail = () => {
   const { id } = useParams();
   const courseId = parseInt(id);
   const navigate = useNavigate();
 
-  const [user, setUser] = useState(null);
   const [course, setCourse] = useState(null);
   const [extra, setExtra] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
   const [formCurriculum, setFormCurriculum] = useState([]);
+  const [newNote, setNewNote] = useState({ title: '', description: '', file: null });
+  const [newAssignment, setNewAssignment] = useState({ title: '', description: '', file: null, dueDate: '' });
+  const [newQuiz, setNewQuiz] = useState({ title: '', description: '', file: null, dueDate: '' });
 
   useEffect(() => {
     const currentUser = getCurrentUser();
-    if (!currentUser || currentUser.userType !== 'instructor') {
-      navigate('/');
-      return;
-    }
-    setUser(currentUser);
+    if (!currentUser || currentUser.userType !== 'instructor') return navigate('/');
 
-    const courseObj = courseData.find(c => c.id === courseId);
-    const extraData = courseExtraData[courseId];
+    const staticCourse = courseData.find(c => c.id === courseId);
+    const dynamicCourse = getCourses().find(c => c.id === courseId);
+    const foundCourse = dynamicCourse || staticCourse;
 
-    if (!courseObj || !extraData) {
-      navigate('/');
-      return;
-    }
+    const staticExtra = courseExtraData[courseId];
+    const dynamicExtra = getExtraData(courseId);
+    const foundExtra = dynamicExtra || staticExtra || {
+      overview: '',
+      curriculum: [],
+      notes: [],
+      assignments: [],
+      quizzes: []
+    };
 
-    setCourse(courseObj);
-    setExtra(extraData);
-    setFormCurriculum(extraData.curriculum || []);
+    setCourse(foundCourse);
+    setExtra(foundExtra);
+    setFormCurriculum(foundExtra.curriculum || []);
   }, [courseId, navigate]);
 
-  const handleChange = (index, key, value) => {
+  const updateExtra = (key, value) => {
+    const updated = { ...extra, [key]: value };
+    setExtra(updated);
+    saveExtraData(courseId, updated);
+  };
+
+  const handleCurriculumChange = (index, field, value) => {
     const updated = [...formCurriculum];
-    updated[index][key] = value;
+    updated[index][field] = value;
     setFormCurriculum(updated);
   };
 
   const addLecture = () => {
-    setFormCurriculum([
-      ...formCurriculum,
-      { title: '', description: '', duration: '', icon: '', video: '' }
-    ]);
+    setFormCurriculum([...formCurriculum, { title: '', description: '', duration: '', icon: '', video: '' }]);
   };
 
-  const removeLecture = (index) => {
-    const updated = [...formCurriculum];
-    updated.splice(index, 1);
-    setFormCurriculum(updated);
+  const saveCurriculum = () => {
+    updateExtra('curriculum', formCurriculum);
+    toast.success("✅ Curriculum saved successfully!");
   };
 
-  const handleSave = () => {
-    setExtra({ ...extra, curriculum: formCurriculum });
-    setIsEditing(false);
-    alert('Curriculum updated (simulated)');
+  const handleNoteUpload = () => {
+    if (!newNote.title || !newNote.description || !newNote.file) {
+      toast.error('⚠️ Fill all note fields');
+      return;
+    }
+    const updated = [...extra.notes, newNote];
+    updateExtra('notes', updated);
+    setNewNote({ title: '', description: '', file: null });
+    toast.success('📝 Note uploaded!');
+  };
+
+  const handleAssignmentUpload = () => {
+    if (!newAssignment.title || !newAssignment.description || !newAssignment.file || !newAssignment.dueDate) {
+      toast.error('⚠️ Fill all assignment fields');
+      return;
+    }
+    const updated = [...extra.assignments, newAssignment];
+    updateExtra('assignments', updated);
+    setNewAssignment({ title: '', description: '', file: null, dueDate: '' });
+    toast.success('📘 Assignment uploaded!');
+  };
+
+  const handleQuizUpload = () => {
+    if (!newQuiz.title || !newQuiz.description || !newQuiz.file || !newQuiz.dueDate) {
+      toast.error('⚠️ Fill all quiz fields');
+      return;
+    }
+    const updated = [...extra.quizzes, newQuiz];
+    updateExtra('quizzes', updated);
+    setNewQuiz({ title: '', description: '', file: null, dueDate: '' });
+    toast.success('🧠 Quiz uploaded!');
   };
 
   if (!course || !extra) return null;
 
   return (
-    <div style={{ maxWidth: 1000, margin: '30px auto', padding: 20 }}>
-      <h2 style={{ color: 'rgb(32,125,140)', marginBottom: 20 }}>
-        {course.title}
-      </h2>
+    <div className="instructor-detail-wrapper">
+      <ToastContainer />
+      <h2 style={{ color: 'rgb(32,125,140)', marginBottom: 20 }}>{course.title}</h2>
 
-      <p style={{ marginBottom: 20 }}>{extra.overview}</p>
+      {/* Curriculum */}
+      <details open className="accordion-card fade-slide-up">
+        <summary>📚 Curriculum</summary>
+        {formCurriculum.map((item, idx) => (
+          <div key={idx} className="animated-accordion">
+            <input className="input-float" placeholder="Title" value={item.title} onChange={e => handleCurriculumChange(idx, 'title', e.target.value)} />
+            <textarea className="input-float" placeholder="Description" value={item.description} onChange={e => handleCurriculumChange(idx, 'description', e.target.value)} />
+            <input className="input-float" placeholder="Duration" value={item.duration} onChange={e => handleCurriculumChange(idx, 'duration', e.target.value)} />
+            <input className="input-float" placeholder="Icon" value={item.icon} onChange={e => handleCurriculumChange(idx, 'icon', e.target.value)} />
+            <input className="input-float" placeholder="YouTube Embed Link" value={item.video} onChange={e => handleCurriculumChange(idx, 'video', e.target.value)} />
+          </div>
+        ))}
+        <button onClick={addLecture} className="glass-button">➕ Add Lecture</button>
+        <button onClick={saveCurriculum} className="glass-button" style={{ marginLeft: 10 }}>💾 Save Curriculum</button>
+      </details>
 
-      <h3 style={{ color: 'rgb(42,98,113)', marginBottom: 10 }}>
-        Curriculum
-      </h3>
+      {/* Notes */}
+      <details className="accordion-card fade-slide-up">
+        <summary>📝 Upload Notes</summary>
+        <input className="input-float" placeholder="Note Title" value={newNote.title} onChange={e => setNewNote({ ...newNote, title: e.target.value })} />
+        <textarea className="input-float" placeholder="Description" value={newNote.description} onChange={e => setNewNote({ ...newNote, description: e.target.value })} />
+        <input type="file" onChange={e => setNewNote({ ...newNote, file: e.target.files[0] })} />
+        <button onClick={handleNoteUpload} className="glass-button">📎 Upload Note</button>
 
-      {isEditing ? (
-        <>
-          {formCurriculum.map((item, idx) => (
-            <div key={idx} style={{ background: '#f9f9f9', padding: 15, borderRadius: 6, marginBottom: 10 }}>
-              <input
-                placeholder="Title"
-                value={item.title}
-                onChange={(e) => handleChange(idx, 'title', e.target.value)}
-                style={inputStyle}
-              />
-              <textarea
-                placeholder="Description"
-                value={item.description}
-                onChange={(e) => handleChange(idx, 'description', e.target.value)}
-                style={inputStyle}
-              />
-              <input
-                placeholder="Duration"
-                value={item.duration}
-                onChange={(e) => handleChange(idx, 'duration', e.target.value)}
-                style={inputStyle}
-              />
-              <input
-                placeholder="Icon"
-                value={item.icon}
-                onChange={(e) => handleChange(idx, 'icon', e.target.value)}
-                style={inputStyle}
-              />
-              <input
-                placeholder="YouTube Embed URL"
-                value={item.video}
-                onChange={(e) => handleChange(idx, 'video', e.target.value)}
-                style={inputStyle}
-              />
-              <button onClick={() => removeLecture(idx)} style={removeBtn}>🗑 Remove</button>
-            </div>
-          ))}
-          <button onClick={addLecture} style={addBtn}>➕ Add Lecture</button>
-          <button onClick={handleSave} style={saveBtn}>💾 Save Curriculum</button>
-        </>
-      ) : (
-        <div>
-          {extra.curriculum.map((item, idx) => (
-            <div key={idx} style={curriculumCard}>
-              <h4>{item.icon} {item.title}</h4>
-              <p>{item.description}</p>
-              <p><strong>Duration:</strong> {item.duration}</p>
-              <iframe
-                width="100%"
-                height="240"
-                src={item.video}
-                title={item.title}
-                allowFullScreen
-                style={{ marginTop: 10, borderRadius: 4 }}
-              />
-            </div>
-          ))}
-          <button onClick={() => setIsEditing(true)} style={editBtn}>✏️ Edit Curriculum</button>
-        </div>
-      )}
+        {extra.notes?.length > 0 && (
+          <div className="preview-section">
+            <h4>📂 Uploaded Notes</h4>
+            {extra.notes.map((n, i) => (
+              <div key={i} className="preview-item">
+                <strong>{n.title}</strong>
+                <p>{n.description}</p>
+                {n.file?.name && <p>📎 {n.file.name}</p>}
+              </div>
+            ))}
+          </div>
+        )}
+      </details>
+
+      {/* Assignments */}
+      <details className="accordion-card fade-slide-up">
+        <summary>📘 Upload Assignment</summary>
+        <input className="input-float" placeholder="Assignment Title" value={newAssignment.title} onChange={e => setNewAssignment({ ...newAssignment, title: e.target.value })} />
+        <textarea className="input-float" placeholder="Description" value={newAssignment.description} onChange={e => setNewAssignment({ ...newAssignment, description: e.target.value })} />
+        <input type="date" value={newAssignment.dueDate} onChange={e => setNewAssignment({ ...newAssignment, dueDate: e.target.value })} />
+        <input type="file" onChange={e => setNewAssignment({ ...newAssignment, file: e.target.files[0] })} />
+        <button onClick={handleAssignmentUpload} className="glass-button">📎 Upload Assignment</button>
+
+        {extra.assignments?.length > 0 && (
+          <div className="preview-section">
+            <h4>📘 Uploaded Assignments</h4>
+            {extra.assignments.map((a, i) => (
+              <div key={i} className="preview-item">
+                <strong>{a.title}</strong>
+                <p>{a.description}</p>
+                <p>📅 Due: {a.dueDate}</p>
+                {a.file?.name && <p>📎 {a.file.name}</p>}
+              </div>
+            ))}
+          </div>
+        )}
+      </details>
+
+      {/* Quizzes */}
+      <details className="accordion-card fade-slide-up">
+        <summary>🧠 Upload Quiz</summary>
+        <input className="input-float" placeholder="Quiz Title" value={newQuiz.title} onChange={e => setNewQuiz({ ...newQuiz, title: e.target.value })} />
+        <textarea className="input-float" placeholder="Description" value={newQuiz.description} onChange={e => setNewQuiz({ ...newQuiz, description: e.target.value })} />
+        <input type="date" value={newQuiz.dueDate} onChange={e => setNewQuiz({ ...newQuiz, dueDate: e.target.value })} />
+        <input type="file" onChange={e => setNewQuiz({ ...newQuiz, file: e.target.files[0] })} />
+        <button onClick={handleQuizUpload} className="glass-button">📎 Upload Quiz</button>
+
+        {extra.quizzes?.length > 0 && (
+          <div className="preview-section">
+            <h4>🧠 Uploaded Quizzes</h4>
+            {extra.quizzes.map((q, i) => (
+              <div key={i} className="preview-item">
+                <strong>{q.title}</strong>
+                <p>{q.description}</p>
+                <p>📅 Due: {q.dueDate}</p>
+                {q.file?.name && <p>📎 {q.file.name}</p>}
+              </div>
+            ))}
+          </div>
+        )}
+      </details>
     </div>
   );
 };
 
-const inputStyle = {
-  display: 'block',
-  width: '100%',
-  padding: 10,
-  marginBottom: 8,
-  borderRadius: 4,
-  border: '1px solid #ccc',
-  fontSize: 14
-};
-
-const removeBtn = {
-  backgroundColor: '#e74c3c',
-  color: '#fff',
-  padding: '8px 12px',
-  border: 'none',
-  borderRadius: 4,
-  cursor: 'pointer'
-};
-
-const addBtn = {
-  marginTop: 10,
-  padding: '8px 16px',
-  backgroundColor: '#2a6271',
-  color: 'white',
-  border: 'none',
-  borderRadius: 5,
-  cursor: 'pointer'
-};
-
-const saveBtn = {
-  marginTop: 20,
-  padding: '10px 16px',
-  backgroundColor: 'rgb(32,125,140)',
-  color: '#fff',
-  border: 'none',
-  borderRadius: 5,
-  cursor: 'pointer'
-};
-
-const editBtn = {
-  marginTop: 20,
-  padding: '10px 16px',
-  backgroundColor: '#3498db',
-  color: '#fff',
-  border: 'none',
-  borderRadius: 5,
-  cursor: 'pointer'
-};
-
-const curriculumCard = {
-  background: '#f2f9fa',
-  padding: 15,
-  borderRadius: 6,
-  marginBottom: 20,
-  boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
-};
-
 export default InstructorCourseDetail;
+
+

@@ -1,0 +1,137 @@
+/* === Page Wrapper === */
+.instructor-detail-wrapper {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 20px;
+  font-family: 'Segoe UI', sans-serif;
+  animation: fadeSlideUp 0.5s ease;
+}
+
+/* === Glass Panel for Each Section === */
+.accordion-card {
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 30px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(32,125,140, 0.1);
+  transition: 0.3s ease;
+}
+
+.accordion-card summary {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  cursor: pointer;
+  color: rgb(32,125,140);
+}
+
+/* === Fade Slide Animation === */
+.fade-slide-up {
+  animation: fadeSlideUp 0.6s ease forwards;
+}
+
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+}
+
+/* === Floating Inputs === */
+.input-float {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 16px;
+  font-size: 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  transition: border-color 0.3s ease;
+}
+
+.input-float:focus {
+  border-color: rgb(32,125,140);
+  outline: none;
+}
+
+/* === Buttons === */
+.glass-button {
+  background: linear-gradient(to right, #207d8c, #2a6271);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  margin-top: 10px;
+  margin-right: 10px;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 12px rgba(32,125,140, 0.3);
+}
+
+.glass-button:hover {
+  background: linear-gradient(to right, #2a6271, #207d8c);
+  transform: scale(1.03);
+}
+
+/* === Previews Section === */
+.preview-section {
+  background: #f4f9fa;
+  border: 1px solid #d5e3e6;
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-top: 20px;
+}
+
+.preview-section h4 {
+  font-size: 17px;
+  color: #2a6271;
+  margin-bottom: 10px;
+}
+
+.preview-item {
+  border-bottom: 1px dashed #ccc;
+  padding: 10px 0;
+  font-size: 15px;
+  color: #333;
+}
+
+.preview-item:last-child {
+  border-bottom: none;
+}
+
+.preview-item p {
+  margin: 5px 0;
+}
+
+/* === Section Title === */
+.section-title {
+  color: rgb(32,125,140);
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: 600;
+  text-align: left;
+}
+
+/* === File Inputs === */
+input[type="file"] {
+  margin-top: 8px;
+  margin-bottom: 14px;
+  font-size: 14px;
+}
+
+/* === Date Picker Styling === */
+input[type="date"] {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  margin-bottom: 14px;
+  background: #fff;
+}

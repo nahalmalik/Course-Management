@@ -1,88 +1,151 @@
-import React from 'react';
-import { Line } from 'react-chartjs-2';
+import React, { useEffect, useState } from 'react';
 import {
-  Chart as ChartJS,
-  LineElement,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  Tooltip,
-  Legend
-} from 'chart.js';
+  LineChart, Line,
+  BarChart, Bar,
+  XAxis, YAxis,
+  Tooltip, CartesianGrid,
+  ResponsiveContainer,
+  ReferenceDot,
+  Legend,
+  AreaChart, Area,
+  defs, linearGradient
+} from 'recharts';
 
-ChartJS.register(
-  LineElement,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  Tooltip,
-  Legend
-);
+const EarningsChart = ({ zero = false }) => {
+  const [chartData, setChartData] = useState([]);
+  const [chartType, setChartType] = useState('line'); // 'line' or 'bar'
 
-const EarningsChart = () => {
-  const data = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-    datasets: [
-      {
-        label: 'Earnings ($)',
-        data: [500, 900, 1400, 1000, 1600, 2100, 1800],
-        fill: true,
-        borderColor: 'rgb(32,125,140)',
-        backgroundColor: 'rgba(32,125,140,0.1)',
-        tension: 0.4,
-        pointRadius: 3,
-        pointBackgroundColor: 'rgb(32,125,140)',
-        pointHoverRadius: 5,
-      },
-    ],
+  useEffect(() => {
+    const storedEarnings = JSON.parse(localStorage.getItem('instructorEarnings'));
+
+    if (zero) {
+      setChartData([
+        { month: 'Jan', earnings: 0 },
+        { month: 'Feb', earnings: 0 },
+        { month: 'Mar', earnings: 0 },
+        { month: 'Apr', earnings: 0 },
+        { month: 'May', earnings: 0 },
+        { month: 'Jun', earnings: 0 }
+      ]);
+    } else if (storedEarnings && storedEarnings.length > 0) {
+      setChartData(storedEarnings);
+    } else {
+      const defaultData = [
+        { month: 'Jan', earnings: 540 },
+        { month: 'Feb', earnings: 620 },
+        { month: 'Mar', earnings: 480 },
+        { month: 'Apr', earnings: 720 },
+        { month: 'May', earnings: 960 },
+        { month: 'Jun', earnings: 1020 }
+      ];
+      localStorage.setItem('instructorEarnings', JSON.stringify(defaultData));
+      setChartData(defaultData);
+    }
+  }, [zero]);
+
+  const currentMonth = new Date().toLocaleString('default', { month: 'short' });
+
+  const handleExportCSV = () => {
+    const csv = `Month,Earnings\n${chartData
+      .map(d => `${d.month},${d.earnings}`)
+      .join('\n')}`;
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'earnings.csv';
+    a.click();
   };
 
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        callbacks: {
-          label: (ctx) => `$${ctx.parsed.y}`,
-        },
-      },
-    },
-    scales: {
-      x: {
-        ticks: {
-          color: '#666',
-        },
-        grid: {
-          display: false,
-        },
-      },
-      y: {
-        beginAtZero: true,
-        ticks: {
-          callback: (value) => `$${value}`,
-          color: '#666',
-        },
-        grid: {
-          color: '#eee',
-        },
-      },
-    },
+  const renderChart = () => {
+    const commonProps = {
+      data: chartData,
+      margin: { top: 10, right: 20, left: 0, bottom: 0 }
+    };
+
+    const gradientDefs = (
+      <defs>
+        <linearGradient id="earnGradient" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#208088" stopOpacity={0.8} />
+          <stop offset="100%" stopColor="#208088" stopOpacity={0.2} />
+        </linearGradient>
+      </defs>
+    );
+
+    if (chartType === 'bar') {
+      return (
+        <BarChart {...commonProps}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+          <XAxis dataKey="month" />
+          <YAxis />
+          <Tooltip formatter={(value) => `$${value}`} />
+          <Legend />
+          <Bar dataKey="earnings" fill="url(#earnGradient)" />
+          {chartData.map((d, i) =>
+            d.month === currentMonth ? (
+              <ReferenceDot
+                key={i}
+                x={d.month}
+                y={d.earnings}
+                r={8}
+                fill="#ff9900"
+                stroke="none"
+              />
+            ) : null
+          )}
+          {gradientDefs}
+        </BarChart>
+      );
+    }
+
+    return (
+      <LineChart {...commonProps}>
+        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+        <XAxis dataKey="month" />
+        <YAxis />
+        <Tooltip formatter={(value) => `$${value}`} />
+        <Legend />
+        <Line
+          type="monotone"
+          dataKey="earnings"
+          stroke="#208088"
+          strokeWidth={3}
+          dot={{ r: 5 }}
+          activeDot={{ r: 7 }}
+          animationDuration={1000}
+        />
+        {chartData.map((d, i) =>
+          d.month === currentMonth ? (
+            <ReferenceDot
+              key={i}
+              x={d.month}
+              y={d.earnings}
+              r={8}
+              fill="#ff9900"
+              stroke="none"
+              isFront
+            />
+          ) : null
+        )}
+        {gradientDefs}
+      </LineChart>
+    );
   };
 
   return (
-    <div style={{
-      background: '#fff',
-      padding: '15px 20px',
-      borderRadius: 10,
-      boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
-      marginTop: 30,
-      height: 250
-    }}>
-      <h3 style={{ marginBottom: 10, color: 'rgb(32,125,140)', fontSize: 18 }}>Earnings Over Time</h3>
-      <div style={{ height: 180 }}>
-        <Line data={data} options={options} />
+    <div className="chart-container">
+      <div className="chart-header">
+        <h3>Earnings Overview</h3>
+        <div className="chart-controls">
+          <button onClick={() => setChartType(chartType === 'line' ? 'bar' : 'line')}>
+            🔁 {chartType === 'line' ? 'Switch to Bar' : 'Switch to Line'}
+          </button>
+          <button onClick={handleExportCSV}>⬇️ Export CSV</button>
+        </div>
       </div>
+
+      <ResponsiveContainer width="100%" height={300}>
+        {renderChart()}
+      </ResponsiveContainer>
     </div>
   );
 };

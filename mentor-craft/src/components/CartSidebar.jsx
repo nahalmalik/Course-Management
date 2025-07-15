@@ -142,7 +142,8 @@ const CartSidebar = ({ open, onClose }) => {
         ) : (
           cartItems.map((item, i) => (
             <CartItem key={i}>
-              <Thumbnail src={item.image} alt={item.title} />
+              <Thumbnail src={item.image || item.thumbnail} alt={item.title} />
+
               <ItemInfo>
                 <ItemTitle>{item.title}</ItemTitle>
                 <ItemPrice>

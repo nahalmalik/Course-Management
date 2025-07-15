@@ -3,8 +3,23 @@ import { Link, useParams } from "react-router-dom";
 import styled from "styled-components";
 import courseData from "../components/courseData";
 import courseExtraData from "../components/courseExtraData";
+import {
+  getCourseById,
+  getExtraData,
+  cleanYouTubeURL,
+  normalizeCurriculumVideos,
+} from "../contexts/courseStorage";
+import {
+  FaArrowLeft,
+  FaBookOpen,
+  FaList,
+  FaQuestion,
+  FaStar,
+  FaUser,
+  FaClock,
+  FaBook,
+} from "react-icons/fa";
 import CourseCardGrid from "../components/CourseCardGrid";
-import { FaArrowLeft, FaBookOpen, FaList, FaQuestion, FaStar, FaUser, FaClock, FaBook } from "react-icons/fa";
 import EnrollButton from "../components/EnrollButton";
 
 // Styled Components
@@ -27,28 +42,62 @@ const CourseImage = styled.img`
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
 `;
 
-const Info = styled.div` flex: 1; `;
-const Title = styled.h1` font-size: 28px; `;
-const Instructor = styled.p` font-weight: bold; margin-top: 10px; `;
-const Meta = styled.div`
-  display: flex; gap: 15px; margin-top: 10px; flex-wrap: wrap;
-  svg { color: #ffd700; margin-right: 5px; }
+const Info = styled.div`
+  flex: 1;
 `;
-const Rating = styled.div` display: flex; align-items: center; `;
+const Title = styled.h1`
+  font-size: 28px;
+`;
+const Instructor = styled.p`
+  font-weight: bold;
+  margin-top: 10px;
+`;
+const Meta = styled.div`
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+  svg {
+    color: #ffd700;
+    margin-right: 5px;
+  }
+`;
+const Rating = styled.div`
+  display: flex;
+  align-items: center;
+`;
 
 const BackButton = styled(Link)`
-  display: inline-flex; align-items: center; font-size: 14px;
-  color: rgb(32, 125, 140); margin: 20px 30px 0;
-  text-decoration: none; font-weight: 500;
-  svg { margin-right: 8px; }
-  &:hover { text-decoration: underline; }
+  display: inline-flex;
+  align-items: center;
+  font-size: 14px;
+  color: rgb(32, 125, 140);
+  margin: 20px 30px 0;
+  text-decoration: none;
+  font-weight: 500;
+  svg {
+    margin-right: 8px;
+  }
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 
 const Breadcrumb = styled.div`
-  padding: 20px 30px 0; font-size: 14px; color: #777;
-  a { color: rgb(32, 125, 140); text-decoration: none; }
-  a:hover { text-decoration: underline; }
-  span { margin: 0 8px; color: #aaa; }
+  padding: 20px 30px 0;
+  font-size: 14px;
+  color: #777;
+  a {
+    color: rgb(32, 125, 140);
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+  span {
+    margin: 0 8px;
+    color: #aaa;
+  }
 `;
 
 const TabSection = styled.div`
@@ -69,7 +118,7 @@ const RightSidebar = styled.div`
   background: #f9f9f9;
   padding: 25px;
   border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.06);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.06);
   position: sticky;
   top: 120px;
   height: fit-content;
@@ -188,41 +237,95 @@ const RelatedGrid = styled.div`
 
 const CourseDetail = () => {
   const { id } = useParams();
-  const course = courseData.find((c) => c.id === parseInt(id));
-  const courseExtra = courseExtraData[parseInt(id)];
-
+  const [course, setCourse] = useState(null);
+  const [courseExtra, setCourseExtra] = useState(null);
   const [activeTab, setActiveTab] = useState("overview");
   const [openIndex, setOpenIndex] = useState(null);
   const [faqOpenIndex, setFaqOpenIndex] = useState(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+    const courseId = parseInt(id);
+    const staticCourse = courseData.find((c) => c.id === courseId);
+    const staticExtra = courseExtraData[courseId];
 
-  if (!course || !courseExtra) return <p>Course not found.</p>;
+    if (staticCourse) {
+      setCourse(staticCourse);
+      setCourseExtra(staticExtra);
+    } else {
+      const dynamicCourse = getCourseById(courseId);
+      const dynamicExtra = getExtraData(courseId);
+
+      if (dynamicCourse) {
+        const fallbackCurriculum = [
+          {
+            title: "Introduction",
+            description: "Welcome to the course!",
+            duration: "5 min",
+            icon: "📘",
+            video: "",
+          },
+        ];
+
+        const fallbackFAQs = [
+          { question: "Who is this course for?", answer: "Anyone who wants to learn!" },
+          { question: "Do I need prior knowledge?", answer: "No, beginners are welcome." },
+        ];
+
+        setCourse(dynamicCourse);
+        setCourseExtra({
+          overview:
+            dynamicCourse.overview || "This course helps you master key concepts step-by-step.",
+          curriculumIntro: "Explore our carefully structured lectures and lessons.",
+          curriculum: normalizeCurriculumVideos(dynamicCourse.curriculum || fallbackCurriculum),
+          faqs: dynamicCourse.faqs?.length ? dynamicCourse.faqs : fallbackFAQs,
+        });
+      } else {
+        setCourse(null);
+        setCourseExtra(null);
+      }
+    }
+  }, [id]);
+
+  if (!course || !courseExtra)
+    return <p style={{ padding: 40 }}>Course not found.</p>;
+
+  // ✅ Universal image support
+  const courseImage = course.thumbnail || course.image || "/assets/default-course.jpg";
 
   return (
     <>
       <Banner>
-        <CourseImage src={course.image} alt={course.title} />
+        <CourseImage src={courseImage} alt={course.title} />
         <Info>
           <Title>{course.title}</Title>
-          <Instructor><FaUser /> Instructor: {course.instructor}</Instructor>
+          <Instructor>
+            <FaUser /> Instructor: {course.instructor}
+          </Instructor>
           <Meta>
             <Rating>
               {[...Array(5)].map((_, i) => (
-                <FaStar key={i} color={i < Math.round(course.rating) ? "#ffd700" : "#ccc"} />
+                <FaStar
+                  key={i}
+                  color={i < Math.round(course.rating || 4.5) ? "#ffd700" : "#ccc"}
+                />
               ))}
-              &nbsp; {course.rating}
+              &nbsp; {course.rating || "4.5"}
             </Rating>
-            <span><FaClock /> {course.duration}</span>
-            <span><FaBook /> {course.lessons} Lessons</span>
+            <span>
+              <FaClock /> {course.duration}
+            </span>
+            <span>
+              <FaBook /> {course.lessons} Lessons
+            </span>
           </Meta>
           <EnrollButton course={course} />
         </Info>
       </Banner>
 
-      <BackButton to="/courses"><FaArrowLeft /> Back to Courses</BackButton>
+      <BackButton to="/courses">
+        <FaArrowLeft /> Back to Courses
+      </BackButton>
 
       <Breadcrumb>
         <Link to="/">Home</Link> <span>&gt;</span>
@@ -233,13 +336,22 @@ const CourseDetail = () => {
       <TabSection>
         <LeftContent>
           <TabNav>
-            <button className={activeTab === "overview" ? "active" : ""} onClick={() => setActiveTab("overview")}>
+            <button
+              className={activeTab === "overview" ? "active" : ""}
+              onClick={() => setActiveTab("overview")}
+            >
               <FaBookOpen /> Overview
             </button>
-            <button className={activeTab === "curriculum" ? "active" : ""} onClick={() => setActiveTab("curriculum")}>
+            <button
+              className={activeTab === "curriculum" ? "active" : ""}
+              onClick={() => setActiveTab("curriculum")}
+            >
               <FaList /> Curriculum
             </button>
-            <button className={activeTab === "faq" ? "active" : ""} onClick={() => setActiveTab("faq")}>
+            <button
+              className={activeTab === "faq" ? "active" : ""}
+              onClick={() => setActiveTab("faq")}
+            >
               <FaQuestion /> FAQs
             </button>
           </TabNav>
@@ -262,7 +374,7 @@ const CourseDetail = () => {
                     <iframe
                       width="100%"
                       height="300"
-                      src={url}
+                      src={cleanYouTubeURL(url)}
                       title={`Video ${i + 1}`}
                       allowFullScreen
                       style={{ borderRadius: "8px", border: "1px solid #ccc" }}
@@ -273,26 +385,34 @@ const CourseDetail = () => {
                 <Accordion>
                   {courseExtra.curriculum.map((item, idx) => (
                     <AccordionItem key={idx}>
-                      <AccordionHeader onClick={() => setOpenIndex(openIndex === idx ? null : idx)}>
-  <span>{item.icon} {item.title}</span>
-  <span>{openIndex === idx ? "-" : "+"}</span>
-</AccordionHeader>
-
+                      <AccordionHeader
+                        onClick={() => setOpenIndex(openIndex === idx ? null : idx)}
+                      >
+                        <span>
+                          {item.icon} {item.title}
+                        </span>
+                        <span>{openIndex === idx ? "-" : "+"}</span>
+                      </AccordionHeader>
                       <AccordionBody open={openIndex === idx}>
-  <p><strong>Description:</strong> {item.description}</p>
-  <p><strong>Duration:</strong> {item.duration}</p>
-  <div style={{ margin: "15px 0" }}>
-    <iframe
-      width="100%"
-      height="300"
-      src={item.video}
-      title={`Video ${idx + 1}`}
-      allowFullScreen
-      style={{ borderRadius: "8px", border: "1px solid #ccc" }}
-    ></iframe>
-  </div>
-</AccordionBody>
-
+                        <p>
+                          <strong>Description:</strong> {item.description}
+                        </p>
+                        <p>
+                          <strong>Duration:</strong> {item.duration}
+                        </p>
+                        {item.video && (
+                          <div style={{ margin: "15px 0" }}>
+                            <iframe
+                              width="100%"
+                              height="300"
+                              src={cleanYouTubeURL(item.video)}
+                              title={`Video ${idx + 1}`}
+                              allowFullScreen
+                              style={{ borderRadius: "8px", border: "1px solid #ccc" }}
+                            ></iframe>
+                          </div>
+                        )}
+                      </AccordionBody>
                     </AccordionItem>
                   ))}
                 </Accordion>
@@ -303,9 +423,11 @@ const CourseDetail = () => {
               <>
                 <h4>Frequently Asked Questions</h4>
                 <Accordion>
-                  {courseExtra.faqs?.map((faq, i) => (
+                  {courseExtra.faqs.map((faq, i) => (
                     <AccordionItem key={i}>
-                      <AccordionHeader onClick={() => setFaqOpenIndex(faqOpenIndex === i ? null : i)}>
+                      <AccordionHeader
+                        onClick={() => setFaqOpenIndex(faqOpenIndex === i ? null : i)}
+                      >
                         {faq.question} <span>{faqOpenIndex === i ? "-" : "+"}</span>
                       </AccordionHeader>
                       <AccordionBody open={faqOpenIndex === i}>
@@ -320,89 +442,65 @@ const CourseDetail = () => {
         </LeftContent>
 
         <RightSidebar>
-  <img
-    src={course.image}
-    alt={course.title}
-    style={{
-      width: "100%",
-      height: "180px",
-      objectFit: "cover",
-      borderRadius: "10px",
-      marginBottom: "20px",
-      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-    }}
-  />
-
-  <h4 style={{ marginBottom: "15px", color: "#205b63" }}>Course Summary</h4>
-
-  <p>
-    <FaUser style={{ marginRight: "8px", color: "#205b63" }} />
-    <strong>Instructor:</strong> {course.instructor}
-  </p>
-  <p>
-    <FaClock style={{ marginRight: "8px", color: "#205b63" }} />
-    <strong>Duration:</strong>{" "}
-    <span style={{ background: "#e7f4f6", padding: "4px 10px", borderRadius: "6px", fontSize: "14px" }}>
-      {course.duration}
-    </span>
-  </p>
-  <p>
-    <FaBook style={{ marginRight: "8px", color: "#205b63" }} />
-    <strong>Lessons:</strong>{" "}
-    <span style={{ background: "#e8f5e9", padding: "4px 10px", borderRadius: "6px", fontSize: "14px" }}>
-      {course.lessons}
-    </span>
-  </p>
-  <p>
-    <strong style={{ display: "inline-block", marginBottom: "5px" }}>Rating:</strong><br />
-    {[...Array(5)].map((_, i) => (
-      <FaStar
-        key={i}
-        color={i < Math.round(course.rating) ? "#ffd700" : "#ccc"}
-        style={{ marginRight: "3px" }}
-      />
-    ))}{" "}
-    <span style={{ fontWeight: "bold", fontSize: "14px" }}>{course.rating}</span>
-  </p>
-  <p>
-    <strong>Category:</strong>{" "}
-    <span style={{ background: "#fbe9e7", padding: "4px 10px", borderRadius: "6px", fontSize: "14px" }}>
-      {course.category}
-    </span>
-  </p>
-  <p>
-    <strong>Enrolled Students:</strong>{" "}
-    <span style={{ background: "#ede7f6", padding: "4px 10px", borderRadius: "6px", fontSize: "14px" }}>
-      {100 + course.id * 12}
-    </span>
-  </p>
-  <p>
-    <strong>Price:</strong>{" "}
-    <span style={{
-      background: course.price.toLowerCase() === "free" ? "#c8e6c9" : "#fff3e0",
-      color: "#000",
-      padding: "4px 10px",
-      borderRadius: "6px",
-      fontSize: "14px"
-    }}>
-      {course.price}
-    </span>
-  </p>
-
-  <div style={{ marginTop: "20px" }}>
-    <EnrollButton course={course} />
-  </div>
-</RightSidebar>
-
-
+          <img
+            src={courseImage}
+            alt={course.title}
+            style={{
+              width: "100%",
+              height: "180px",
+              objectFit: "cover",
+              borderRadius: "10px",
+              marginBottom: "20px",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+            }}
+          />
+          <h4 style={{ marginBottom: "15px", color: "#205b63" }}>Course Summary</h4>
+          <p>
+            <FaUser style={{ marginRight: "8px" }} />
+            <strong>Instructor:</strong> {course.instructor}
+          </p>
+          <p>
+            <FaClock style={{ marginRight: "8px" }} />
+            <strong>Duration:</strong> {course.duration}
+          </p>
+          <p>
+            <FaBook style={{ marginRight: "8px" }} />
+            <strong>Lessons:</strong> {course.lessons}
+          </p>
+          <p>
+            <strong>Rating:</strong>{" "}
+            {[...Array(5)].map((_, i) => (
+              <FaStar
+                key={i}
+                color={i < Math.round(course.rating || 4.5) ? "#ffd700" : "#ccc"}
+              />
+            ))}{" "}
+            {course.rating || "4.5"}
+          </p>
+          <p>
+            <strong>Category:</strong> {course.category}
+          </p>
+          <p>
+            <strong>Enrolled:</strong> {100 + course.id * 12}
+          </p>
+          <p>
+            <strong>Price:</strong> {course.price}
+          </p>
+          <div style={{ marginTop: "20px" }}>
+            <EnrollButton course={course} />
+          </div>
+        </RightSidebar>
       </TabSection>
 
       <RelatedSection>
         <RelatedTitle>Related Courses</RelatedTitle>
         <RelatedGrid>
-          {courseData.filter((c) => c.id !== course.id).slice(0, 4).map((rel) => (
-            <CourseCardGrid key={rel.id} course={rel} />
-          ))}
+          {courseData
+            .filter((c) => c.id !== course.id)
+            .slice(0, 4)
+            .map((rel) => (
+              <CourseCardGrid key={rel.id} course={rel} />
+            ))}
         </RelatedGrid>
       </RelatedSection>
     </>

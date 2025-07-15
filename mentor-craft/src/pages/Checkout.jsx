@@ -86,6 +86,14 @@ const Total = styled.div`
   font-weight: bold;
   color: #205a61;
 `;
+const Thumbnail = styled.img`
+  width: 100px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-bottom: 10px;
+`;
+
 
 const Checkout = () => {
   const { cartItems, clearCart } = useCart();
@@ -166,6 +174,7 @@ const Checkout = () => {
           <Title style={{ marginTop: "30px" }}>Your Courses</Title>
           {cartItems.map((course) => (
             <CourseBox key={course.id}>
+              
               <strong>{course.title}</strong>
               <br />
               <small>{course.instructor}</small>
@@ -186,16 +195,34 @@ const Checkout = () => {
 
       <Right>
         <Title>Order Summary</Title>
-        {cartItems.map((course, i) => (
-          <SummaryItem key={i}>
-            <span>{course.title}</span>
-            <span>
-              {isNaN(course.price) || course.price.toLowerCase() === "free"
-                ? "Free"
-                : `$${parseFloat(course.price).toFixed(2)}`}
-            </span>
-          </SummaryItem>
-        ))}
+        {cartItems.map((course) => (
+  <CourseBox key={course.id}>
+    <Thumbnail src={course.image || course.thumbnail} alt={course.title} />
+    <strong>{course.title}</strong>
+    <br />
+    <small>{course.instructor}</small>
+    <div>
+      Price:{" "}
+      {isNaN(course.price) || course.price.toLowerCase() === "free"
+        ? "Free"
+        : `$${parseFloat(course.price).toFixed(2)}`}
+    </div>
+  </CourseBox>
+))}
+        <SummaryItem>
+          <div>Subtotal</div>
+          <div>
+            {total === 0 ? "Free" : `$${total.toFixed(2)}`}
+          </div>
+        </SummaryItem>
+        <SummaryItem>
+          <div>Tax (10%)</div>
+          <div>${(total * 0.1).toFixed(2)}</div>        
+        </SummaryItem>
+        <SummaryItem>
+          <div>Discount</div>
+          <div>${(total * 0.05).toFixed(2)}</div>
+        </SummaryItem> 
 
         <hr />
         <SummaryItem>

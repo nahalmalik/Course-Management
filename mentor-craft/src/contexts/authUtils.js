@@ -1,27 +1,38 @@
-// Save the logged-in user (type = 'student' or 'instructor') and their email
-export const loginUser = (userType, email) => {
-  localStorage.setItem('user', JSON.stringify({ userType, email }));
+// --- Login User: Save full user info into localStorage
+export const loginUser = (userType, email, name = '') => {
+  const safeName = name || email?.split('@')[0] || 'Unknown';
+  const user = { userType, email, name: safeName };
+  localStorage.setItem('user', JSON.stringify(user));
 };
 
-// Remove user from localStorage
+// --- Logout User: Remove from localStorage
 export const logoutUser = () => {
   localStorage.removeItem('user');
 };
 
-// Get current logged-in user object
+// --- Get Current Logged-in User
 export const getCurrentUser = () => {
   const user = localStorage.getItem('user');
   return user ? JSON.parse(user) : null;
 };
 
-// Utility to check if current user is an instructor
+// --- Check if user is Instructor
 export const isInstructor = () => {
   const user = getCurrentUser();
   return user?.userType === 'instructor';
 };
 
-// Utility to check if current user is a student
+// --- Check if user is Student
 export const isStudent = () => {
   const user = getCurrentUser();
   return user?.userType === 'student';
+};
+
+// --- Patch existing user (for older accounts missing 'name')
+export const ensureUserHasName = () => {
+  const user = getCurrentUser();
+  if (user && !user.name) {
+    user.name = user.email?.split('@')[0] || 'Unknown';
+    localStorage.setItem('user', JSON.stringify(user));
+  }
 };

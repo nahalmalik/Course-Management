@@ -5,7 +5,7 @@ import { FaSearch, FaShoppingCart, FaUser } from "react-icons/fa";
 import logo from "../assets/logo.png"; // Ensure correct path
 
 const HeaderWrapper = styled.header`
-  position: sticky;
+  
   top: 0;
   z-index: 1000;
   background-color: rgb(32, 125, 140);
