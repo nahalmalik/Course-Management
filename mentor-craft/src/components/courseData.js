@@ -203,6 +203,7 @@ const courseData = [
   lessons: 15,
   duration: "12h",
   instructor: "John Doe",
+  instructorEmail: "john@mentorcraft.com",
   rating: 4.7,
   category: "Development",
 },
@@ -214,6 +215,7 @@ const courseData = [
   lessons: 11,
   duration: "8h",
   instructor: "John Doe",
+  instructorEmail: "john@mentorcraft.com",
   rating: 4.6,
   category: "Development",
 },
@@ -225,10 +227,12 @@ const courseData = [
   lessons: 16,
   duration: "10h",
   instructor: "John Doe",
+  instructorEmail: "john@mentorcraft.com",
   rating: 4.8,
   category: "Development",
 },
 
 ];
+
 
 export default courseData;

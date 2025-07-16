@@ -21,8 +21,18 @@ import InstructorCourseDetail from "./pages/InstructorCourseDetail";
 import CreateCourse from "./pages/CreateCourse";
 import InstructorMyCourses from "./pages/InstructorMyCourses";
 import InstructorDashboard from "./pages/InstructorDashboard";
-import InstructorLayout from "./components/InstructorLayout"; 
+import InstructorLayout from "./components/InstructorLayout";
+import StudentLayout from "./components/StudentLayout"; 
 import InstructorReviews from "./pages/InstructorReviews"; 
+import InstructorEarnings from "./pages/InstructorEarnings";
+import InstructorQuizAttempts from "./pages/InstructorQuizAttempts";
+import InstructorAssignmentAttempts from "./pages/InstructorAssignmentAttempts";
+import InstructorAnnouncements from "./pages/InstructorAnnouncements";
+import InstructorPurchaseHistory from "./pages/InstructorPurchaseHistory";
+import GenerateCertificate from "./pages/GenerateCertificate";
+import InstructorProfile from "./pages/InstructorProfile";
+import InstructorSettings from "./pages/InstructorSettings";
+import StudentQuizResults from "./pages/StudentQuizResults";
 import { Navigate } from "react-router-dom"; 
 
 function App() {
@@ -44,7 +54,6 @@ function App() {
             { path: "/cart", element: <Cart /> },
             { path: "/checkout", element: <Checkout /> },
             { path: "/receipt/:orderId", element: <Receipt /> },
-            { path: "/student-dashboard", element: <StudentDashboard /> },
           ].map(({ path, element }) => (
             <Route
               key={path}
@@ -66,16 +75,34 @@ function App() {
             <Route path="create-course" element={<CreateCourse />} />
             <Route path="courses/:id" element={<InstructorCourseDetail />} />
             <Route path="reviews" element={<InstructorReviews />} />
+            <Route path="earning" element={<InstructorEarnings />} />
+            <Route path="quiz-attempts" element={<InstructorQuizAttempts />} />
+            <Route path="assignment-attempts" element={<InstructorAssignmentAttempts />} />
+            <Route path="announcements" element={<InstructorAnnouncements />} />
+            <Route path="purchase-history" element={<InstructorPurchaseHistory />} />
+            <Route path="generate-certificate" element={<GenerateCertificate />} />
+            <Route path="profile" element={<InstructorProfile />} />
+            <Route path="settings" element={<InstructorSettings />} />
             {/* Add more like /reviews, /messages if needed */}
           </Route>
-
+ 
           {/* ✅ Optional: Redirect old /instructor-dashboard to new layout path */}
           <Route
             path="/instructor-dashboard"
             element={<Navigate to="/instructor/dashboard" replace />}
           />
-        </Routes>
-      </Router>
+       <Route path="/student" element={<StudentLayout />}>
+  <Route path="dashboard" element={<StudentDashboard />} />
+  <Route path="quiz-results" element={<StudentQuizResults />} />
+  <Route path="settings" element={<div>Coming Soon</div>} />
+</Route>
+          <Route
+            path="/student-dashboard"
+            element={<Navigate to="/student/dashboard" replace />}
+          />
+
+      </Routes>
+    </Router>
     </CartProvider>
   );
 }

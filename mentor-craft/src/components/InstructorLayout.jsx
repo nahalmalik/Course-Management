@@ -49,10 +49,16 @@ const InstructorLayout = () => {
         <aside className="sidebar">
           <ul>
             <li><a href="/instructor/dashboard">Overview</a></li>
+            <li><a href="/instructor/profile">My Profile</a></li>
             <li><a href="/instructor/my-courses">My Courses</a></li>
+            <li><a href="/instructor/earning">Earnings & Analytics </a></li>
+            <li><a href="/instructor/announcements">Announcements</a></li>
+            <li><a href="/instructor/assignment-attempts">Assignment Attempts</a></li>
+            <li><a href="/instructor/quiz-attempts">Quiz Attempts</a></li>
+            <li><a href="/instructor/purchase-history">Purchase History</a></li>
             <li><a href="/instructor/reviews">Reviews</a></li>
-            <li><a href="/instructor/messages">Messages</a></li>
-            <li><a href="/instructor-settings">Settings</a></li>
+            <li><a href="/instructor/generate-certificate">Generate Certificate</a></li>
+            <li><a href="/instructor/settings">Settings</a></li>
           </ul>
         </aside>
 

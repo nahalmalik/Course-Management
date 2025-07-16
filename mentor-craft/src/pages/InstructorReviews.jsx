@@ -188,3 +188,4 @@ const InstructorReviews = () => {
 };
 
 export default InstructorReviews;
+

@@ -1,3 +1,7 @@
+// courseStorage.js
+
+import staticCourseData from '../components/courseData'; 
+import courseData from '../components/courseData';
 // =======================
 // --- Core Course Storage
 // =======================
@@ -37,11 +41,41 @@ export const saveCourse = (course) => {
 // Explicit alias
 export const updateCourse = saveCourse;
 
+// ================================
+// --- Add Dummy Analytics Support
+// ================================
+
+const addDummyAnalyticsForCourse = (course) => {
+  if (!course || !course.instructorEmail || !course.title) return;
+
+  const analytics = JSON.parse(localStorage.getItem('instructorAnalyticsData') || '[]');
+  const alreadyExists = analytics.some(a =>
+    a.instructorEmail === course.instructorEmail && a.course === course.title
+  );
+  if (alreadyExists) return;
+
+  const months = ['May', 'June', 'July'];
+  const newData = months.map(month => ({
+    instructorEmail: course.instructorEmail,
+    course: course.title,
+    month,
+    year: '2025',
+    earnings: Math.floor(Math.random() * 300) + 100,
+    enrollments: Math.floor(Math.random() * 20) + 5,
+    quizAverage: Math.floor(Math.random() * 21) + 75 // 75–95
+  }));
+
+  const updated = [...analytics, ...newData];
+  localStorage.setItem('instructorAnalyticsData', JSON.stringify(updated));
+};
+
 export const addNewCourse = (course) => {
   if (!course || typeof course.id !== 'number') return;
   const courses = getCourses();
   courses.push(course);
   localStorage.setItem('courses', JSON.stringify(courses));
+
+  addDummyAnalyticsForCourse(course); // 👈 Auto-generate analytics
 };
 
 export const deleteCourse = (id) => {
@@ -53,14 +87,23 @@ export const clearAllCourses = () => {
   localStorage.removeItem('courses');
 };
 
-// Get all course titles
 export const getAllCourseTitles = () => {
   return getCourses().map(c => c.title);
 };
 
-// Get courses for specific instructor
 export const getCoursesByInstructor = (email) => {
-  return getCourses().filter(c => c.instructorEmail === email);
+  const localCourses = getCourses();
+  const combined = [...localCourses];
+
+  // Include courses from courseData if not already in localStorage
+  courseData.forEach(cd => {
+    const alreadyIncluded = combined.some(c => c.id === cd.id);
+    if (!alreadyIncluded) {
+      combined.push(cd);
+    }
+  });
+
+  return combined.filter(c => c.instructorEmail === email);
 };
 
 // ==============================
@@ -126,4 +169,21 @@ export const normalizeCurriculumVideos = (curriculum = []) => {
     ...item,
     video: cleanYouTubeURL(item.video || "")
   }));
+};
+
+// ==============================
+// --- Combined Course Access
+// ==============================
+
+export const getAllCourses = () => {
+  const local = getCourses();
+  const combined = [...staticCourseData, ...local];
+
+  // Deduplicate by course.id
+  const unique = Array.from(new Map(combined.map(c => [c.id, c])).values());
+  return unique;
+};
+
+export const getAllCoursesByInstructor = (email) => {
+  return getAllCourses().filter(c => c.instructorEmail?.toLowerCase() === email.toLowerCase());
 };
