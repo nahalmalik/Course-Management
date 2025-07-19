@@ -1,13 +1,23 @@
+import studentData from '../contexts/studentData'; // Make sure the path is correct
+
 // --- Login User: Save full user info into localStorage
 export const loginUser = (userType, email, name = '') => {
   const safeName = name || email?.split('@')[0] || 'Unknown';
-  const user = { userType, email, name: safeName };
+  const user = { userType, email: email.toLowerCase(), name: safeName };
+
+  // Save user object
   localStorage.setItem('user', JSON.stringify(user));
+
+  // For backward compatibility
+  if (userType === 'student') {
+    localStorage.setItem('studentEmail', email.toLowerCase());
+  }
 };
 
-// --- Logout User: Remove from localStorage
+// --- Logout User: Remove all session data
 export const logoutUser = () => {
   localStorage.removeItem('user');
+  localStorage.removeItem('studentEmail'); // Cleanup legacy key if needed
 };
 
 // --- Get Current Logged-in User
@@ -26,6 +36,17 @@ export const isInstructor = () => {
 export const isStudent = () => {
   const user = getCurrentUser();
   return user?.userType === 'student';
+};
+
+// --- Get Full Student Object from studentData.js
+export const getCurrentStudent = () => {
+  const user = getCurrentUser();
+  if (user?.userType === 'student') {
+    return studentData.find(
+      (student) => student.email.toLowerCase() === user.email.toLowerCase()
+    );
+  }
+  return null;
 };
 
 // --- Patch existing user (for older accounts missing 'name')

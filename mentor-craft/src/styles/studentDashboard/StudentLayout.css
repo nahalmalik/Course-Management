@@ -1,0 +1,119 @@
+.student-dashboard {
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(to right, #eef6f9, #f9fbfc);
+  min-height: 100vh;
+}
+
+.student-topbar {
+  background-color: #205d6d;
+  color: #ffffff;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 64px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.student-title {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.student-profile-section {
+  position: relative;
+}
+
+.student-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid #fff;
+}
+
+.student-dropdown {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background-color: #ffffff;
+  color: #333;
+  border-radius: 4px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  z-index: 1000;
+  padding: 10px 0;
+  min-width: 180px;
+}
+
+.student-dropdown div {
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.student-dropdown div:hover {
+  background-color: #f0f0f0;
+}
+
+.student-email {
+  font-size: 13px;
+  font-weight: bold;
+  color: #205d6d;
+  padding-bottom: 6px;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 6px;
+}
+
+.student-layout-container {
+  display: flex;
+}
+
+.sidebar {
+  background-color: #205d6d;
+  width: 250px;
+  padding-top: 30px;
+  min-height: calc(100vh - 64px);
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar ul li {
+  margin-bottom: 10px;
+}
+
+.sidebar ul li a {
+  display: flex;
+  align-items: center;
+  padding: 14px 20px;
+  color: #ecf0f1;
+  text-decoration: none;
+  border-left: 4px solid transparent;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  font-size: 15px;
+  gap: 10px;
+}
+
+.sidebar ul li a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border-left: 4px solid #00c9c8;
+}
+
+.sidebar ul li a.active {
+  background-color: #1a4e5a;
+  color: #ffffff;
+  border-left: 4px solid #00c9c8;
+  font-weight: 600;
+  box-shadow: inset 0 0 5px rgba(255,255,255,0.1);
+}
+
+.student-main-content {
+  flex-grow: 1;
+  padding: 30px;
+}

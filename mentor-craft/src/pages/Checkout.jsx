@@ -135,7 +135,7 @@ const Checkout = () => {
     });
 
     clearCart();
-    navigate("/student-dashboard");
+    navigate("/student/courses");
   };
 
   return (

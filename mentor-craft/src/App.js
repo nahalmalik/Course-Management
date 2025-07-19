@@ -9,7 +9,7 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Login from "./pages/Login";
 import CourseDetail from "./pages/CourseDetail";
-import StudentDashboard from "./pages/StudentDashboard";
+import StudentCourses from "./pages/studentDashboard/StudentCourses";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import { CartProvider } from "./contexts/CartContext";
@@ -33,6 +33,10 @@ import GenerateCertificate from "./pages/GenerateCertificate";
 import InstructorProfile from "./pages/InstructorProfile";
 import InstructorSettings from "./pages/InstructorSettings";
 import StudentQuizResults from "./pages/StudentQuizResults";
+import StudentOverview from "./pages/studentDashboard/StudentOverview";
+import StudentProfile from "./pages/studentDashboard/StudentProfile";
+import StudentSettings from "./pages/studentDashboard/StudentSettings";
+import StudentWishlist from "./pages/studentDashboard/Wishlist"; // Import Wishlist page
 import { Navigate } from "react-router-dom"; 
 
 function App() {
@@ -92,13 +96,16 @@ function App() {
             element={<Navigate to="/instructor/dashboard" replace />}
           />
        <Route path="/student" element={<StudentLayout />}>
-  <Route path="dashboard" element={<StudentDashboard />} />
+       <Route path="overview" element={<StudentOverview />} />
+        <Route path="profile" element={<StudentProfile />} />
+  <Route path="courses" element={<StudentCourses/>} />
+  <Route path="wishlist" element={<StudentWishlist />} />
   <Route path="quiz-results" element={<StudentQuizResults />} />
-  <Route path="settings" element={<div>Coming Soon</div>} />
+  <Route path="settings" element={<StudentSettings/>} />
 </Route>
           <Route
             path="/student-dashboard"
-            element={<Navigate to="/student/dashboard" replace />}
+            element={<Navigate to="/student/overview" replace />}
           />
 
       </Routes>
