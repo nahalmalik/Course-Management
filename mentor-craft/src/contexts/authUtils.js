@@ -1,29 +1,21 @@
 import studentData from '../contexts/studentData'; // Make sure the path is correct
 
-// --- Login User: Save full user info into localStorage
-export const loginUser = (userType, email, name = '') => {
-  const safeName = name || email?.split('@')[0] || 'Unknown';
-  const user = { userType, email: email.toLowerCase(), name: safeName };
-
-  // Save user object
+// ✅ Save current user on login
+export const loginUser = (user) => {
   localStorage.setItem('user', JSON.stringify(user));
-
-  // For backward compatibility
-  if (userType === 'student') {
-    localStorage.setItem('studentEmail', email.toLowerCase());
-  }
 };
 
-// --- Logout User: Remove all session data
+
+// ✅ Remove user on logout
 export const logoutUser = () => {
   localStorage.removeItem('user');
-  localStorage.removeItem('studentEmail'); // Cleanup legacy key if needed
 };
 
-// --- Get Current Logged-in User
+
+// ✅ Get the current logged-in user
 export const getCurrentUser = () => {
-  const user = localStorage.getItem('user');
-  return user ? JSON.parse(user) : null;
+  const stored = localStorage.getItem('user');
+  return stored ? JSON.parse(stored) : null;
 };
 
 // --- Check if user is Instructor
@@ -41,12 +33,10 @@ export const isStudent = () => {
 // --- Get Full Student Object from studentData.js
 export const getCurrentStudent = () => {
   const user = getCurrentUser();
-  if (user?.userType === 'student') {
-    return studentData.find(
-      (student) => student.email.toLowerCase() === user.email.toLowerCase()
-    );
-  }
-  return null;
+  if (!user || user.userType !== 'student' || !user.email) return null;
+
+  const email = user.email.toLowerCase();
+  return studentData.find(student => student.email.toLowerCase() === email) || null;
 };
 
 // --- Patch existing user (for older accounts missing 'name')

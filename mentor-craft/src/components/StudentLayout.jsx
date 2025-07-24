@@ -60,7 +60,7 @@ const StudentLayout = () => {
             <li><Link to="/student/courses" className={isActive('/student/courses') ? 'active' : ''}><FaBook /> My Courses</Link></li>
             <li><Link to="/student/wishlist" className={isActive('/student/wishlist') ? 'active' : ''}><FaHeart /> Wishlist</Link></li>
             <li><Link to="/student/reviews" className={isActive('/student/reviews') ? 'active' : ''}><FaStar /> My Reviews</Link></li>
-            <li><Link to="/student/enrollments" className={isActive('/student/enrollments') ? 'active' : ''}><FaBell /> Enrollment History</Link></li>
+            <li><Link to="/student/enrollment-history" className={isActive('/student/enrollments') ? 'active' : ''}><FaBell /> Enrollment History</Link></li>
             <li><Link to="/student/quizzes" className={isActive('/student/quizzes') ? 'active' : ''}><FaTasks /> Quizzes</Link></li>
             <li><Link to="/student/assignments" className={isActive('/student/assignments') ? 'active' : ''}><FaTasks /> Assignments</Link></li>
             <li><Link to="/student/achievements" className={isActive('/student/achievements') ? 'active' : ''}><FaCertificate /> Achievements</Link></li>

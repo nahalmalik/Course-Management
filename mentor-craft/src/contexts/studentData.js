@@ -187,23 +187,60 @@ const rawData = [
   }
 ];
 
-// 🔄 Processed Student List
-const studentData = enrichStudentData(rawData);
+// Load from localStorage if saved
+const storedStudents = JSON.parse(localStorage.getItem("students"));
+const allStudents = storedStudents || rawData;
 
-// 📤 Get current student by email in localStorage
-export function getCurrentStudent() {
-  const savedEmail = localStorage.getItem("studentEmail");
-  return studentData.find((s) => s.email === savedEmail);
+// Save raw if not yet saved
+if (!storedStudents) {
+  localStorage.setItem("students", JSON.stringify(rawData));
 }
 
-// 🔄 React hook to use student state
+// 🔄 Processed Student List
+const studentData = enrichStudentData(allStudents);
+
+
+// Get currently logged in student from localStorage
+export function getCurrentStudent() {
+  const savedEmail = localStorage.getItem("studentEmail");
+  if (!savedEmail) return null;
+
+  const students = JSON.parse(localStorage.getItem("students")) || [];
+  return students.find((s) => s.email === savedEmail);
+}
+
+// Update current student in localStorage
+export function updateCurrentStudent(updatedStudent) {
+  const savedEmail = localStorage.getItem("studentEmail");
+  if (!savedEmail) return;
+
+  let students = JSON.parse(localStorage.getItem("students")) || [];
+  students = students.map((s) =>
+    s.email === savedEmail ? updatedStudent : s
+  );
+
+  localStorage.setItem("students", JSON.stringify(students));
+}
+
+export const updateStudentWishlist = (email, newWishlist) => {
+  const allStudents = JSON.parse(localStorage.getItem('students')) || [];
+  const index = allStudents.findIndex(s => s.email === email);
+  if (index !== -1) {
+    allStudents[index].wishlist = newWishlist;
+    localStorage.setItem('students', JSON.stringify(allStudents));
+    localStorage.setItem('studentEmail', email); // optional but safe to re-store
+  }
+};
+
+// 🔄 React hook to use student state reactively
 export function useStudent() {
   const [student, setStudent] = useState(null);
 
   useEffect(() => {
     const email = localStorage.getItem("studentEmail");
     if (email) {
-      const found = studentData.find((s) => s.email === email);
+      const stored = JSON.parse(localStorage.getItem("students")) || [];
+      const found = stored.find((s) => s.email === email);
       setStudent(found || null);
     }
   }, []);

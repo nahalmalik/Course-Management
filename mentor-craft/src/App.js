@@ -36,7 +36,8 @@ import StudentQuizResults from "./pages/StudentQuizResults";
 import StudentOverview from "./pages/studentDashboard/StudentOverview";
 import StudentProfile from "./pages/studentDashboard/StudentProfile";
 import StudentSettings from "./pages/studentDashboard/StudentSettings";
-import StudentWishlist from "./pages/studentDashboard/Wishlist"; // Import Wishlist page
+import StudentWishlist from "./pages/studentDashboard/Wishlist";
+import StudentEnrollmentHistory from "./pages/studentDashboard/StudentEnrollmentHistory";
 import { Navigate } from "react-router-dom"; 
 
 function App() {
@@ -100,6 +101,7 @@ function App() {
         <Route path="profile" element={<StudentProfile />} />
   <Route path="courses" element={<StudentCourses/>} />
   <Route path="wishlist" element={<StudentWishlist />} />
+  <Route path="enrollment-history" element={<StudentEnrollmentHistory />} />
   <Route path="quiz-results" element={<StudentQuizResults />} />
   <Route path="settings" element={<StudentSettings/>} />
 </Route>
