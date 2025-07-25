@@ -6,19 +6,31 @@ import courseData from '../components/courseData';
 // --- Core Course Storage
 // =======================
 
-export const getCourses = () => {
+export async function getCourses() {
   try {
-    const data = localStorage.getItem('courses');
-    return data ? JSON.parse(data) : [];
+    const res = await fetch("http://localhost:8000/api/courses/");
+    const data = await res.json();
+    console.log("Courses fetched from backend:", data);
+    return data;
   } catch (err) {
-    console.error('Failed to parse courses from localStorage:', err);
+    console.error("Failed to fetch courses:", err);
     return [];
   }
-};
+}
 
-export const getCourseById = (id) => {
-  return getCourses().find(c => c.id === parseInt(id)) || null;
-};
+// contexts/courseStorage.js
+
+export async function getCourseById(id) {
+  try {
+    const res = await fetch(`http://localhost:8000/api/courses/${id}/`);
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (err) {
+    console.error("Error fetching course by ID", err);
+    return null;
+  }
+}
+
 
 export const saveCourse = (course) => {
   if (!course || typeof course.id !== 'number') {

@@ -1,23 +1,30 @@
 // src/components/InstructorLayout.jsx
 import React, { useState, useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { getCurrentUser, logoutUser } from '../contexts/authUtils';
+import { getCurrentUser, logoutUser, isInstructor } from '../contexts/authUtils';
 import '../styles/InstructorEarnings.css';
 
 const InstructorLayout = () => {
   const navigate = useNavigate();
+  const [checked, setChecked] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [user, setUser] = useState(null);
+  const user = getCurrentUser(); // ✅ fetch user info
 
   useEffect(() => {
-    const currentUser = getCurrentUser();
-    setUser(currentUser);
-  }, []);
+    const roleCheck = isInstructor();
+    if (!roleCheck) {
+      navigate('/');
+    } else {
+      setChecked(true);
+    }
+  }, [navigate]);
 
   const handleLogout = () => {
     logoutUser();
     navigate('/');
   };
+
+  if (!checked) return null; // Or return <div>Loading...</div>
 
   return (
     <div className="instructor-dashboard">
@@ -51,7 +58,7 @@ const InstructorLayout = () => {
             <li><a href="/instructor/dashboard">Overview</a></li>
             <li><a href="/instructor/profile">My Profile</a></li>
             <li><a href="/instructor/my-courses">My Courses</a></li>
-            <li><a href="/instructor/earning">Earnings & Analytics </a></li>
+            <li><a href="/instructor/earning">Earnings & Analytics</a></li>
             <li><a href="/instructor/announcements">Announcements</a></li>
             <li><a href="/instructor/assignment-attempts">Assignment Attempts</a></li>
             <li><a href="/instructor/quiz-attempts">Quiz Attempts</a></li>

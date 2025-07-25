@@ -1,7 +1,6 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import styled from "styled-components";
 import courseData from "../components/courseData";
-import { getCourses } from "../contexts/courseStorage";
 import CourseFilters from "../components/CourseFilters";
 import CourseCardGrid from "../components/CourseCardGrid";
 import CourseCardList from "../components/CourseCardList";
@@ -111,15 +110,31 @@ const Courses = () => {
     price: "all",
     duration: "all",
   });
-
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
-  // Combine static and created (dynamic) courses
-  const createdCourses = getCourses(); // from localStorage
-  const allCourses = [...createdCourses, ...courseData]; // New first
+  const [backendCourses, setBackendCourses] = useState([]);
 
-  // Filter logic
+  // ✅ Fetch backend courses
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/api/courses/");
+        const data = await response.json();
+        setBackendCourses(data);
+      } catch (error) {
+        console.error("Error fetching courses from backend:", error);
+      }
+    };
+
+    fetchCourses();
+  }, []);
+
+  // ✅ Combine with static dummy courses
+  const allCourses = useMemo(() => {
+    return [...backendCourses, ...courseData];
+  }, [backendCourses]);
+
   const filteredCourses = useMemo(() => {
     return allCourses.filter((course) => {
       if (
@@ -144,7 +159,6 @@ const Courses = () => {
     });
   }, [filters, allCourses]);
 
-  // Pagination logic
   const totalPages = Math.ceil(filteredCourses.length / itemsPerPage);
   const paginatedCourses = filteredCourses.slice(
     (currentPage - 1) * itemsPerPage,

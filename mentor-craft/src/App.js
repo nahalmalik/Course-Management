@@ -7,14 +7,12 @@ import Home from "./pages/Home";
 import Courses from "./pages/Courses";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
-import Login from "./pages/Login";
 import CourseDetail from "./pages/CourseDetail";
 import StudentCourses from "./pages/studentDashboard/StudentCourses";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import { CartProvider } from "./contexts/CartContext";
 import Receipt from "./pages/Receipt";
-import Signup from "./pages/Signup";
 import BecomeInstructor from "./pages/BecomeInstructor";
 import ForgotPassword from "./pages/ForgotPassword";
 import InstructorCourseDetail from "./pages/InstructorCourseDetail";
@@ -40,6 +38,13 @@ import StudentWishlist from "./pages/studentDashboard/Wishlist";
 import StudentEnrollmentHistory from "./pages/studentDashboard/StudentEnrollmentHistory";
 import { Navigate } from "react-router-dom"; 
 
+/*Login/SIgnup*/
+import StudentLogin from "./pages/StudentLogin";
+import InstructorLogin from "./pages/InstructorLogin";
+import StudentSignup from "./pages/StudentSignup";
+import InstructorSignup from "./pages/InstructorSignup";
+
+
 function App() {
   return (
     <CartProvider>
@@ -52,8 +57,10 @@ function App() {
             { path: "/courses/:id", element: <CourseDetail /> },
             { path: "/about", element: <About /> },
             { path: "/contact", element: <Contact /> },
-            { path: "/login", element: <Login /> },
-            { path: "/signup", element: <Signup /> },
+            {path:"/login/student", element: <StudentLogin />} ,
+            {path:"/signup/student", element: <StudentSignup />}, 
+            {path:"/login/instructor", element: <InstructorLogin />}, 
+            {path:"/signup/instructor", element: <InstructorSignup />}, 
             { path: "/become-instructor", element: <BecomeInstructor /> },
             { path: "/forgot-password", element: <ForgotPassword /> },
             { path: "/cart", element: <Cart /> },

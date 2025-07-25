@@ -67,7 +67,7 @@ const CreateCourse = () => {
     };
     if (file) reader.readAsDataURL(file);
   };
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const instructorName = user?.name || user?.email?.split('@')[0] || 'Unknown Instructor';
     const instructorEmail = user?.email || '';
@@ -104,7 +104,12 @@ const CreateCourse = () => {
       hasExpiration: courseData.hasExpiration
     };
 
-    addNewCourse(newCourse);
+    await fetch('http://localhost:8000/api/courses/', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(newCourse),
+});
+
     setToastVisible(true);
     setTimeout(() => {
       setToastVisible(false);

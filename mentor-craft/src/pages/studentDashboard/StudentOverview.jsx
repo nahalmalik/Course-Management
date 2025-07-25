@@ -32,7 +32,20 @@ const StudentOverview = () => {
     const localProfile = JSON.parse(localStorage.getItem('studentProfile'));
     const foundStudent = studentData.find(s => s.email === storedUser.email);
 
-    const source = localProfile || foundStudent;
+// New user if not in static data AND no enrolledCourses in localStorage
+const localEnrolled = JSON.parse(localStorage.getItem('enrolledCourses')) || [];
+const isUserNew = !foundStudent && localEnrolled.length === 0;
+setIsNewUser(isUserNew);
+
+const source = localProfile || foundStudent || {
+  activeCourses: [],
+  completedCourses: [],
+  wishlist: [],
+  badges: [],
+  certificates: [],
+  enrolledCourses: localEnrolled
+};
+
 
     if (source) {
       setCurrentUser(prev => ({
@@ -41,10 +54,11 @@ const StudentOverview = () => {
         profileCompletion: source.profileCompletion || 40,
       }));
 
-      const enrolled = [
-        ...(JSON.parse(localStorage.getItem('enrolledCourses')) || []),
-        ...(source.enrolledCourses || [])
-      ];
+   const enrolled = [
+  ...localEnrolled,
+  ...(source.enrolledCourses || [])
+];
+
 
       const uniqueEnrolled = [...new Set(enrolled)];
 

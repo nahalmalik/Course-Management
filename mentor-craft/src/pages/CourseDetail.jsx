@@ -244,48 +244,59 @@ const CourseDetail = () => {
   const [faqOpenIndex, setFaqOpenIndex] = useState(null);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+  window.scrollTo(0, 0);
+
+  const loadCourse = async () => {
     const courseId = parseInt(id);
-    const staticCourse = courseData.find((c) => c.id === courseId);
-    const staticExtra = courseExtraData[courseId];
 
-    if (staticCourse) {
-      setCourse(staticCourse);
-      setCourseExtra(staticExtra);
+    // 1. Try dynamic course (from backend)
+    const dynamicCourse = await getCourseById(courseId);
+
+    if (dynamicCourse) {
+      setCourse(dynamicCourse);
+
+      // fallback or merge dynamic extra
+      const fallbackCurriculum = [
+        {
+          title: "Introduction",
+          description: "Welcome to the course!",
+          duration: "5 min",
+          icon: "📘",
+          video: "",
+        },
+      ];
+
+      const fallbackFAQs = [
+        { question: "Who is this course for?", answer: "Anyone who wants to learn!" },
+        { question: "Do I need prior knowledge?", answer: "No, beginners are welcome." },
+      ];
+
+      setCourseExtra({
+        overview:
+          dynamicCourse.overview || "This course helps you master key concepts step-by-step.",
+        curriculumIntro: "Explore our carefully structured lectures and lessons.",
+        curriculum: normalizeCurriculumVideos(dynamicCourse.curriculum || fallbackCurriculum),
+        videos: dynamicCourse.videos || [], // You can add this in model later
+        faqs: dynamicCourse.faqs?.length ? dynamicCourse.faqs : fallbackFAQs,
+      });
     } else {
-      const dynamicCourse = getCourseById(courseId);
-      const dynamicExtra = getExtraData(courseId);
+      // 2. Fallback to static courseData.js
+      const staticCourse = courseData.find((c) => c.id === courseId);
+      const staticExtra = courseExtraData[courseId];
 
-      if (dynamicCourse) {
-        const fallbackCurriculum = [
-          {
-            title: "Introduction",
-            description: "Welcome to the course!",
-            duration: "5 min",
-            icon: "📘",
-            video: "",
-          },
-        ];
-
-        const fallbackFAQs = [
-          { question: "Who is this course for?", answer: "Anyone who wants to learn!" },
-          { question: "Do I need prior knowledge?", answer: "No, beginners are welcome." },
-        ];
-
-        setCourse(dynamicCourse);
-        setCourseExtra({
-          overview:
-            dynamicCourse.overview || "This course helps you master key concepts step-by-step.",
-          curriculumIntro: "Explore our carefully structured lectures and lessons.",
-          curriculum: normalizeCurriculumVideos(dynamicCourse.curriculum || fallbackCurriculum),
-          faqs: dynamicCourse.faqs?.length ? dynamicCourse.faqs : fallbackFAQs,
-        });
+      if (staticCourse) {
+        setCourse(staticCourse);
+        setCourseExtra(staticExtra);
       } else {
         setCourse(null);
         setCourseExtra(null);
       }
     }
-  }, [id]);
+  };
+
+  loadCourse();
+}, [id]);
+
 
   if (!course || !courseExtra)
     return <p style={{ padding: 40 }}>Course not found.</p>;
