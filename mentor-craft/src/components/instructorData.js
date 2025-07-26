@@ -1,15 +1,17 @@
-const instructorData = {
-  "John Doe": {
+// src/components/instructorData.js
+
+const instructorData = [
+  {
     name: "John Doe",
     email: "john@mentorcraft.com",
     password: "123456",
     phone: "123-456-7890",
     website: "https://johndoe.dev",
     bio: "Senior React Developer & Mentor at Mentor Craft. Passionate about frontend performance and modern UI patterns.",
-    image: "", // Add base64 string if needed
-    role:"instructor",
+    image: "",
+    role: "instructor",
   },
-  "Fatima Rizvi": {
+  {
     name: "Fatima Rizvi",
     email: "fatima@mentorcraft.com",
     password: "123456",
@@ -17,9 +19,9 @@ const instructorData = {
     website: "https://fatimadesigns.com",
     bio: "UI/UX expert with 8+ years of design experience and strong focus on usability.",
     image: "",
-    role:"instructor",
+    role: "instructor",
   },
-  "Ali Murtaza": {
+  {
     name: "Ali Murtaza",
     email: "ali@mentorcraft.com",
     password: "123456",
@@ -27,9 +29,9 @@ const instructorData = {
     website: "https://alimurtaza.tech",
     bio: "Data Scientist & Python enthusiast with real-world experience in AI & ML models.",
     image: "",
-    role:"instructor",
+    role: "instructor",
   },
-  "Sara Ahmed": {
+  {
     name: "Sara Ahmed",
     email: "sara@mentorcraft.com",
     password: "123456",
@@ -37,9 +39,9 @@ const instructorData = {
     website: "https://saramarkets.com",
     bio: "Digital Marketing Guru, SEO wizard & social media growth strategist.",
     image: "",
-    role:"instructor",
+    role: "instructor",
   },
-  "Zainab Malik": {
+  {
     name: "Zainab Malik",
     email: "zainab@mentorcraft.com",
     password: "123456",
@@ -47,9 +49,9 @@ const instructorData = {
     website: "https://zainabdesigns.com",
     bio: "Creative Illustrator & branding expert, teaching Illustrator like a pro!",
     image: "",
-    role:"instructor",
+    role: "instructor",
   },
-  "Omar Farooq": {
+  {
     name: "Omar Farooq",
     email: "omar@mentorcraft.com",
     password: "123456",
@@ -57,9 +59,9 @@ const instructorData = {
     website: "https://omar-ai.net",
     bio: "AI Engineer & Machine Learning Instructor with industry-grade models under his belt.",
     image: "",
-    role:"instructor",
+    role: "instructor",
   },
-  "Ayesha Rehman": {
+  {
     name: "Ayesha Rehman",
     email: "ayesha@mentorcraft.com",
     password: "123456",
@@ -67,9 +69,9 @@ const instructorData = {
     website: "https://ayesharehman.dev",
     bio: "WordPress developer helping small businesses build fast websites that convert.",
     image: "",
-    role:"instructor",
+    role: "instructor",
   },
-  "Imran Qureshi": {
+  {
     name: "Imran Qureshi",
     email: "imran@mentorcraft.com",
     password: "123456",
@@ -77,9 +79,9 @@ const instructorData = {
     website: "https://imranexcelpro.com",
     bio: "Excel trainer with 10+ years helping teams become spreadsheet pros.",
     image: "",
-    role:"instructor",
+    role: "instructor",
   },
-  "Nida Khan": {
+  {
     name: "Nida Khan",
     email: "nida@mentorcraft.com",
     password: "123456",
@@ -87,9 +89,9 @@ const instructorData = {
     website: "https://nidaufx.com",
     bio: "Figma design expert with a minimalist, user-centered design philosophy.",
     image: "",
-    role:"instructor",
+    role: "instructor",
   },
-  "Talha Naeem": {
+  {
     name: "Talha Naeem",
     email: "talha@mentorcraft.com",
     password: "123456",
@@ -97,9 +99,9 @@ const instructorData = {
     website: "https://talhacreates.com",
     bio: "YouTube creator with a focus on niche channel growth and monetization.",
     image: "",
-    role:"instructor",
+    role: "instructor",
   },
-  "Kiran Fatima": {
+  {
     name: "Kiran Fatima",
     email: "kiran@mentorcraft.com",
     password: "123456",
@@ -107,9 +109,9 @@ const instructorData = {
     website: "https://kiranjs.dev",
     bio: "Frontend developer and teacher who simplifies JavaScript for all levels.",
     image: "",
-    role:"instructor",
+    role: "instructor",
   },
-  "Bilal Arshad": {
+  {
     name: "Bilal Arshad",
     email: "bilal@mentorcraft.com",
     password: "123456",
@@ -117,9 +119,9 @@ const instructorData = {
     website: "https://bilalcloud.com",
     bio: "Cloud architect & DevOps engineer who loves teaching AWS and cloud-native workflows.",
     image: "",
-    role:"instructor",
+    role: "instructor",
   },
-  "Maria Asif": {
+  {
     name: "Maria Asif",
     email: "maria@mentorcraft.com",
     password: "123456",
@@ -127,9 +129,9 @@ const instructorData = {
     website: "https://mariaseo.com",
     bio: "SEO & SEM strategist with a data-driven approach to rankings and ROI.",
     image: "",
-    role:"instructor",
+    role: "instructor",
   },
-  "Hassan Raza": {
+  {
     name: "Hassan Raza",
     email: "hassan@mentorcraft.com",
     password: "123456",
@@ -137,9 +139,9 @@ const instructorData = {
     website: "https://hassanflutter.com",
     bio: "Flutter app developer bringing beautiful cross-platform apps to life.",
     image: "",
-    role:"instructor",
+    role: "instructor",
   },
-  "Nimra Shah": {
+  {
     name: "Nimra Shah",
     email: "nimra@mentorcraft.com",
     password: "123456",
@@ -147,8 +149,8 @@ const instructorData = {
     website: "https://nimrashah.com",
     bio: "Public speaking coach helping professionals unlock confident communication.",
     image: "",
-    role:"instructor",
+    role: "instructor",
   },
-};
+];
 
 export default instructorData;

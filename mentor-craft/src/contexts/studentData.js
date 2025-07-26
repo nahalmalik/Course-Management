@@ -1,6 +1,8 @@
+//src/contexts/studentData.js
 import { useState, useEffect } from 'react';
 
 // 🔧 Helper to enrich raw data
+
 function enrichStudentData(data) {
   return data.map((student) => {
     const enrolled = student.enrolledCourses || [];
@@ -259,5 +261,6 @@ export function useStudent() {
 
   return student;
 }
+export const studentRawData = rawData;
 
 export default studentData;

@@ -137,7 +137,7 @@ const Header = () => {
         </DropdownWrapper>
 
         <NavLink to="/instructor-dashboard">Instructor Dashboard</NavLink>
-        <NavLink to="/student-dashboard">Student Dashboard</NavLink>
+        <NavLink to="/student/overview">Student Dashboard</NavLink>
 
         <IconGroup>
           <FaSearch />

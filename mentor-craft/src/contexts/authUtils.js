@@ -1,11 +1,12 @@
 import axios from 'axios';
 import studentData from './studentData';
 import instructorData from '../components/instructorData';
+import { studentRawData } from './studentData';
 
 export const loginUser = async (role, email, password) => {
   try {
     const url = `http://localhost:8000/api/users/login/${role}/`;
-    //const response = await axios.post(url, { email, password });
+    const response = await axios.post(url, { email, password });
 
     // Backend login success
     localStorage.setItem('accessToken', response.data.access);
@@ -18,17 +19,17 @@ export const loginUser = async (role, email, password) => {
 
     if (status === 400 || status === 401) {
       const dataset =
-        role === 'student'
-          ? studentData
-          : Object.values(instructorData);
+  role === 'student'
+    ? studentRawData
+    : Object.values(instructorData);
 
-      console.log("🔍 Fallback role:", role);
-      console.log("🔍 Email/pass:", email, password);
-      console.log("🔍 Sample data:", dataset[0]);
+      console.warn("Backend login failed. Trying fallback...");
+      console.log("Role:", role, "Email:", email, "Password:", password);
+      console.log("Dataset preview:", dataset?.[0]);
 
       if (!Array.isArray(dataset)) {
-        console.error("🚨 Fallback dataset is not an array!", dataset);
-        throw { detail: "Student fallback failed: Dataset invalid." };
+        console.error("Fallback dataset is invalid:", dataset);
+        throw { detail: "Fallback failed: Dataset invalid." };
       }
 
       const matched = dataset.find(
@@ -59,7 +60,6 @@ export const loginUser = async (role, email, password) => {
 };
 
 
-
 // ✅ Logout user
 export const logoutUser = () => {
   localStorage.removeItem('accessToken');
@@ -70,9 +70,14 @@ export const logoutUser = () => {
 
 // ✅ Get current logged-in user info
 export const getCurrentUser = () => {
-  const stored = localStorage.getItem('user');
-  return stored ? JSON.parse(stored) : null;
+  const user = localStorage.getItem('currentUser');
+  try {
+    return user ? JSON.parse(user) : null;
+  } catch (e) {
+    return null;
+  }
 };
+
 
 // ✅ Check if user is Instructor
 export const isInstructor = () => {

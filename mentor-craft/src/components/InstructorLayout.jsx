@@ -1,18 +1,21 @@
-// src/components/InstructorLayout.jsx
 import React, { useState, useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { getCurrentUser, logoutUser, isInstructor } from '../contexts/authUtils';
+import { getCurrentUser, logoutUser } from '../contexts/authUtils';
 import '../styles/InstructorEarnings.css';
 
 const InstructorLayout = () => {
   const navigate = useNavigate();
   const [checked, setChecked] = useState(false);
+  const [user, setUser] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
-  const user = getCurrentUser(); // ✅ fetch user info
 
   useEffect(() => {
-    const roleCheck = isInstructor();
-    if (!roleCheck) {
+    const currentUser = getCurrentUser();
+    setUser(currentUser);
+
+    if (!currentUser) {
+      navigate('/');
+    } else if (currentUser.role !== 'instructor') {
       navigate('/');
     } else {
       setChecked(true);
@@ -24,7 +27,7 @@ const InstructorLayout = () => {
     navigate('/');
   };
 
-  if (!checked) return null; // Or return <div>Loading...</div>
+  if (!checked) return <div>Loading...</div>;
 
   return (
     <div className="instructor-dashboard">

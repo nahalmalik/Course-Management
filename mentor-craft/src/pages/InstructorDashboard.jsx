@@ -17,27 +17,32 @@ const InstructorEarnings = () => {
   const [profileCompletion, setProfileCompletion] = useState(40);
   const [width, height] = useWindowSize();
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem("darkMode") === "true");
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const currentUser = getCurrentUser();
-    if (currentUser?.userType === 'instructor') {
-      setUser(currentUser);
-      const staticCourses = courseData.filter(c => c.instructorEmail === currentUser.email);
-      const dynamicCourses = getCourses().filter(c => c.instructorEmail === currentUser.email);
-      const allCourses = [...dynamicCourses, ...staticCourses];
-      setMyCourses(allCourses);
 
-      if (dynamicCourses.length === 1 && localStorage.getItem("firstCoursePublished") !== "shown") {
-        setShowConfetti(true);
-        setTimeout(() => setShowConfetti(false), 4000);
-        localStorage.setItem("firstCoursePublished", "shown");
-      }
+ useEffect(() => {
+  const currentUser = getCurrentUser();
+  
+  if (currentUser && currentUser.userType === 'instructor') {
+    setUser(currentUser);
+    const staticCourses = courseData.filter(c => c.instructorEmail === currentUser.email);
+    const dynamicCourses = getCourses().filter(c => c.instructorEmail === currentUser.email);
+    const allCourses = [...dynamicCourses, ...staticCourses];
+    setMyCourses(allCourses);
 
-      setProfileCompletion(currentUser.profileCompleted ? 100 : 40);
-    } else {
-      navigate('/');
+    if (dynamicCourses.length === 1 && localStorage.getItem("firstCoursePublished") !== "shown") {
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 4000);
+      localStorage.setItem("firstCoursePublished", "shown");
     }
-  }, [navigate]);
+
+    setProfileCompletion(currentUser.profileCompleted ? 100 : 40);
+  } else {
+    navigate('/');
+  }
+
+  setLoading(false); // ✅ stop loading once checked
+}, [navigate]);
 
   const handleLogout = () => {
     logoutUser();

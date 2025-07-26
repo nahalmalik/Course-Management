@@ -32,7 +32,8 @@ const StudentLogin = () => {
       localStorage.setItem('currentUser', JSON.stringify(user));
 
       toast.success('Welcome Student!');
-      setTimeout(() => navigate('/'), 1500);
+      setTimeout(() => navigate('/student/overview'), 1500);
+
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.detail || 'Login failed. Please try again.');
