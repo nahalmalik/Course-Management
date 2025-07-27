@@ -1,22 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import {
   getCourses,
   getExtraData,
   saveExtraData
 } from '../contexts/courseStorage';
-import courseData from '../components/courseData';
-import courseExtraData from '../components/courseExtraData';
-import { getCurrentUser } from '../contexts/authUtils';
 import 'react-toastify/dist/ReactToastify.css';
 import '../styles/InstructorCourseDetail.css';
 
-
 const InstructorCourseDetail = () => {
   const { id } = useParams();
-  const courseId = parseInt(id);
-  const navigate = useNavigate();
+  const courseId = parseInt(id, 10);
 
   const [course, setCourse] = useState(null);
   const [extra, setExtra] = useState(null);
@@ -25,28 +20,41 @@ const InstructorCourseDetail = () => {
   const [newAssignment, setNewAssignment] = useState({ title: '', description: '', file: null, dueDate: '' });
   const [newQuiz, setNewQuiz] = useState({ title: '', description: '', file: null, dueDate: '' });
 
-  useEffect(() => {
-    const currentUser = getCurrentUser();
-    if (!currentUser || currentUser.userType !== 'instructor') return navigate('/');
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const courses = await getCourses();
 
-    const staticCourse = courseData.find(c => c.id === courseId);
-    const dynamicCourse = getCourses().find(c => c.id === courseId);
-    const foundCourse = dynamicCourse || staticCourse;
+      console.log("✅ Fetched courses:", courses);
+      const found = courses.find(c => String(c.id) === String(courseId));
 
-    const staticExtra = courseExtraData[courseId];
-    const dynamicExtra = getExtraData(courseId);
-    const foundExtra = dynamicExtra || staticExtra || {
-      overview: '',
-      curriculum: [],
-      notes: [],
-      assignments: [],
-      quizzes: []
-    };
 
-    setCourse(foundCourse);
-    setExtra(foundExtra);
-    setFormCurriculum(foundExtra.curriculum || []);
-  }, [courseId, navigate]);
+      if (!found) {
+        console.warn("⚠️ Course not found for ID:", courseId);
+      }
+
+      setCourse(found || null);
+
+      let existingExtra = getExtraData(courseId);
+      if (!existingExtra) {
+        existingExtra = {
+          curriculum: [],
+          notes: [],
+          assignments: [],
+          quizzes: []
+        };
+        saveExtraData(courseId, existingExtra);
+      }
+
+      setExtra(existingExtra);
+      setFormCurriculum(existingExtra.curriculum || []);
+    } catch (error) {
+      console.error('❌ Failed to load course or extra data:', error);
+    }
+  };
+
+  fetchData();
+}, [courseId]);
 
   const updateExtra = (key, value) => {
     const updated = { ...extra, [key]: value };
@@ -66,7 +74,7 @@ const InstructorCourseDetail = () => {
 
   const saveCurriculum = () => {
     updateExtra('curriculum', formCurriculum);
-    toast.success("✅ Curriculum saved successfully!");
+    toast.success('✅ Curriculum saved successfully!');
   };
 
   const handleNoteUpload = () => {
@@ -74,7 +82,8 @@ const InstructorCourseDetail = () => {
       toast.error('⚠️ Fill all note fields');
       return;
     }
-    const updated = [...extra.notes, newNote];
+
+    const updated = [...(extra.notes || []), newNote];
     updateExtra('notes', updated);
     setNewNote({ title: '', description: '', file: null });
     toast.success('📝 Note uploaded!');
@@ -85,7 +94,8 @@ const InstructorCourseDetail = () => {
       toast.error('⚠️ Fill all assignment fields');
       return;
     }
-    const updated = [...extra.assignments, newAssignment];
+
+    const updated = [...(extra.assignments || []), newAssignment];
     updateExtra('assignments', updated);
     setNewAssignment({ title: '', description: '', file: null, dueDate: '' });
     toast.success('📘 Assignment uploaded!');
@@ -96,13 +106,14 @@ const InstructorCourseDetail = () => {
       toast.error('⚠️ Fill all quiz fields');
       return;
     }
-    const updated = [...extra.quizzes, newQuiz];
+
+    const updated = [...(extra.quizzes || []), newQuiz];
     updateExtra('quizzes', updated);
     setNewQuiz({ title: '', description: '', file: null, dueDate: '' });
     toast.success('🧠 Quiz uploaded!');
   };
 
-  if (!course || !extra) return null;
+  if (!course || !extra) return <div className="loading">Loading course data...</div>;
 
   return (
     <div className="instructor-detail-wrapper">
@@ -199,5 +210,3 @@ const InstructorCourseDetail = () => {
 };
 
 export default InstructorCourseDetail;
-
-

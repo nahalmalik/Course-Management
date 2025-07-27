@@ -286,3 +286,28 @@
   color: #444;
   margin-left: 8px;
 }
+.create-course-container {
+  max-width: 700px;
+  margin: auto;
+  padding: 30px;
+}
+
+.create-course-form input,
+.create-course-form textarea {
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 10px;
+}
+
+.thumbnail-dropzone {
+  border: 2px dashed #ccc;
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 15px;
+  cursor: pointer;
+}
+
+.status-message {
+  margin-top: 10px;
+  font-weight: bold;
+}

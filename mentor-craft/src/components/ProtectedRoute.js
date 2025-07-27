@@ -3,8 +3,8 @@ import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
 
 const ProtectedRoute = ({ allowedRole }) => {
-  const user = JSON.parse(localStorage.getItem("currentUser"));
-  console.log("🔐 ProtectedRoute user:", user);
+  const user = JSON.parse(localStorage.getItem('user'));
+  console.log("ProtectedRoute User:", user);
 
   if (!user) return <Navigate to="/" replace />;
   if (allowedRole && user.role !== allowedRole) {

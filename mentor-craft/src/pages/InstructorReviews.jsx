@@ -22,49 +22,60 @@ const InstructorReviews = () => {
   const [toastVisible, setToastVisible] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
-  useEffect(() => {
+ useEffect(() => {
+  const fetchReviews = async () => {
     const loggedInUser = getCurrentUser();
     setUser(loggedInUser);
 
     if (loggedInUser) {
-      const allCourses = getCourses();
-      const ownedCourses = allCourses.filter(
-        c =>
-          c.instructor?.toLowerCase() === loggedInUser.name?.toLowerCase() &&
-          c.instructorEmail?.toLowerCase() === loggedInUser.email?.toLowerCase()
-      );
-      setInstructorCourses(ownedCourses);
+      try {
+        const allCourses = await getCourses(); // ✅ Await the async call
 
-      const ownedIds = ownedCourses.map(c => c.id);
+        const ownedCourses = allCourses.filter(
+          c =>
+            c.instructor?.toLowerCase() === loggedInUser.name?.toLowerCase() &&
+            c.instructorEmail?.toLowerCase() === loggedInUser.email?.toLowerCase()
+        );
 
-      const stored = loadStoredReviews();
+        setInstructorCourses(ownedCourses);
 
-      let finalReviews = stored;
-      if (!stored) {
-        const demoReviews = [];
-        ownedCourses.forEach((course, index) => {
-          demoReviews.push({
-            id: index + 1,
-            courseId: course.id,
-            courseTitle: course.title,
-            student: `Student ${index + 1}`,
-            rating: 5 - (index % 2),
-            text: `This is a great course on ${course.title.toLowerCase()}. Very helpful!`,
-            date: new Date(Date.now() - index * 86400000).toISOString().split('T')[0],
-            isAnswered: false,
-            reply: ''
+        const ownedIds = ownedCourses.map(c => c.id);
+
+        const stored = loadStoredReviews();
+
+        let finalReviews = stored;
+        if (!stored) {
+          const demoReviews = [];
+          ownedCourses.forEach((course, index) => {
+            demoReviews.push({
+              id: index + 1,
+              courseId: course.id,
+              courseTitle: course.title,
+              student: `Student ${index + 1}`,
+              rating: 5 - (index % 2),
+              text: `This is a great course on ${course.title.toLowerCase()}. Very helpful!`,
+              date: new Date(Date.now() - index * 86400000).toISOString().split('T')[0],
+              isAnswered: false,
+              reply: ''
+            });
           });
-        });
-        finalReviews = demoReviews;
-        localStorage.setItem('instructor_reviews', JSON.stringify(finalReviews));
-        setToastVisible(true);
-        setTimeout(() => setToastVisible(false), 3000);
-      }
+          finalReviews = demoReviews;
+          localStorage.setItem('instructor_reviews', JSON.stringify(finalReviews));
+          setToastVisible(true);
+          setTimeout(() => setToastVisible(false), 3000);
+        }
 
-      const matchingReviews = finalReviews.filter(r => ownedIds.includes(r.courseId));
-      setFilteredReviews(matchingReviews);
+        const matchingReviews = finalReviews.filter(r => ownedIds.includes(r.courseId));
+        setFilteredReviews(matchingReviews);
+
+      } catch (err) {
+        console.error("Error loading instructor reviews:", err);
+      }
     }
-  }, []);
+  };
+
+  fetchReviews();
+}, []);
 
   const handleReplyOpen = (review) => {
     setCurrentReplyReview(review);

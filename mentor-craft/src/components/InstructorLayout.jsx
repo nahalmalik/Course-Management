@@ -1,25 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { getCurrentUser, logoutUser } from '../contexts/authUtils';
 import '../styles/InstructorEarnings.css';
 
 const InstructorLayout = () => {
   const navigate = useNavigate();
-  const [checked, setChecked] = useState(false);
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
-    const currentUser = getCurrentUser();
-    setUser(currentUser);
+    const userData = getCurrentUser();
+    console.log('👤 InstructorLayout: Current User ->', userData);
 
-    if (!currentUser) {
-      navigate('/');
-    } else if (currentUser.role !== 'instructor') {
+    if (!userData || userData.role !== 'instructor') {
       navigate('/');
     } else {
-      setChecked(true);
+      setUser(userData);
     }
+
+    setLoading(false);
   }, [navigate]);
 
   const handleLogout = () => {
@@ -27,21 +27,24 @@ const InstructorLayout = () => {
     navigate('/');
   };
 
-  if (!checked) return <div>Loading...</div>;
+  if (loading) return <div>Loading Instructor Dashboard...</div>;
 
   return (
     <div className="instructor-dashboard">
-      {/* TOP NAVBAR */}
+      {/* Header */}
       <header className="dashboard-header">
         <h1>Instructor Dashboard</h1>
         <div className="header-right">
-          <button onClick={() => navigate('/instructor/create-course')} className="create-course-btn">
+          <button
+            className="create-course-btn"
+            onClick={() => navigate('/instructor/create-course')}
+          >
             + Create Course
           </button>
           <div className="profile" onClick={() => setShowDropdown(!showDropdown)}>
             <img
               src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
-              alt="Profile"
+              alt="Instructor Profile"
             />
             {showDropdown && (
               <div className="dropdown">
@@ -54,21 +57,21 @@ const InstructorLayout = () => {
         </div>
       </header>
 
-      {/* SIDEBAR + MAIN */}
+      {/* Sidebar + Main */}
       <div className="dashboard-content">
         <aside className="sidebar">
           <ul>
-            <li><a href="/instructor/dashboard">Overview</a></li>
-            <li><a href="/instructor/profile">My Profile</a></li>
-            <li><a href="/instructor/my-courses">My Courses</a></li>
-            <li><a href="/instructor/earning">Earnings & Analytics</a></li>
-            <li><a href="/instructor/announcements">Announcements</a></li>
-            <li><a href="/instructor/assignment-attempts">Assignment Attempts</a></li>
-            <li><a href="/instructor/quiz-attempts">Quiz Attempts</a></li>
-            <li><a href="/instructor/purchase-history">Purchase History</a></li>
-            <li><a href="/instructor/reviews">Reviews</a></li>
-            <li><a href="/instructor/generate-certificate">Generate Certificate</a></li>
-            <li><a href="/instructor/settings">Settings</a></li>
+            <li><Link to="/instructor/dashboard">Overview</Link></li>
+            <li><Link to="/instructor/profile">My Profile</Link></li>
+            <li><Link to="/instructor/mycourses">My Courses</Link></li>
+            <li><Link to="/instructor/earning">Earnings & Analytics</Link></li>
+            <li><Link to="/instructor/announcements">Announcements</Link></li>
+            <li><Link to="/instructor/assignment-attempts">Assignment Attempts</Link></li>
+            <li><Link to="/instructor/quiz-attempts">Quiz Attempts</Link></li>
+            <li><Link to="/instructor/purchase-history">Purchase History</Link></li>
+            <li><Link to="/instructor/reviews">Reviews</Link></li>
+            <li><Link to="/instructor/generate-certificate">Generate Certificate</Link></li>
+            <li><Link to="/instructor/settings">Settings</Link></li>
           </ul>
         </aside>
 

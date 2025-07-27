@@ -11,13 +11,15 @@ const generateMonthlyStats = (instructorEmail, course) => {
     year: '2025',
     earnings: Math.floor(Math.random() * 300) + 100,
     enrollments: Math.floor(Math.random() * 20) + 5,
-    quizAverage: Math.floor(Math.random() * 21) + 75
+    quizAverage: Math.floor(Math.random() * 21) + 75 // 75–95%
   }));
 };
 
-export const syncInstructorAnalytics = () => {
+// 🔧 Fix: async/await getCourses()
+export const syncInstructorAnalytics = async () => {
   const existingData = JSON.parse(localStorage.getItem('instructorAnalyticsData') || '[]');
-  const allCourses = [...courseData, ...getCourses()];
+  const dynamicCourses = await getCourses();
+  const allCourses = [...courseData, ...dynamicCourses];
 
   let updatedData = [...existingData];
 
@@ -39,7 +41,8 @@ export const syncInstructorAnalytics = () => {
   localStorage.setItem('instructorAnalyticsData', JSON.stringify(updatedData));
 };
 
+// 🔧 Fix: read analytics data from localStorage directly
 export const getInstructorAnalytics = (email) => {
-  const allData = JSON.parse(localStorage.getItem('instructorAnalyticsData') || '[]');
-  return allData.filter(a => a.instructorEmail === email);
+  const data = JSON.parse(localStorage.getItem('instructorAnalyticsData') || '[]');
+  return data.filter(a => a.instructorEmail === email);
 };

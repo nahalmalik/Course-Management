@@ -94,10 +94,10 @@ function App() {
             <Route element={<ProtectedRoute allowedRole="instructor" />}>
               <Route path="/instructor" element={<InstructorLayout />}>
                 <Route path="dashboard" element={<InstructorDashboard />} />
-                <Route path="my-courses" element={<InstructorMyCourses />} />
+                <Route path="mycourses" element={<InstructorMyCourses />} />
                 <Route path="create-course" element={<CreateCourse />} />
                 <Route path="courses/:id" element={<InstructorCourseDetail />} />
-                <Route path="reviews" element={<InstructorReviews />} />
+                <Route path="reviews"      element={<InstructorReviews />} />
                 <Route path="earning" element={<InstructorEarnings />} />
                 <Route path="quiz-attempts" element={<InstructorQuizAttempts />} />
                 <Route path="assignment-attempts" element={<InstructorAssignmentAttempts />} />

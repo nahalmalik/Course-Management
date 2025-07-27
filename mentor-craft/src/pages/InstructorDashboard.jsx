@@ -19,30 +19,50 @@ const InstructorEarnings = () => {
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem("darkMode") === "true");
   const [loading, setLoading] = useState(true);
 
+useEffect(() => {
+  const loadData = async () => {
+    const currentUser = getCurrentUser();
 
- useEffect(() => {
-  const currentUser = getCurrentUser();
-  
-  if (currentUser && currentUser.userType === 'instructor') {
-    setUser(currentUser);
-    const staticCourses = courseData.filter(c => c.instructorEmail === currentUser.email);
-    const dynamicCourses = getCourses().filter(c => c.instructorEmail === currentUser.email);
-    const allCourses = [...dynamicCourses, ...staticCourses];
-    setMyCourses(allCourses);
+    if (currentUser && currentUser.role === 'instructor') {
+      setUser(currentUser);
 
-    if (dynamicCourses.length === 1 && localStorage.getItem("firstCoursePublished") !== "shown") {
-      setShowConfetti(true);
-      setTimeout(() => setShowConfetti(false), 4000);
-      localStorage.setItem("firstCoursePublished", "shown");
+      const staticCourses = courseData.filter(
+        c => c.instructorEmail === currentUser.email
+      );
+
+      let dynamicCourses = [];
+      try {
+        const fetched = await getCourses(); // ✅ Await async call
+        dynamicCourses = fetched.filter(
+          c => c.instructorEmail === currentUser.email
+        );
+      } catch (error) {
+        console.error('❌ Failed to fetch backend/local courses:', error);
+      }
+
+      const allCourses = [...dynamicCourses, ...staticCourses];
+      setMyCourses(allCourses);
+
+      if (
+        dynamicCourses.length === 1 &&
+        localStorage.getItem("firstCoursePublished") !== "shown"
+      ) {
+        setShowConfetti(true);
+        setTimeout(() => setShowConfetti(false), 4000);
+        localStorage.setItem("firstCoursePublished", "shown");
+      }
+
+      setProfileCompletion(currentUser.profileCompleted ? 100 : 40);
+    } else {
+      navigate('/');
     }
 
-    setProfileCompletion(currentUser.profileCompleted ? 100 : 40);
-  } else {
-    navigate('/');
-  }
+    setLoading(false);
+  };
 
-  setLoading(false); // ✅ stop loading once checked
+  loadData();
 }, [navigate]);
+
 
   const handleLogout = () => {
     logoutUser();
@@ -326,7 +346,7 @@ const css= `
             {myCourses.length > 3 && (
               <div style={{ textAlign: 'center', marginTop: 20 }}>
                 <button
-                  onClick={() => navigate('/instructor/my-courses')}
+                  onClick={() => navigate('/instructor/mycourses')}
                   style={{
                     background: 'rgb(32,125,140)',
                     color: '#fff',

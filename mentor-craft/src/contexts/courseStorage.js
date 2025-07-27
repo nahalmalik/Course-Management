@@ -1,25 +1,59 @@
-// courseStorage.js
-
-import staticCourseData from '../components/courseData'; 
+import staticCourseData from '../components/courseData';
 import courseData from '../components/courseData';
 // =======================
 // --- Core Course Storage
 // =======================
 
+// Helper to get courses from localStorage
+const getCoursesFromStorage = () => {
+  try {
+    const stored = JSON.parse(localStorage.getItem('courses'));
+    return Array.isArray(stored) ? stored : [];
+  } catch {
+    return [];
+  }
+};
+
+// Save to localStorage
+const saveCoursesToStorage = (courses) => {
+  localStorage.setItem('courses', JSON.stringify(courses));
+};
+
+// ✅ Get all courses (backend + fallback to localStorage + mock)
+
 export async function getCourses() {
   try {
     const res = await fetch("http://localhost:8000/api/courses/");
-    const data = await res.json();
-    console.log("Courses fetched from backend:", data);
-    return data;
+    const backendCourses = await res.json();
+
+    if (!Array.isArray(backendCourses)) throw new Error("Invalid backend response");
+
+    console.log("✅ Fetched backend courses:", backendCourses);
+
+    // ✅ Combine backend + static
+    const combinedCourses = [...backendCourses, ...staticCourseData];
+
+    // Optionally cache in localStorage
+    saveCoursesToStorage(combinedCourses);
+
+    return combinedCourses;
   } catch (err) {
-    console.error("Failed to fetch courses:", err);
-    return [];
+    console.warn("❌ Backend fetch failed, using fallback:", err);
+
+    const fallback = getCoursesFromStorage();
+
+    if (fallback.length > 0) {
+      console.log("✅ Loaded courses from localStorage:", fallback);
+      return fallback;
+    }
+
+    console.log("✅ Loaded static mock courses only");
+    return staticCourseData;
   }
 }
 
-// contexts/courseStorage.js
 
+// ✅ Get a single course by ID
 export async function getCourseById(id) {
   try {
     const res = await fetch(`http://localhost:8000/api/courses/${id}/`);
@@ -31,26 +65,25 @@ export async function getCourseById(id) {
   }
 }
 
-
-export const saveCourse = (course) => {
+// ✅ Save/update course in localStorage
+export async function saveCourse(course) {
   if (!course || typeof course.id !== 'number') {
     console.warn('❌ Invalid course object passed to saveCourse:', course);
     return;
   }
 
-  const courses = getCourses();
-  const existingIndex = courses.findIndex(c => c.id === course.id);
+  const courses = getCoursesFromStorage();
+  const index = courses.findIndex(c => c.id === course.id);
 
-  if (existingIndex !== -1) {
-    courses[existingIndex] = course;
+  if (index !== -1) {
+    courses[index] = course;
   } else {
     courses.push(course);
   }
 
-  localStorage.setItem('courses', JSON.stringify(courses));
-};
+  saveCoursesToStorage(courses);
+}
 
-// Explicit alias
 export const updateCourse = saveCourse;
 
 // ================================
@@ -81,42 +114,34 @@ const addDummyAnalyticsForCourse = (course) => {
   localStorage.setItem('instructorAnalyticsData', JSON.stringify(updated));
 };
 
-export const addNewCourse = (course) => {
+export async function addNewCourse(course) {
   if (!course || typeof course.id !== 'number') return;
-  const courses = getCourses();
-  courses.push(course);
-  localStorage.setItem('courses', JSON.stringify(courses));
+  const current = getCoursesFromStorage();
+  current.push(course);
+  saveCoursesToStorage(current);
+  addDummyAnalyticsForCourse(course);
+}
 
-  addDummyAnalyticsForCourse(course); // 👈 Auto-generate analytics
-};
+export async function deleteCourse(id) {
+  const current = getCoursesFromStorage();
+  const updated = current.filter(c => c.id !== id);
+  saveCoursesToStorage(updated);
+}
 
-export const deleteCourse = (id) => {
-  const updated = getCourses().filter(c => c.id !== id);
-  localStorage.setItem('courses', JSON.stringify(updated));
-};
-
-export const clearAllCourses = () => {
+export function clearAllCourses() {
   localStorage.removeItem('courses');
+}
+
+export async function getAllCourseTitles() {
+  const all = await getCourses();
+  return all.map(c => c.title);
+}
+
+export const getCoursesByInstructor = async (email) => {
+  const allCourses = await getCourses();
+  return allCourses.filter(course => course.instructorEmail === email);
 };
 
-export const getAllCourseTitles = () => {
-  return getCourses().map(c => c.title);
-};
-
-export const getCoursesByInstructor = (email) => {
-  const localCourses = getCourses();
-  const combined = [...localCourses];
-
-  // Include courses from courseData if not already in localStorage
-  courseData.forEach(cd => {
-    const alreadyIncluded = combined.some(c => c.id === cd.id);
-    if (!alreadyIncluded) {
-      combined.push(cd);
-    }
-  });
-
-  return combined.filter(c => c.instructorEmail === email);
-};
 
 // ==============================
 // --- Extra Curriculum Data
@@ -187,15 +212,15 @@ export const normalizeCurriculumVideos = (curriculum = []) => {
 // --- Combined Course Access
 // ==============================
 
-export const getAllCourses = () => {
-  const local = getCourses();
-  const combined = [...staticCourseData, ...local];
+export async function getAllCourses() {
+  const fromBackendOrStorage = await getCourses();
+  const combined = [...staticCourseData, ...fromBackendOrStorage];
 
-  // Deduplicate by course.id
   const unique = Array.from(new Map(combined.map(c => [c.id, c])).values());
   return unique;
-};
+}
 
-export const getAllCoursesByInstructor = (email) => {
-  return getAllCourses().filter(c => c.instructorEmail?.toLowerCase() === email.toLowerCase());
-};
+export async function getAllCoursesByInstructor(email) {
+  const all = await getAllCourses();
+  return all.filter(c => c.instructorEmail?.toLowerCase() === email.toLowerCase());
+}

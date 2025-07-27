@@ -6,27 +6,30 @@ import {
   getUnseenInstructorAttempts,
   markAttemptsSeenByInstructor
 } from '../contexts/quizUtils';
-
+import { generateSampleQuizAttemptsForAllCourses } from '../contexts/quizUtils';
+import courseData from '../components/courseData';
 import toast from 'react-hot-toast';
 
 const InstructorQuizAttempts = () => {
   const [attempts, setAttempts] = useState([]);
   const [instructorEmail, setInstructorEmail] = useState(null);
 
-  useEffect(() => {
-    const user = getCurrentUser();
-    if (user) {
-      setInstructorEmail(user.email);
-      const data = getQuizAttempts().filter(a => a.instructorEmail === user.email);
-      setAttempts(data);
+useEffect(() => {
+  generateSampleQuizAttemptsForAllCourses(courseData); // 👈 ADD THIS LINE
 
-      const unseen = getUnseenInstructorAttempts(user.email);
-      if (unseen.length > 0) {
-        toast.success(`🔔 ${unseen.length} new quiz attempt(s) received!`);
-        markAttemptsSeenByInstructor(user.email);
-      }
+  const user = getCurrentUser();
+  if (user) {
+    setInstructorEmail(user.email);
+    const data = getQuizAttempts().filter(a => a.instructorEmail === user.email);
+    setAttempts(data);
+
+    const unseen = getUnseenInstructorAttempts(user.email);
+    if (unseen.length > 0) {
+      toast.success(`🔔 ${unseen.length} new quiz attempt(s) received!`);
+      markAttemptsSeenByInstructor(user.email);
     }
-  }, []);
+  }
+}, []);
 
   const handleGradeChange = (id, grade) => {
     const updated = attempts.map(attempt =>

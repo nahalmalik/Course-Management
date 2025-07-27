@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getCurrentUser } from '../contexts/authUtils';
-import { getPurchases, generateSamplePurchases } from '../contexts/purchaseUtils';
+import { getPurchases } from '../contexts/purchaseUtils'; // ⛔ Removed generateSamplePurchases
 import courseData from '../components/courseData';
-import { Link } from 'react-router-dom';
 
 const InstructorPurchaseHistory = () => {
   const [purchases, setPurchases] = useState([]);
@@ -10,9 +9,18 @@ const InstructorPurchaseHistory = () => {
   useEffect(() => {
     const user = getCurrentUser();
     if (user) {
-      generateSamplePurchases(courseData);
       const all = getPurchases();
+      console.log("✅ All purchases:", all);
+      console.log("✅ Current instructor email:", user.email);
+
       const mine = all.filter(p => p.instructorEmail === user.email);
+      console.log("🔍 Looping all purchases:");
+all.forEach(p => {
+  console.log(`Instructor: ${p.instructorEmail}, Course: ${p.courseTitle}`);
+});
+
+      console.log("✅ Matched purchases:", mine);
+
       setPurchases(mine);
     }
   }, []);

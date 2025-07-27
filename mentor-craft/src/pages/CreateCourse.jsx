@@ -1,41 +1,53 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getCurrentUser } from '../contexts/authUtils';
-import { addNewCourse } from '../contexts/courseStorage';
+
 import '../styles/InstructorEarnings.css';
 import '../styles/CreateCourse.css';
 
 const CreateCourse = () => {
   const navigate = useNavigate();
+  const handleDragOver = (e) => e.preventDefault();
+
   const [user, setUser] = useState(null);
   const [toastVisible, setToastVisible] = useState(false);
   const [activeAccordion, setActiveAccordion] = useState('info');
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState('');
 
-  const [courseData, setCourseData] = useState({
-    title: '',
-    description: '',
-    category: '',
-    price: '',
-    discountPrice: '',
-    duration: '',
-    lessons: '',
-    thumbnail: '',
-    curriculumIntro: '',
-    faq: '',
-    mediaLink: '',
-    level: '',
-    language: '',
-    seoTitle: '',
-    seoKeywords: '',
-    seoDescription: '',
-    hasExpiration: false
-  });
+ // ✅ FIXED field names in courseData state
+const [courseData, setCourseData] = useState({
+  title: '',
+  description: '',
+  category: '',
+  level: '',
+  language: '',
+  price: '',
+  discount_price: '', // ✅ not discountPrice
+  duration: '',
+  lessons: '',
+  curriculum_intro: '', // ✅ not curriculumIntro
+  faqs: '', // ✅ not faq
+  seo_title: '', // ✅ not seoTitle
+  seo_keywords: '', // ✅ not seoKeywords
+  seo_description: '', // ✅ not seoDescription
+  has_expiration: false,
+  image: null,
+  video_file: null, 
+  thumbnailPreview: null,
+  videoPreview: null,
+});
+
 
   useEffect(() => {
     const currentUser = getCurrentUser();
-    if (currentUser?.userType === 'instructor') {
+    if (!currentUser) {
+      setTimeout(() => {
+        const delayedUser = getCurrentUser();
+        if (delayedUser?.role === 'instructor') setUser(delayedUser);
+        else navigate('/');
+      }, 100);
+    } else if (currentUser.role === 'instructor') {
       setUser(currentUser);
     } else {
       navigate('/');
@@ -44,7 +56,7 @@ const CreateCourse = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setCourseData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
+    setCourseData((prev) => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
   };
 
   const handleTagAdd = (e) => {
@@ -56,87 +68,115 @@ const CreateCourse = () => {
   };
 
   const removeTag = (tagToRemove) => {
-    setTags(tags.filter(tag => tag !== tagToRemove));
+    setTags(tags.filter((tag) => tag !== tagToRemove));
   };
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setCourseData(prev => ({ ...prev, thumbnail: reader.result }));
-    };
-    if (file) reader.readAsDataURL(file);
+    if (file && file.type.startsWith('image/')) {
+      setCourseData((prev) => ({
+        ...prev,
+        image: file,
+        thumbnailPreview: URL.createObjectURL(file),
+      }));
+    }
   };
+
+  const handleVideoUpload = (e) => {
+    const file = e.target.files[0];
+    if (file && file.type.startsWith('video/')) {
+      setCourseData((prev) => ({
+        ...prev,
+        video_file: file,
+        videoPreview: URL.createObjectURL(file),
+      }));
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+      setCourseData((prev) => ({
+        ...prev,
+        image: file,
+        thumbnailPreview: URL.createObjectURL(file),
+      }));
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const instructorName = user?.name || user?.email?.split('@')[0] || 'Unknown Instructor';
-    const instructorEmail = user?.email || '';
-    if (!instructorEmail) {
-      alert('Instructor email is missing.');
-      return;
+
+    if (isNaN(Number(courseData.price))) return alert('Price must be a valid number.');
+    if (isNaN(Number(courseData.lessons))) return alert('Lessons must be a valid number.');
+
+    const instructorName = user?.name || user?.email?.split('@')[0] || 'Unknown';
+    const instructorEmail = user?.email;
+
+    const formData = new FormData();
+    for (let key in courseData) {
+      if (key === 'image' && courseData.image) {
+        formData.append('image', courseData.image);
+      } else if (key === 'video' && courseData.video) {
+        formData.append('video_file', courseData.video_file); 
+      } else if (key !== 'thumbnailPreview' && key !== 'videoPreview') {
+        formData.append(key, courseData[key]);
+      }
     }
+const sampleFaqs = [
+  { question: "What is this course about?", answer: "It's a test FAQ." },
+  { question: "Is it beginner friendly?", answer: "Yes." }
+];
 
-    const newCourse = {
-      id: Date.now(),
-      title: courseData.title,
-      description: courseData.description,
-      instructor: instructorName,
-      instructorEmail,
-      rating: 4.8,
-      students: 0,
-      lessons: courseData.lessons || 0,
-      duration: courseData.duration || 'N/A',
-      price: courseData.price || 'Free',
-      discountPrice: courseData.discountPrice,
-      image: courseData.thumbnail || '/images/placeholder-course.jpg',
-      category: courseData.category || 'General',
-      curriculumIntro: courseData.curriculumIntro,
-      faq: courseData.faq,
-      mediaLink: courseData.mediaLink,
-      level: courseData.level,
-      language: courseData.language,
-      tags,
-      seo: {
-        title: courseData.seoTitle,
-        keywords: courseData.seoKeywords,
-        description: courseData.seoDescription
-      },
-      hasExpiration: courseData.hasExpiration
-    };
+formData.append('faqs', JSON.stringify(sampleFaqs));
 
-    await fetch('http://localhost:8000/api/courses/', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(newCourse),
-});
+    formData.append('instructor', instructorName);
+    formData.append('instructor_email', instructorEmail);
+    formData.append('tags', JSON.stringify(tags));
 
-    setToastVisible(true);
-    setTimeout(() => {
-      setToastVisible(false);
-      navigate('/instructor/my-courses');
-    }, 2000);
+    try {
+      const res = await fetch('http://localhost:8000/api/courses/', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!res.ok) throw new Error('Failed to create course');
+
+      setToastVisible(true);
+      setTimeout(() => {
+        setToastVisible(false);
+        navigate('/instructor/mycourses');
+      }, 2000);
+    } catch (err) {
+      console.error('❌ Course upload failed:', err);
+      alert('Failed to upload. Please check backend.');
+    }
   };
+  
 
   const toggleAccordion = (section) => {
-    setActiveAccordion(prev => (prev === section ? '' : section));
+    setActiveAccordion((prev) => (prev === section ? '' : section));
   };
 
   return (
     <div className="instructor-dashboard">
       <main className="main-section">
-            {/* Course Upload Tips */}
-          <aside className="course-tips-box">
-            <h4>💡 Course Upload Tips</h4>
-            <ul>
-              <li>Use a clear and catchy title</li>
-              <li>Make your description easy to read</li>
-              <li>Upload a high-quality thumbnail image</li>
-              <li>Choose the correct level and category</li>
-              <li>Preview your course before publishing</li>
-            </ul>
-          </aside>
+        {/* Sidebar Tips */}
+        <aside className="course-tips-box">
+          <h4>💡 Course Upload Tips</h4>
+          <ul>
+            <li>Use a clear and catchy title</li>
+            <li>Make your description easy to read</li>
+            <li>Upload a high-quality thumbnail image</li>
+            <li>Choose the correct level and category</li>
+            <li>Preview your course before publishing</li>
+          </ul>
+        </aside>
+
         <h2 className="create-course-heading">🛠️ Create a New Course</h2>
         <p className="create-course-subtitle">Fill out the details below to publish your course.</p>
+
 
         <form className="create-form" onSubmit={handleSubmit}>
           <div className="accordion">
@@ -152,14 +192,18 @@ const CreateCourse = () => {
     <div className="floating-input">
       <textarea name="description" value={courseData.description} onChange={handleChange} required maxLength={300} />
       <label>Course Description</label>
-      <div style={{ fontSize: '12px', color: '#888' }}>{courseData.description.length}/300 characters</div>
+      <div style={{ fontSize: '12px', color: '#888' }}>{(courseData.description || '').length}/300 characters
+</div>
     </div>
 
     <div className="floating-input">
       <input type="text" value={user?.name || ''} readOnly />
       <label>Instructor Name</label>
     </div>
-
+<div className="floating-input">
+      <input type="email" value={user?.name || ''} readOnly />
+      <label>Instructor Email</label>
+    </div>
     <div className="floating-input">
       <input type="text" name="category" value={courseData.category} onChange={handleChange} required />
       <label>Category</label>
@@ -191,7 +235,7 @@ const CreateCourse = () => {
     </div>
 
     <div className="floating-input">
-      <input type="text" name="discountPrice" value={courseData.discountPrice} onChange={handleChange} />
+      <input type="text" name="discount_price" value={courseData.discount_price} onChange={handleChange} />
       <label>Discounted Price (optional)</label>
     </div>
 
@@ -205,16 +249,23 @@ const CreateCourse = () => {
       <label>Number of Lessons</label>
     </div>
 
-    <div className="floating-input">
-      <input type="file" accept="image/*" onChange={handleImageUpload} />
-      <label style={{ top: '-10px', fontSize: '13px', color: '#777' }}>Upload Course Thumbnail</label>
-    </div>
+    <div
+  className="floating-input dropzone"
+  onDrop={handleDrop}
+  onDragOver={handleDragOver}
+  style={{ border: '2px dashed #ccc', padding: '20px', textAlign: 'center' }}
+>
+  <input type="file" accept="image/*" onChange={handleImageUpload} />
+  <label style={{ top: '-10px', fontSize: '13px', color: '#777' }}>Drag or Click to Upload Thumbnail</label>
+  {courseData.image && (
+    <img
+      src={courseData.image}
+      alt="Thumbnail"
+      style={{ marginTop: '10px', width: '200px', borderRadius: '8px' }}
+    />
+  )}
+</div>
 
-    {courseData.thumbnail && (
-      <div style={{ marginTop: '10px', textAlign: 'center' }}>
-        <img src={courseData.thumbnail} alt="Thumbnail Preview" style={{ width: '220px', borderRadius: '8px' }} />
-      </div>
-    )}
 
     {/* Tags */}
     <div className="floating-input tag-input">
@@ -235,7 +286,7 @@ const CreateCourse = () => {
 
     {/* Expiration Toggle */}
     <div className="checkbox">
-      <input type="checkbox" name="hasExpiration" checked={courseData.hasExpiration} onChange={handleChange} />
+      <input type="checkbox" name="hasExpiration" checked={courseData.has_expiration} onChange={handleChange} />
       <label>Limit course access (expire after duration)</label>
     </div>
   </div>
@@ -245,15 +296,17 @@ const CreateCourse = () => {
   <div className="accordion-title" onClick={() => toggleAccordion('curriculum')}>📚 Curriculum</div>
   <div className="accordion-content">
     <div className="floating-input">
-      <textarea
-        name="curriculumIntro"
-        value={courseData.curriculumIntro}
-        onChange={handleChange}
-        required
-        maxLength={400}
-      />
+     <textarea
+  name="curriculum_intro"
+  value={courseData.curriculum_intro}
+  onChange={handleChange}
+  required
+  maxLength={400}
+/>
+
       <label>Curriculum Introduction</label>
-      <div style={{ fontSize: '12px', color: '#888' }}>{courseData.curriculumIntro.length}/400 characters</div>
+      <div style={{ fontSize: '12px', color: '#888' }}>{(courseData.curriculum_intro || '').length}/400 characters
+</div>
     </div>
   </div>
 </div>
@@ -262,39 +315,33 @@ const CreateCourse = () => {
   <div className="accordion-title" onClick={() => toggleAccordion('faq')}>❓ FAQ</div>
   <div className="accordion-content">
     <div className="floating-input">
-      <textarea name="faq" value={courseData.faq} onChange={handleChange} required />
+     <textarea
+  name="faqs"
+  value={courseData.faqs}
+  onChange={handleChange}
+  required
+/>
+
       <label>Frequently Asked Questions</label>
     </div>
   </div>
 </div>
 {/* Media Link Tab */}
 <div className={`accordion-item ${activeAccordion === 'media' ? 'active' : ''}`}>
-  <div className="accordion-title" onClick={() => toggleAccordion('media')}>🎥 Media</div>
+  <div className="accordion-title" onClick={() => toggleAccordion('media')}>🎥 Media Upload</div>
   <div className="accordion-content">
-    <div className="floating-input">
-      <input
-        type="text"
-        name="mediaLink"
-        value={courseData.mediaLink}
-        onChange={handleChange}
-        placeholder="https://www.youtube.com/watch?v=..."
-      />
-      <label>YouTube Video Link</label>
-    </div>
+    <label>Upload Course Video</label>
+    <input type="file" accept="video/*" onChange={handleVideoUpload} />
 
-    {courseData.mediaLink && courseData.mediaLink.includes("youtube") && (
-      <div className="video-preview">
-        <iframe
-          width="100%"
-          height="300"
-          src={courseData.mediaLink.replace("watch?v=", "embed/")}
-          title="Course Preview Video"
-          allowFullScreen
-        ></iframe>
-      </div>
+    {courseData.video_file && (
+      <video controls width="100%" style={{ marginTop: '10px', borderRadius: '8px' }}>
+        <source src={courseData.video_file} type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
     )}
   </div>
 </div>
+
 {/* SEO Tab */}
 <div className={`accordion-item ${activeAccordion === 'seo' ? 'active' : ''}`}>
   <div className="accordion-title" onClick={() => toggleAccordion('seo')}>📈 SEO Settings</div>
@@ -302,8 +349,8 @@ const CreateCourse = () => {
     <div className="floating-input">
       <input
         type="text"
-        name="seoTitle"
-        value={courseData.seoTitle}
+        name="seo_title"
+        value={courseData.seo_title}
         onChange={handleChange}
         placeholder="Optimized course title"
       />
@@ -313,8 +360,8 @@ const CreateCourse = () => {
     <div className="floating-input">
       <input
         type="text"
-        name="seoKeywords"
-        value={courseData.seoKeywords}
+        name="seo_keywords"
+        value={courseData.seo_keywords}
         onChange={handleChange}
         placeholder="react, programming, web dev"
       />
@@ -323,11 +370,12 @@ const CreateCourse = () => {
 
     <div className="floating-input">
       <textarea
-        name="seoDescription"
-        value={courseData.seoDescription}
-        onChange={handleChange}
-        placeholder="Write a short meta description for SEO"
-      />
+  name="seo_description"
+  value={courseData.seo_description}
+  onChange={handleChange}
+  placeholder="Write a short meta description for SEO"
+/>
+
       <label>SEO Meta Description</label>
     </div>
   </div>
@@ -340,11 +388,11 @@ const CreateCourse = () => {
           </div>
         </form>
 
-        {/* Live Preview */}
+ {/* Live Preview */}
         <div className="preview-section">
           <h3 style={{ marginBottom: '10px' }}>🧪 Live Course Preview</h3>
           <div className="course-card preview-card">
-            {courseData.thumbnail && <img src={courseData.thumbnail} alt="Thumbnail" />}
+            {courseData.thumbnailPreview && <img src={courseData.thumbnailPreview} alt="Thumbnail" />}
             <h4>{courseData.title || 'Course Title'}</h4>
             <p>{courseData.duration || '--'} · {courseData.lessons || '--'} lessons</p>
             <p><strong>{courseData.price ? `$${courseData.price}` : 'Free'}</strong></p>

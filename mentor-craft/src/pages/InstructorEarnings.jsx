@@ -7,6 +7,9 @@ import QuizPerformanceChart from '../components/charts/QuizPerformanceChart';
 import EnrollmentChart from '../components/charts/EnrollmentChart';
 import CourseComparison from '../components/charts/CourseComparison';
 import { Download } from 'lucide-react';
+import courseData from '../components/courseData';
+import { getCourses } from '../contexts/courseStorage';
+
 import '../styles/InstructorAnalytics.css';
 
 const InstructorEarnings = () => {
@@ -15,19 +18,33 @@ const InstructorEarnings = () => {
   const [selectedCourse, setSelectedCourse] = useState('All');
   const [user, setUser] = useState(null);
 
-  useEffect(() => {
+ useEffect(() => {
+  const fetchData = async () => {
     const current = getCurrentUser();
     setUser(current);
 
     if (current) {
-      syncInstructorAnalytics(); // 👈 Auto-generate missing analytics
-      const instructorCourses = getCoursesByInstructor(current.email);
-      setCourses(instructorCourses);
+      await syncInstructorAnalytics(); // Auto-generate missing analytics
+
+      let dynamicCourses = [];
+try {
+  const fetched = await getCourses();
+  dynamicCourses = fetched.filter((c) => c.instructorEmail === current.email);
+} catch (err) {
+  console.error("❌ Failed to fetch dynamic courses:", err);
+}
+
+const staticCourses = courseData.filter((c) => c.instructorEmail === current.email);
+const allCourses = [...dynamicCourses, ...staticCourses];
+setCourses(allCourses);
 
       const data = getInstructorAnalytics(current.email);
       setAnalytics(data);
     }
-  }, []);
+  };
+
+  fetchData();
+}, []);
 
   const handleCourseChange = (e) => {
     setSelectedCourse(e.target.value);

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { getCurrentUser, logoutUser } from '../contexts/authUtils';
+import { getCurrentUser } from '../contexts/authUtils';
 import { useNavigate } from 'react-router-dom';
-import { getCourses } from '../contexts/courseStorage';
+import { getCourses } from '../contexts/courseStorage'; // ✅ Import async getter
 import courseData from '../components/courseData';
 import '../styles/InstructorCourses.css';
 import NoCourse from "../assets/no-courses.jpg";
@@ -11,31 +11,43 @@ const InstructorMyCourses = () => {
   const [user, setUser] = useState(null);
   const [myCourses, setMyCourses] = useState([]);
   const [viewType, setViewType] = useState('grid');
-
-  useEffect(() => {
-    const currentUser = getCurrentUser();
-    if (!currentUser || currentUser.userType !== 'instructor') {
-      navigate('/');
-      return;
-    }
-    setUser(currentUser);
-
-    // Get all courses and filter by instructorEmail
-    const dynamicCourses = getCourses(); 
-    const allCourses = [...dynamicCourses, ...courseData];
-    const instructorEmail = currentUser.email;
-    const instructorName = currentUser.name || instructorEmail.split('@')[0] || 'You';
-    const filtered = allCourses.filter(course =>
-  course.instructorEmail === instructorEmail ||
-  course.instructor === instructorName
-);
-    setMyCourses(filtered);
-  }, [navigate]);
+  const [loading, setLoading] = useState(true);
 
   const renderImage = (course) =>
     course.thumbnail?.startsWith('data:image')
       ? course.thumbnail
       : course.image || course.thumbnail;
+
+  useEffect(() => {
+    const loadCourses = async () => {
+      const currentUser = getCurrentUser();
+      setUser(currentUser);
+
+      if (currentUser?.role === 'instructor') {
+        const staticCourses = courseData.filter(
+          c => c.instructorEmail === currentUser.email
+        );
+
+        let dynamicCourses = [];
+        try {
+          const fetched = await getCourses();
+          dynamicCourses = fetched.filter(
+            c => c.instructor_email === currentUser.email
+          );
+        } catch (err) {
+          console.error("❌ Error fetching courses:", err);
+        }
+
+        setMyCourses([...dynamicCourses, ...staticCourses]);
+      }
+
+      setLoading(false);
+    };
+
+    loadCourses();
+  }, []);
+
+  if (loading) return null;
 
   return (
     <div className="instructor-dashboard">
