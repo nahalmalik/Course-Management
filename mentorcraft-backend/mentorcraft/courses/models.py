@@ -36,9 +36,6 @@ class Course(models.Model):
 
     videos = models.JSONField(blank=True, null=True)
 
-    seo_title = models.CharField(max_length=255, blank=True)
-    seo_keywords = models.TextField(blank=True)
-    seo_description = models.TextField(blank=True)
     has_expiration = models.BooleanField(default=False)
     tags = models.JSONField(blank=True, null=True)
 

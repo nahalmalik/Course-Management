@@ -7,13 +7,12 @@ import {
   ResponsiveContainer,
   ReferenceDot,
   Legend,
-  AreaChart, Area,
   defs, linearGradient
 } from 'recharts';
 
 const EarningsChart = ({ zero = false }) => {
   const [chartData, setChartData] = useState([]);
-  const [chartType, setChartType] = useState('line'); // 'line' or 'bar'
+  const [chartType, setChartType] = useState('line');
 
   useEffect(() => {
     const storedEarnings = JSON.parse(localStorage.getItem('instructorEarnings'));
@@ -56,28 +55,29 @@ const EarningsChart = ({ zero = false }) => {
     a.click();
   };
 
+  const gradientDefs = (
+    <defs>
+      <linearGradient id="earnGradient" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stopColor="#208088" stopOpacity={0.8} />
+        <stop offset="100%" stopColor="#208088" stopOpacity={0.2} />
+      </linearGradient>
+    </defs>
+  );
+
   const renderChart = () => {
     const commonProps = {
       data: chartData,
       margin: { top: 10, right: 20, left: 0, bottom: 0 }
     };
 
-    const gradientDefs = (
-      <defs>
-        <linearGradient id="earnGradient" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#208088" stopOpacity={0.8} />
-          <stop offset="100%" stopColor="#208088" stopOpacity={0.2} />
-        </linearGradient>
-      </defs>
-    );
-
     if (chartType === 'bar') {
       return (
         <BarChart {...commonProps}>
+          {gradientDefs}
           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
           <XAxis dataKey="month" />
           <YAxis />
-          <Tooltip formatter={(value) => `$${value}`} />
+          <Tooltip formatter={value => `$${value}`} />
           <Legend />
           <Bar dataKey="earnings" fill="url(#earnGradient)" />
           {chartData.map((d, i) =>
@@ -88,21 +88,20 @@ const EarningsChart = ({ zero = false }) => {
                 y={d.earnings}
                 r={8}
                 fill="#ff9900"
-                stroke="none"
               />
             ) : null
           )}
-          {gradientDefs}
         </BarChart>
       );
     }
 
     return (
       <LineChart {...commonProps}>
+        {gradientDefs}
         <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
         <XAxis dataKey="month" />
         <YAxis />
-        <Tooltip formatter={(value) => `$${value}`} />
+        <Tooltip formatter={value => `$${value}`} />
         <Legend />
         <Line
           type="monotone"
@@ -111,7 +110,6 @@ const EarningsChart = ({ zero = false }) => {
           strokeWidth={3}
           dot={{ r: 5 }}
           activeDot={{ r: 7 }}
-          animationDuration={1000}
         />
         {chartData.map((d, i) =>
           d.month === currentMonth ? (
@@ -121,25 +119,61 @@ const EarningsChart = ({ zero = false }) => {
               y={d.earnings}
               r={8}
               fill="#ff9900"
-              stroke="none"
               isFront
             />
           ) : null
         )}
-        {gradientDefs}
       </LineChart>
     );
   };
 
+  // ✅ Inline Modern Styles
+  const containerStyle = {
+    background: '#fff',
+    padding: '20px',
+    borderRadius: '12px',
+    boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+    marginBottom: '30px'
+  };
+
+  const headerStyle = {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '16px'
+  };
+
+  const titleStyle = {
+    fontSize: '18px',
+    fontWeight: 'bold',
+    color: '#333'
+  };
+
+  const buttonGroup = {
+    display: 'flex',
+    gap: '10px'
+  };
+
+  const buttonStyle = {
+    padding: '8px 16px',
+    background: 'rgb(32,125,140)',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    fontSize: '14px',
+    fontWeight: '500'
+  };
+
   return (
-    <div className="chart-container">
-      <div className="chart-header">
-        <h3>Earnings Overview</h3>
-        <div className="chart-controls">
-          <button onClick={() => setChartType(chartType === 'line' ? 'bar' : 'line')}>
-            🔁 {chartType === 'line' ? 'Switch to Bar' : 'Switch to Line'}
+    <div style={containerStyle}>
+      <div style={headerStyle}>
+        <h3 style={titleStyle}>📈 Earnings Overview</h3>
+        <div style={buttonGroup}>
+          <button style={buttonStyle} onClick={() => setChartType(chartType === 'line' ? 'bar' : 'line')}>
+            {chartType === 'line' ? 'Switch to Bar' : 'Switch to Line'}
           </button>
-          <button onClick={handleExportCSV}>⬇️ Export CSV</button>
+          <button style={buttonStyle} onClick={handleExportCSV}>Export CSV</button>
         </div>
       </div>
 

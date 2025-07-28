@@ -20,25 +20,23 @@ const InstructorSettings = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   useEffect(() => {
-    const saved = localStorage.getItem("instructorProfile");
-    if (saved) {
-      setProfile(JSON.parse(saved));
-    } else {
-      const dummy = Object.values(instructorData).find(
-        (inst) => inst.email === user?.email || inst.name === user?.name
-      );
-      setProfile(
-        dummy || {
-          name: user?.name || "",
-          email: user?.email || "",
-          phone: "",
-          website: "",
-          bio: "",
-          image: "",
-        }
-      );
+  const fetchProfile = async () => {
+    if (!user || user.role !== 'instructor') return;
+    try {
+      const res = await fetch("http://localhost:8000/api/instructor/profile/", {
+        headers: { Authorization: `Bearer ${user.token}` },
+      });
+      if (!res.ok) throw new Error("Failed to fetch profile");
+      const data = await res.json();
+      setProfile(data);
+    } catch (err) {
+      console.error("Profile fetch error:", err);
     }
-  }, []);
+  };
+
+  fetchProfile();
+}, []);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -55,11 +53,30 @@ const InstructorSettings = () => {
     reader.readAsDataURL(file);
   };
 
-  const handleSave = () => {
-    localStorage.setItem("instructorProfile", JSON.stringify(profile));
+const handleSave = async () => {
+  try {
+    const formData = new FormData();
+    Object.entries(profile).forEach(([key, value]) => {
+      if (value) formData.append(key, value);
+    });
+
+    const res = await fetch("http://localhost:8000/api/instructor/profile/", {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${user.token}`,
+      },
+      body: formData,
+    });
+
+    if (!res.ok) throw new Error("Update failed");
     alert("✅ Profile updated successfully!");
     navigate("/instructor/profile");
-  };
+  } catch (err) {
+    console.error(err);
+    alert("❌ Failed to save profile.");
+  }
+};
+
 
   const handleChangePassword = () => {
     if (password.trim().length < 6) {

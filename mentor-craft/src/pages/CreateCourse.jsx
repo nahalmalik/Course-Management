@@ -146,7 +146,8 @@ formData.append('faqs', JSON.stringify(sampleFaqs));
       setToastVisible(true);
       setTimeout(() => {
         setToastVisible(false);
-        navigate('/instructor/mycourses');
+        navigate('/instructor/dashboard', { state: { courseCreated: true } });
+
       }, 2000);
     } catch (err) {
       console.error('❌ Course upload failed:', err);
@@ -339,45 +340,6 @@ formData.append('faqs', JSON.stringify(sampleFaqs));
         Your browser does not support the video tag.
       </video>
     )}
-  </div>
-</div>
-
-{/* SEO Tab */}
-<div className={`accordion-item ${activeAccordion === 'seo' ? 'active' : ''}`}>
-  <div className="accordion-title" onClick={() => toggleAccordion('seo')}>📈 SEO Settings</div>
-  <div className="accordion-content">
-    <div className="floating-input">
-      <input
-        type="text"
-        name="seo_title"
-        value={courseData.seo_title}
-        onChange={handleChange}
-        placeholder="Optimized course title"
-      />
-      <label>SEO Title</label>
-    </div>
-
-    <div className="floating-input">
-      <input
-        type="text"
-        name="seo_keywords"
-        value={courseData.seo_keywords}
-        onChange={handleChange}
-        placeholder="react, programming, web dev"
-      />
-      <label>SEO Keywords</label>
-    </div>
-
-    <div className="floating-input">
-      <textarea
-  name="seo_description"
-  value={courseData.seo_description}
-  onChange={handleChange}
-  placeholder="Write a short meta description for SEO"
-/>
-
-      <label>SEO Meta Description</label>
-    </div>
   </div>
 </div>
           </div> {/* End of .accordion */}
