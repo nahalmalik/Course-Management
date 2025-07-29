@@ -39,6 +39,8 @@ import InstructorPurchaseHistory from "./pages/InstructorPurchaseHistory";
 import GenerateCertificate from "./pages/GenerateCertificate";
 import InstructorProfile from "./pages/InstructorProfile";
 import InstructorSettings from "./pages/InstructorSettings";
+import QuizCreatePage from "./pages/QuizCreatePage";
+import AssignmentCreatePage from "./pages/AssignmentCreatePage"
 
 // Student Pages
 import StudentLayout from "./components/StudentLayout";
@@ -100,6 +102,8 @@ function App() {
                 <Route path="reviews"      element={<InstructorReviews />} />
                 <Route path="earning" element={<InstructorEarnings />} />
                 <Route path="quiz-attempts" element={<InstructorQuizAttempts />} />
+                <Route path="assignment-upload" element={<AssignmentCreatePage />} />
+                <Route path="quiz-create" element={<QuizCreatePage/>}/>
                 <Route path="assignment-attempts" element={<InstructorAssignmentAttempts />} />
                 <Route path="announcements" element={<InstructorAnnouncements />} />
                 <Route path="purchase-history" element={<InstructorPurchaseHistory />} />

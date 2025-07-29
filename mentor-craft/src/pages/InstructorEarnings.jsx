@@ -1,14 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { getCurrentUser } from '../contexts/authUtils';
-import { getCoursesByInstructor } from '../contexts/courseStorage';
-import { syncInstructorAnalytics, getInstructorAnalytics } from '../contexts/instructorAnalyticsUtils';
+import {
+  syncInstructorAnalytics,
+  getInstructorAnalyticsFromBackend,
+  syncStaticInstructorAnalytics,
+  getStaticInstructorAnalytics,
+} from '../contexts/instructorAnalyticsUtils';
+
+import { getCourses } from '../contexts/courseStorage';
+import courseData from '../components/courseData';
+
 import EarningsChart from '../components/charts/EarningsChart';
 import QuizPerformanceChart from '../components/charts/QuizPerformanceChart';
 import EnrollmentChart from '../components/charts/EnrollmentChart';
 import CourseComparison from '../components/charts/CourseComparison';
 import { Download } from 'lucide-react';
-import courseData from '../components/courseData';
-import { getCourses } from '../contexts/courseStorage';
 
 import '../styles/InstructorAnalytics.css';
 
@@ -17,34 +23,48 @@ const InstructorEarnings = () => {
   const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState('All');
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
- useEffect(() => {
-  const fetchData = async () => {
-    const current = getCurrentUser();
-    setUser(current);
-
-    if (current) {
-      await syncInstructorAnalytics(); // Auto-generate missing analytics
+  useEffect(() => {
+    const fetchData = async () => {
+      const currentUser = getCurrentUser();
+      setUser(currentUser);
+      if (!currentUser) return;
 
       let dynamicCourses = [];
-try {
-  const fetched = await getCourses();
-  dynamicCourses = fetched.filter((c) => c.instructorEmail === current.email);
-} catch (err) {
-  console.error("❌ Failed to fetch dynamic courses:", err);
-}
+      let staticCourses = [];
 
-const staticCourses = courseData.filter((c) => c.instructorEmail === current.email);
-const allCourses = [...dynamicCourses, ...staticCourses];
-setCourses(allCourses);
+      try {
+        const fetched = await getCourses();
+        dynamicCourses = fetched.filter(c => c.instructor_email === currentUser.email);
 
-      const data = getInstructorAnalytics(current.email);
-      setAnalytics(data);
-    }
-  };
+      } catch (err) {
+        console.error('❌ Failed to fetch backend courses:', err);
+      }
 
-  fetchData();
-}, []);
+      staticCourses = courseData.filter(
+        c => c.instructorEmail === currentUser.email
+      );
+
+      const allCourses = [...dynamicCourses, ...staticCourses];
+      setCourses(allCourses);
+
+      let analyticsData = [];
+
+      if (staticCourses.length > 0) {
+        await syncStaticInstructorAnalytics();
+        analyticsData = getStaticInstructorAnalytics(currentUser.email);
+      } else if (dynamicCourses.length > 0) {
+        await syncInstructorAnalytics();
+        analyticsData = await getInstructorAnalyticsFromBackend();
+      }
+
+      setAnalytics(analyticsData);
+      setLoading(false);
+    };
+
+    fetchData();
+  }, []);
 
   const handleCourseChange = (e) => {
     setSelectedCourse(e.target.value);
@@ -55,23 +75,28 @@ setCourses(allCourses);
       ? analytics
       : analytics.filter((d) => d.course === selectedCourse);
 
-  if (!user) {
-    return <div className="analytics-container">Loading user data...</div>;
+  // DEBUG logs
+  console.log('👤 User:', user?.email);
+  console.log('📘 Courses:', courses);
+  console.log('📊 Analytics sample:', analytics?.[0]);
+
+  if (loading || !user) {
+    return <div className="analytics-container">Loading instructor data...</div>;
   }
 
   if (courses.length === 0) {
     return (
       <div className="analytics-welcome">
-        <h2>Welcome to Instructor Analytics</h2>
+        <h2>👋 Welcome to Instructor Analytics</h2>
         <p>Once you create a course, you’ll be able to track your:</p>
         <ul>
-          <li>📊 Earnings (Line + Bar graphs)</li>
-          <li>🧮 Student Enrollments</li>
+          <li>📊 Earnings</li>
+          <li>🧮 Enrollments</li>
           <li>📝 Quiz Performance</li>
           <li>📈 Course Comparisons</li>
         </ul>
         <a href="/instructor/create-course" className="create-btn">
-          Create Your First Course
+          ➕ Create Your First Course
         </a>
       </div>
     );
@@ -81,10 +106,14 @@ setCourses(allCourses);
     <div className="analytics-container">
       <div className="analytics-header">
         <h2>📊 Instructor Analytics</h2>
-        <select className="course-select" value={selectedCourse} onChange={handleCourseChange}>
+        <select
+          className="course-select"
+          value={selectedCourse}
+          onChange={handleCourseChange}
+        >
           <option value="All">All Courses</option>
-          {courses.map((c) => (
-            <option key={c.id} value={c.title}>
+          {courses.map((c, i) => (
+            <option key={i} value={c.title}>
               {c.title}
             </option>
           ))}

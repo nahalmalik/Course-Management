@@ -1,5 +1,6 @@
 import staticCourseData from '../components/courseData';
 import courseData from '../components/courseData';
+import { getAccessToken } from './authUtils';
 // =======================
 // --- Core Course Storage
 // =======================
@@ -23,14 +24,22 @@ const saveCoursesToStorage = (courses) => {
 
 export async function getCourses() {
   try {
-    const res = await fetch("http://localhost:8000/api/courses/");
-    const backendCourses = await res.json();
+    const token = getAccessToken(); // ✅ get token
 
-    if (!Array.isArray(backendCourses)) throw new Error("Invalid backend response");
+    const res = await fetch("http://localhost:8000/api/courses/", {
+      headers: {
+        Authorization: `Bearer ${token}`, // ✅ pass token
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!res.ok) throw new Error("Failed to fetch courses from backend");
+
+    const backendCourses = await res.json();
 
     console.log("✅ Fetched backend courses:", backendCourses);
 
-    // ✅ Combine backend + static
+    // Combine backend + static
     const combinedCourses = [...backendCourses, ...staticCourseData];
 
     // Optionally cache in localStorage
@@ -223,4 +232,40 @@ export async function getAllCourses() {
 export async function getAllCoursesByInstructor(email) {
   const all = await getAllCourses();
   return all.filter(c => c.instructorEmail?.toLowerCase() === email.toLowerCase());
+}
+export async function uploadLecture(courseId, lecture) {
+  const token = getAccessToken();
+  const formData = { ...lecture, course: courseId };
+
+  const res = await fetch("http://localhost:8000/api/courses/lectures/", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(formData),
+  });
+
+  if (!res.ok) throw new Error("Failed to upload lecture");
+  return await res.json();
+}
+
+export async function uploadNote(courseId, note) {
+  const token = getAccessToken();
+  const formData = new FormData();
+  formData.append("course", courseId);
+  formData.append("title", note.title);
+  formData.append("description", note.description);
+  formData.append("file", note.file);
+
+  const res = await fetch("http://localhost:8000/api/courses/notes/", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData,
+  });
+
+  if (!res.ok) throw new Error("Failed to upload note");
+  return await res.json();
 }

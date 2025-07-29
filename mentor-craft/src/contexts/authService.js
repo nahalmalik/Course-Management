@@ -17,7 +17,7 @@ export const refreshAccessToken = async () => {
   if (!refresh) return null;
 
   try {
-    const response = await fetch("http://localhost:8000/api/token/refresh/", {
+    const response = await fetch("http://localhost:8000/api/users/token/refresh/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

@@ -69,10 +69,10 @@ export const logoutUser = () => {
   localStorage.removeItem('studentEmail');
 };
 
-// ✅ Get current logged-in user from localStorage
-// ✅ FIXED getCurrentUser function
+// ✅ Get current logged-in user 
+
 export const getCurrentUser = () => {
-  const user = localStorage.getItem('user'); // was 'currentUser'
+  const user = localStorage.getItem('user'); 
   try {
     return user ? JSON.parse(user) : null;
   } catch (e) {
@@ -116,3 +116,4 @@ export const refreshAccessToken = async () => {
     throw err;
   }
 };
+

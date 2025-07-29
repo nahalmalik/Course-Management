@@ -1,49 +1,44 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import instructorData from "../components/instructorData";
-import { getCurrentUser } from "../contexts/authUtils";
+import { getCurrentUser, getAccessToken } from "../contexts/authUtils";
 
 const InstructorProfile = () => {
-  const [profile, setProfile] = useState({
-    name: '',
-    email: '',
-    bio: '',
-    website: '',
-    phone: '',
-    image: '',
-  });
-
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-
-useEffect(() => {
   const user = getCurrentUser();
-  if (!user) return;
+  const token = getAccessToken();
 
-  // Try to find instructor from dummy data
-  const matchedProfile = Object.values(instructorData).find(
-    (inst) => inst.email === user.email || inst.name === user.name
-  );
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!user || user.role !== 'instructor') return;
+      try {
+        const res = await fetch("http://localhost:8000/api/instructor/profile/", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
 
-  if (matchedProfile) {
-    setProfile(matchedProfile);
-  } else {
-    // Local user (not in dummy list) — check if they edited their profile
-    const saved = localStorage.getItem("instructorProfile");
-    if (saved) {
-      setProfile(JSON.parse(saved));
-    } else {
-      setProfile({
-        name: user.name || "",
-        email: user.email || "",
-        phone: "",
-        bio: "",
-        image: "",
-      });
-    }
+        if (!res.ok) throw new Error("Failed to fetch instructor profile");
+        const data = await res.json();
+        setProfile(data);
+        setLoading(false);
+      } catch (err) {
+        console.error("Fetch error:", err);
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, [token]);
+
+  if (loading) {
+    return <div style={styles.container}><p>Loading...</p></div>;
   }
-}, []);
 
-
+  if (!profile) {
+    return <div style={styles.container}><p>No profile data found.</p></div>;
+  }
 
   return (
     <div style={styles.container}>
@@ -77,6 +72,10 @@ useEffect(() => {
           <div style={styles.field}>
             <label style={styles.label}>Phone:</label>
             <div style={styles.readonly}>{profile.phone}</div>
+          </div>
+          <div style={styles.field}>
+            <label style={styles.label}>Website:</label>
+            <div style={styles.readonly}>{profile.website}</div>
           </div>
           <div style={styles.field}>
             <label style={styles.label}>Bio:</label>
@@ -173,17 +172,6 @@ const styles = {
     border: '1px solid #ccc',
     color: '#444',
     fontSize: '14px',
-  },
-  link: {
-    display: 'inline-block',
-    color: '#20818f',
-    fontWeight: '500',
-    textDecoration: 'none',
-    backgroundColor: '#eef7f8',
-    padding: '10px',
-    borderRadius: '6px',
-    fontSize: '14px',
-    border: '1px solid #ccc',
   },
 };
 

@@ -1,79 +1,91 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getCurrentUser, logoutUser } from "../contexts/authUtils";
+import { getCurrentUser, logoutUser, getAccessToken } from "../contexts/authUtils";
 import instructorData from "../components/instructorData";
 
 const InstructorSettings = () => {
   const navigate = useNavigate();
   const user = getCurrentUser();
+  const token = getAccessToken();
 
   const [profile, setProfile] = useState({
-    name: "",
-    email: "",
     phone: "",
     website: "",
     bio: "",
-    image: "",
+    image: null,
+    name: "",
+    email: ""
   });
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
   useEffect(() => {
-  const fetchProfile = async () => {
-    if (!user || user.role !== 'instructor') return;
-    try {
-      const res = await fetch("http://localhost:8000/api/instructor/profile/", {
-        headers: { Authorization: `Bearer ${user.token}` },
-      });
-      if (!res.ok) throw new Error("Failed to fetch profile");
-      const data = await res.json();
-      setProfile(data);
-    } catch (err) {
-      console.error("Profile fetch error:", err);
-    }
-  };
+    const fetchProfile = async () => {
+      if (!user || user.role !== 'instructor') return;
+      try {
+        const res = await fetch("http://localhost:8000/api/instructor/profile/", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        if (!res.ok) throw new Error("Failed to fetch profile");
+        const data = await res.json();
+        setProfile(data);
+      } catch (err) {
+        console.error("Profile fetch error:", err);
+      }
+    };
 
-  fetchProfile();
-}, []);
-
+    fetchProfile();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProfile((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setProfile((prev) => ({ ...prev, image: reader.result }));
-    };
-    reader.readAsDataURL(file);
-  };
+const handleImageChange = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    setProfile((prev) => ({ ...prev, image: file }));
+  }
+};
 
 const handleSave = async () => {
   try {
     const formData = new FormData();
-    Object.entries(profile).forEach(([key, value]) => {
-      if (value) formData.append(key, value);
-    });
+
+    // Only send writable fields
+    if (profile.phone) formData.append("phone", profile.phone);
+    if (profile.website) formData.append("website", profile.website);
+    if (profile.bio) formData.append("bio", profile.bio);
+
+    // Only send image if it's a File object (not a base64 string)
+    if (profile.image && typeof profile.image !== "string") {
+      formData.append("image", profile.image);
+    }
 
     const res = await fetch("http://localhost:8000/api/instructor/profile/", {
       method: "PUT",
       headers: {
-        Authorization: `Bearer ${user.token}`,
+        Authorization: `Bearer ${token}`,
       },
       body: formData,
     });
 
-    if (!res.ok) throw new Error("Update failed");
+    const resData = await res.json();
+    if (!res.ok) {
+      console.error("Backend error:", resData);
+      alert("❌ Failed to save profile. Check console for details.");
+      return;
+    }
+
     alert("✅ Profile updated successfully!");
     navigate("/instructor/profile");
   } catch (err) {
-    console.error(err);
-    alert("❌ Failed to save profile.");
+    console.error("Network or logic error:", err);
+    alert("❌ Error saving profile.");
   }
 };
 
@@ -94,7 +106,6 @@ const handleSave = async () => {
 
   const handleDeleteAccount = () => {
     if (window.confirm("⚠️ Are you sure you want to delete your account?")) {
-      localStorage.removeItem("instructorProfile");
       logoutUser();
       navigate("/");
     }
@@ -105,19 +116,24 @@ const handleSave = async () => {
       (inst) => inst.email === user?.email || inst.name === user?.name
     );
     if (fallback) {
-      setProfile(fallback);
-      localStorage.setItem("instructorProfile", JSON.stringify(fallback));
+      setProfile({
+        phone: fallback.phone || "",
+        website: fallback.website || "",
+        bio: fallback.bio || "",
+        image: fallback.image || "",
+        name: fallback.name || "",
+        email: fallback.email || ""
+      });
       alert("♻️ Default profile restored!");
     } else {
       setProfile({
-        name: "",
-        email: user?.email || "",
         phone: "",
         website: "",
         bio: "",
-        image: "",
+        image: null,
+        name: user?.name || "",
+        email: user?.email || ""
       });
-      localStorage.removeItem("instructorProfile");
       alert("🧹 Profile reset to blank!");
     }
   };
@@ -128,7 +144,7 @@ const handleSave = async () => {
 
       <div style={styles.form}>
         <div style={styles.imageUploadBox}>
-          {profile.image && (
+          {profile.image && typeof profile.image === "string" && (
             <img
               src={profile.image}
               alt="Profile"
@@ -140,12 +156,12 @@ const handleSave = async () => {
 
         <div style={styles.field}>
           <label style={styles.label}>Full Name:</label>
-          <input name="name" value={profile.name} onChange={handleChange} style={styles.input} />
+          <input value={profile.name || ""} disabled style={styles.input} />
         </div>
 
         <div style={styles.field}>
           <label style={styles.label}>Email:</label>
-          <input name="email" value={profile.email} onChange={handleChange} style={styles.input} disabled />
+          <input value={profile.email || ""} disabled style={styles.input} />
         </div>
 
         <div style={styles.field}>
@@ -155,7 +171,7 @@ const handleSave = async () => {
 
         <div style={styles.field}>
           <label style={styles.label}>Website:</label>
-          <input name="website" value={profile.website} onChange={handleChange} style={styles.input} />
+          <input name="website" placeholder="http://example.com" value={profile.website} onChange={handleChange} style={styles.input} />
         </div>
 
         <div style={styles.field}>
