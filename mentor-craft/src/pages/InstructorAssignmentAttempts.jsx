@@ -1,131 +1,86 @@
 import React, { useEffect, useState } from 'react';
-import { getCurrentUser } from '../contexts/authUtils';
-import {
-  getAssignmentAttempts,
-  updateAssignmentGrade,
-  getUnseenInstructorAssignments,
-  markAssignmentsSeenByInstructor,
-  generateSampleAssignmentAttemptsForAllCourses
-} from '../contexts/assignmentUtils';
+import axios from 'axios';
+import { getAccessToken } from '../contexts/authUtils';
 import toast from 'react-hot-toast';
-import courseData from '../components/courseData';
 
 const InstructorAssignments = () => {
-  const [attempts, setAttempts] = useState([]);
-  const [instructorEmail, setInstructorEmail] = useState(null);
-  const [selectedSubmission, setSelectedSubmission] = useState(null);
+  const [assignments, setAssignments] = useState([]);
+  const [submissions, setSubmissions] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const token = getAccessToken();
 
   useEffect(() => {
-    generateSampleAssignmentAttemptsForAllCourses(courseData);
-
-    const user = getCurrentUser();
-    if (user) {
-      setInstructorEmail(user.email);
-      const data = getAssignmentAttempts().filter(
-        a => a.instructorEmail === user.email
-      );
-      setAttempts(data);
-
-      const unseen = getUnseenInstructorAssignments(user.email);
-      if (unseen.length > 0) {
-        toast.success(`📩 ${unseen.length} new assignment(s) submitted!`);
-        markAssignmentsSeenByInstructor(user.email);
-      }
-    }
+    fetchData();
   }, []);
 
-  const handleGradeChange = (id, grade) => {
-    const updated = attempts.map(attempt =>
-      attempt.id === id ? { ...attempt, grade } : attempt
-    );
-    setAttempts(updated);
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const assignmentRes = await axios.get('http://localhost:8000/api/instructor/assignments/', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const submissionRes = await axios.get('http://localhost:8000/api/instructor/assignment-submissions/', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      setAssignments(assignmentRes.data);
+      setSubmissions(submissionRes.data);
+    } catch (err) {
+      console.error(err);
+      toast.error('Error fetching data.');
+    }
+    setLoading(false);
   };
 
-  const handleSubmitGrade = (id) => {
-    const attempt = attempts.find(a => a.id === id);
-    if (!attempt || !attempt.grade) {
-      toast.error("Please assign a grade before submitting.");
-      return;
-    }
-    updateAssignmentGrade(id, attempt.grade);
-    toast.success("Assignment graded and sent to student.");
-    setAttempts(getAssignmentAttempts().filter(a => a.instructorEmail === instructorEmail));
+  const renderSubmissionTable = (assignmentId) => {
+    const related = submissions.filter(sub => sub.assignment === assignmentId);
+    if (related.length === 0) return <p style={styles.empty}>No submissions yet.</p>;
+
+    return (
+      <table style={styles.table}>
+        <thead>
+          <tr>
+            <th style={styles.th}>Student Name</th>
+            <th style={styles.th}>Email</th>
+            <th style={styles.th}>File</th>
+          </tr>
+        </thead>
+        <tbody>
+          {related.map(sub => (
+            <tr key={sub.id} style={styles.row}>
+              <td style={styles.td}>{sub.student_name}</td>
+              <td style={styles.td}>{sub.student_email}</td>
+              <td style={styles.td}>
+                <a href={sub.submitted_file_url} target="_blank" rel="noreferrer" style={styles.fileLink}>
+                  View
+                </a>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
   };
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.heading}>📚 Student Assignment Submissions</h2>
-      {attempts.length === 0 ? (
-        <p style={styles.empty}>No assignment submissions yet.</p>
+      <h2 style={styles.heading}>📘 Instructor Assignments & Submissions</h2>
+      {loading ? (
+        <p>Loading...</p>
       ) : (
-        <table style={styles.table}>
-          <thead>
-            <tr>
-              <th style={styles.th}>Student</th>
-              <th style={styles.th}>Course</th>
-              <th style={styles.th}>Assignment</th>
-              <th style={styles.th}>Status</th>
-              <th style={styles.th}>Submission</th>
-              <th style={styles.th}>Grade</th>
-              <th style={styles.th}>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {attempts.map(a => (
-              <tr key={a.id} style={styles.row}>
-                <td style={styles.td}>{a.studentName}</td>
-                <td style={styles.td}>{a.course}</td>
-                <td style={styles.td}>{a.assignmentTitle}</td>
-                <td style={styles.td}>
-                  <span style={{ ...styles.badge, background: a.status === 'graded' ? '#4caf50' : '#ff9800' }}>
-                    {a.status}
-                  </span>
-                </td>
-                <td style={styles.td}>
-                  <button
-                    style={styles.linkButton}
-                    onClick={() => setSelectedSubmission(a)}
-                  >
-                    See Submission
-                  </button>
-                </td>
-                <td style={styles.td}>
-                  <input
-                    type="text"
-                    value={a.grade || ''}
-                    onChange={(e) => handleGradeChange(a.id, e.target.value)}
-                    placeholder="A / B / 90%..."
-                    style={styles.input}
-                  />
-                </td>
-                <td style={styles.td}>
-                  <button onClick={() => handleSubmitGrade(a.id)} style={styles.button}>
-                    Submit
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-
-      {/* Modal for submission */}
-      {selectedSubmission && (
-        <div style={styles.modalOverlay} onClick={() => setSelectedSubmission(null)}>
-          <div style={styles.modal} onClick={e => e.stopPropagation()}>
-            <h3 style={{ marginBottom: 10 }}>📄 Files Submitted by {selectedSubmission.studentName}</h3>
-            <ul>
-              {selectedSubmission.files?.map((file, i) => (
-                <li key={i}>
-                  <a href={file.url} target="_blank" rel="noreferrer" style={styles.fileLink}>
-                    {file.name}
-                  </a>
-                </li>
-              ))}
-            </ul>
-            <button style={styles.closeBtn} onClick={() => setSelectedSubmission(null)}>Close</button>
+        assignments.map((assignment) => (
+          <div key={assignment.id} style={styles.assignmentCard}>
+            <h3 style={styles.assignmentTitle}>{assignment.title}</h3>
+            <p>{assignment.description}</p>
+            <p><strong>Due:</strong> {assignment.due_date}</p>
+            <div style={{ marginTop: '20px' }}>
+              <h4>🧑‍🎓 Submissions</h4>
+              {renderSubmissionTable(assignment.id)}
+            </div>
           </div>
-        </div>
+        ))
       )}
     </div>
   );
@@ -142,64 +97,33 @@ const styles = {
     fontFamily: "'Segoe UI', sans-serif",
   },
   heading: {
-    fontSize: '30px',
+    fontSize: '26px',
     fontWeight: '600',
-    marginBottom: '25px',
+    marginBottom: '30px',
     color: '#20818f',
-    borderBottom: '2px solid #eee',
-    paddingBottom: '10px',
+  },
+  assignmentCard: {
+    padding: '20px',
+    marginBottom: '40px',
+    background: '#f9f9f9',
+    borderRadius: '12px',
+    boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+  },
+  assignmentTitle: {
+    color: '#1e3a8a',
+    marginBottom: '10px',
   },
   table: {
     width: '100%',
     borderCollapse: 'collapse',
-    background: '#fefefe',
+    background: '#fff',
     borderRadius: '10px',
     overflow: 'hidden',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
+    boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+    marginTop: '10px'
   },
   row: {
     borderBottom: '1px solid #f0f0f0'
-  },
-  badge: {
-    padding: '6px 14px',
-    borderRadius: '25px',
-    color: '#fff',
-    fontSize: '13px',
-    fontWeight: '500',
-    display: 'inline-block',
-    textTransform: 'capitalize'
-  },
-  input: {
-    padding: '7px 12px',
-    borderRadius: '8px',
-    border: '1px solid #ccc',
-    width: '100px',
-    outline: 'none',
-    fontSize: '14px',
-  },
-  button: {
-    background: '#20818f',
-    color: '#fff',
-    padding: '8px 16px',
-    border: 'none',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    transition: 'all 0.3s ease',
-    fontSize: '14px',
-  },
-  linkButton: {
-    background: '#eee',
-    padding: '6px 12px',
-    borderRadius: '6px',
-    border: '1px solid #ccc',
-    cursor: 'pointer',
-    fontSize: '13px'
-  },
-  empty: {
-    padding: '30px',
-    textAlign: 'center',
-    color: '#666',
-    fontStyle: 'italic'
   },
   th: {
     backgroundColor: '#20818f',
@@ -213,37 +137,15 @@ const styles = {
     fontSize: '14px',
     color: '#333',
   },
-  modalOverlay: {
-    position: 'fixed',
-    top: 0, left: 0, right: 0, bottom: 0,
-    background: 'rgba(0,0,0,0.5)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 1000
-  },
-  modal: {
-    background: '#fff',
-    padding: '25px',
-    borderRadius: '12px',
-    width: '400px',
-    maxHeight: '80vh',
-    overflowY: 'auto',
-    boxShadow: '0 8px 30px rgba(0,0,0,0.2)'
-  },
   fileLink: {
     color: '#20818f',
     fontSize: '14px',
-    textDecoration: 'underline'
+    textDecoration: 'underline',
   },
-  closeBtn: {
-    marginTop: '15px',
-    padding: '8px 14px',
-    background: '#20818f',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer'
+  empty: {
+    padding: '10px',
+    fontStyle: 'italic',
+    color: '#666',
   }
 };
 

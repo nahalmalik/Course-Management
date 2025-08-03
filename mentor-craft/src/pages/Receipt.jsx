@@ -1,13 +1,13 @@
-// src/pages/Receipt.jsx
-import React, { useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
-import { getEnrollmentById } from "../components/enrollmentUtils";
+import { fetchOrderReceipt } from "../components/enrollmentUtils";
 import styled from "styled-components";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { QRCodeCanvas as QRCode } from "qrcode.react";
 import logo from "../assets/logo.png";
 
+// Styled Components (keep all your existing styles below unchanged)
 const Wrapper = styled.div`
   max-width: 750px;
   margin: 50px auto;
@@ -178,10 +178,26 @@ const ThankYou = styled.p`
   font-weight: 500;
 `;
 
+// ✅ Receipt Component
 const Receipt = () => {
   const { orderId } = useParams();
-  const course = getEnrollmentById(orderId);
   const receiptRef = useRef();
+  const [receipt, setReceipt] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadReceipt = async () => {
+      try {
+        const data = await fetchOrderReceipt(orderId);
+        setReceipt(data);
+      } catch (err) {
+        console.error("Failed to load receipt", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadReceipt();
+  }, [orderId]);
 
   const handleDownload = async () => {
     const element = receiptRef.current;
@@ -193,35 +209,16 @@ const Receipt = () => {
     const height = (canvas.height * width) / canvas.width;
 
     pdf.addImage(imgData, "PNG", 0, 0, width, height);
-
-    const cleanTitle = course.title.replace(/\s+/g, "-").toLowerCase();
+    const cleanTitle = receipt?.items?.[0]?.course_title?.replace(/\s+/g, "-").toLowerCase() || "receipt";
     const filename = `mentorcraft-receipt-${cleanTitle}-${orderId}.pdf`;
     pdf.save(filename);
   };
 
-  const generateReceiptNumber = (orderId) => {
-    const [id, timestamp] = orderId.split("-");
-    const date = new Date(parseInt(timestamp));
-    const yyyymmdd = date.toISOString().split("T")[0].replace(/-/g, "");
-    return `#RCPT-${yyyymmdd}-${id.padStart(4, "0")}`;
-  };
-
-  if (!course) {
-    return (
-      <Wrapper>
-        <Heading>Receipt Not Found</Heading>
-        <p style={{ color: "#666" }}>
-          Sorry, we couldn’t locate a receipt for this order.
-        </p>
-        <BackLink to="/student-dashboard">← Back to Dashboard</BackLink>
-      </Wrapper>
-    );
-  }
-
   const formatPrice = (price) =>
-    isNaN(price) || price.toLowerCase() === "free"
-      ? "Free"
-      : `$${parseFloat(price).toFixed(2)}`;
+    isNaN(price) ? "Free" : `$${parseFloat(price).toFixed(2)}`;
+
+  if (loading) return <div>Loading receipt...</div>;
+  if (!receipt) return <Wrapper><Heading>Receipt Not Found</Heading></Wrapper>;
 
   return (
     <Wrapper ref={receiptRef}>
@@ -238,36 +235,32 @@ const Receipt = () => {
 
       <ReceiptRow>
         <Label>Receipt #:</Label>
-        <Value>{generateReceiptNumber(course.orderId)}</Value>
-      </ReceiptRow>
-      <ReceiptRow>
-        <Label>Order ID:</Label>
-        <Value>{course.orderId}</Value>
-      </ReceiptRow>
-      <ReceiptRow>
-        <Label>Course:</Label>
-        <Value>{course.title}</Value>
-      </ReceiptRow>
-      <ReceiptRow>
-        <Label>Instructor:</Label>
-        <Value>{course.instructor}</Value>
+        <Value>{receipt.order_id}</Value>
       </ReceiptRow>
       <ReceiptRow>
         <Label>Student:</Label>
-        <Value>{course.student}</Value>
+        <Value>{receipt.full_name}</Value>
       </ReceiptRow>
       <ReceiptRow>
         <Label>Email:</Label>
-        <Value>{course.email}</Value>
+        <Value>{receipt.email}</Value>
       </ReceiptRow>
       <ReceiptRow>
-        <Label>Price:</Label>
-        <Value>{formatPrice(course.price)}</Value>
+        <Label>Total Paid:</Label>
+        <Value>{formatPrice(receipt.total_amount)}</Value>
       </ReceiptRow>
       <ReceiptRow>
-        <Label>Date:</Label>
-        <Value>{new Date(course.enrolledAt).toLocaleString()}</Value>
+        <Label>Payment Date:</Label>
+        <Value>{new Date(receipt.created_at).toLocaleString()}</Value>
       </ReceiptRow>
+
+      {/* ✅ Show all purchased courses */}
+      {receipt.items.map((item, idx) => (
+        <ReceiptRow key={idx}>
+          <Label>Course:</Label>
+          <Value>{item.course_title} (Instructor: {item.instructor})</Value>
+        </ReceiptRow>
+      ))}
 
       <FooterSection>
         <div>
@@ -279,7 +272,7 @@ const Receipt = () => {
         </div>
 
         <QRBox>
-          <QRCode value={course.orderId} size={64} />
+          <QRCode value={receipt.order_id} size={64} />
           <QRNote>Scan to verify</QRNote>
         </QRBox>
       </FooterSection>

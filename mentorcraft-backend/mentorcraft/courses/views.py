@@ -1,6 +1,6 @@
 from rest_framework import generics,viewsets,permissions
 from .models import Course,Assignment,Note,Lecture,Quiz
-from .serializers import CourseSerializer,NoteSerializer,AssignmentSerializer,QuizSerializer,LectureSerializer
+from .serializers import CourseSerializer,NoteSerializer,AssignmentSerializer,QuizSerializer,LectureSerializer,QuizCreateSerializer
 from rest_framework.permissions import IsAuthenticated
 
 class CourseListCreateView(generics.ListCreateAPIView):
@@ -53,5 +53,13 @@ class LectureViewSet(viewsets.ModelViewSet):
 
 class QuizViewSet(viewsets.ModelViewSet):
     queryset = Quiz.objects.all()
-    serializer_class = QuizSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_serializer_class(self):
+        if self.action in ['list', 'retrieve']:
+            return QuizSerializer  # Student-friendly
+        return QuizCreateSerializer  # Instructor-facing (write)
+
+    def get_serializer_context(self):
+        return {'request': self.request}
+

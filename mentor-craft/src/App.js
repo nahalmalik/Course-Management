@@ -47,10 +47,13 @@ import StudentLayout from "./components/StudentLayout";
 import StudentOverview from "./pages/studentDashboard/StudentOverview";
 import StudentProfile from "./pages/studentDashboard/StudentProfile";
 import StudentCourses from "./pages/studentDashboard/StudentCourses";
-import StudentWishlist from "./pages/studentDashboard/Wishlist";
 import StudentEnrollmentHistory from "./pages/studentDashboard/StudentEnrollmentHistory";
 import StudentQuizResults from "./pages/StudentQuizResults";
 import StudentSettings from "./pages/studentDashboard/StudentSettings";
+import StudentReviewPage from "./pages/studentDashboard/StudentReviewPage";
+import StudentAssignmentPage from "./pages/studentDashboard/StudentAssignmentPage";
+import StudentQuizPage from "./pages/studentDashboard/StudentQuizPage";
+import StudentDiscussions from "./pages/studentDashboard/StudentDiscussions";
 
 // Protected Route
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -78,6 +81,7 @@ function App() {
               { path: "/cart", element: <Cart /> },
               { path: "/checkout", element: <Checkout /> },
               { path: "/receipt/:orderId", element: <Receipt /> },
+              
             ].map(({ path, element }) => (
               <Route
                 key={path}
@@ -116,19 +120,22 @@ function App() {
             {/* ✅ Student Protected Routes */}
             <Route element={<ProtectedRoute allowedRole="student" />}>
               <Route path="/student" element={<StudentLayout />}>
-                <Route path="overview" element={<StudentOverview />} />
+              <Route path="overview" element={<StudentOverview />} />
                 <Route path="profile" element={<StudentProfile />} />
+                <Route path="reviews" element={<StudentReviewPage/>}/>
                 <Route path="courses" element={<StudentCourses />} />
-                <Route path="wishlist" element={<StudentWishlist />} />
                 <Route path="enrollment-history" element={<StudentEnrollmentHistory />} />
                 <Route path="quiz-results" element={<StudentQuizResults />} />
                 <Route path="settings" element={<StudentSettings />} />
+                <Route path="assignment-submit" element={<StudentAssignmentPage/>}/>
+                <Route path="quizzes" element={<StudentQuizPage/>}/>
+                <Route path="discussion" element={<StudentDiscussions/>}/>
               </Route>
             </Route>
 
             {/* ✅ Shortcuts */}
             <Route path="/instructor-dashboard" element={<Navigate to="/instructor/dashboard" replace />} />
-            <Route path="/student-dashboard" element={<Navigate to="/student/overview" replace />} />
+            <Route path="/student-overview" element={<Navigate to="/student/overview" replace />} />
 
           </Routes>
         </AuthProvider>

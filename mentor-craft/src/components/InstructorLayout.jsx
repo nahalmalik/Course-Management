@@ -97,6 +97,8 @@ const InstructorLayout = () => {
                     <hr style={styles.hrLight} />
                     <li style={styles.li}><Link to="/instructor/purchase-history" style={isActive('/instructor/purchase-history') ? styles.activeLink : styles.link}>Purchase History</Link></li>
                     <hr style={styles.hrLight} />
+                    <li style={styles.li}><Link to="/instructor/announcements" style={isActive('/instructor/announcements') ? styles.activeLink : styles.link}>Announcements</Link></li>
+                    <hr style={styles.hrLight} />
                     <li style={styles.li}><Link to="/instructor/generate-certificate" style={isActive('/instructor/generate-certificate') ? styles.activeLink : styles.link}>Generate Certificate</Link></li>
                   </motion.ul>
                 )}

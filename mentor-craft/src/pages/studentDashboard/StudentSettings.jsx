@@ -1,41 +1,40 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCurrentUser, logoutUser } from "../../contexts/authUtils";
-import studentData from "../../contexts/studentData"; // Adjust path as needed
 
 const StudentSettings = () => {
   const navigate = useNavigate();
   const user = getCurrentUser();
+  const token = localStorage.getItem("accessToken");
 
   const [profile, setProfile] = useState({
     name: "",
     email: "",
     phone: "",
     bio: "",
-    image: "",
+    image: null,
   });
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  // ✅ Fetch profile from backend
   useEffect(() => {
-    const saved = localStorage.getItem("studentProfile");
-    if (saved) {
-      setProfile(JSON.parse(saved));
-    } else {
-      const dummy = studentData.find(
-        (std) => std.email === user?.email || std.name === user?.name
-      );
-      setProfile(
-        dummy || {
-          name: user?.name || "",
-          email: user?.email || "",
-          phone: "",
-          bio: "",
-          image: "",
-        }
-      );
-    }
+    const fetchProfile = async () => {
+      try {
+        const res = await fetch("http://localhost:8000/api/student/profile/", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await res.json();
+        setProfile(data);
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      }
+    };
+
+    fetchProfile();
   }, []);
 
   const handleChange = (e) => {
@@ -46,17 +45,36 @@ const StudentSettings = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setProfile((prev) => ({ ...prev, image: reader.result }));
-    };
-    reader.readAsDataURL(file);
+    setProfile((prev) => ({ ...prev, image: file }));
   };
 
-  const handleSave = () => {
-    localStorage.setItem("studentProfile", JSON.stringify(profile));
-    alert("✅ Profile updated successfully!");
-    navigate("/student/profile");
+  // ✅ Save to backend (multipart for image)
+  const handleSave = async () => {
+    const formData = new FormData();
+    formData.append("phone", profile.phone);
+    formData.append("bio", profile.bio);
+    if (profile.image instanceof File) {
+      formData.append("image", profile.image);
+    }
+
+    try {
+      const res = await fetch("http://localhost:8000/api/student/profile/", {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (res.ok) {
+        alert("✅ Profile updated successfully!");
+        navigate("/student/profile");
+      } else {
+        alert("❌ Failed to update profile.");
+      }
+    } catch (error) {
+      console.error("Save error:", error);
+    }
   };
 
   const handleChangePassword = () => {
@@ -75,30 +93,8 @@ const StudentSettings = () => {
 
   const handleDeleteAccount = () => {
     if (window.confirm("⚠️ Are you sure you want to delete your account?")) {
-      localStorage.removeItem("studentProfile");
       logoutUser();
       navigate("/");
-    }
-  };
-
-  const handleRestoreDefault = () => {
-    const fallback = studentData.find(
-      (std) => std.email === user?.email || std.name === user?.name
-    );
-    if (fallback) {
-      setProfile(fallback);
-      localStorage.setItem("studentProfile", JSON.stringify(fallback));
-      alert("♻️ Default profile restored!");
-    } else {
-      setProfile({
-        name: "",
-        email: user?.email || "",
-        phone: "",
-        bio: "",
-        image: "",
-      });
-      localStorage.removeItem("studentProfile");
-      alert("🧹 Profile reset to blank!");
     }
   };
 
@@ -108,7 +104,7 @@ const StudentSettings = () => {
 
       <div style={styles.form}>
         <div style={styles.imageUploadBox}>
-          {profile.image && (
+          {profile.image && typeof profile.image === "string" && (
             <img
               src={profile.image}
               alt="Profile"
@@ -120,7 +116,7 @@ const StudentSettings = () => {
 
         <div style={styles.field}>
           <label style={styles.label}>Full Name:</label>
-          <input name="name" value={profile.name} onChange={handleChange} style={styles.input} />
+          <input name="name" value={profile.name} disabled style={styles.input} />
         </div>
 
         <div style={styles.field}>
@@ -140,7 +136,6 @@ const StudentSettings = () => {
 
         <div style={styles.btnRow}>
           <button onClick={handleSave} style={styles.saveBtn}>💾 Save Changes</button>
-          <button onClick={handleRestoreDefault} style={styles.restoreBtn}>♻️ Restore Default</button>
         </div>
       </div>
 

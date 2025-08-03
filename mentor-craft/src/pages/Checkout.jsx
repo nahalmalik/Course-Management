@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { useCart } from "../contexts/CartContext";
 import { useNavigate } from "react-router-dom";
-import { enrollCourse } from "../components/enrollmentUtils";
+import { enrollCourse, enrollCourseLocal } from "../components/enrollmentUtils";
+import { getCurrentUser, getAccessToken } from "../contexts/authUtils";
+import API from "../api"; 
 
 const Wrapper = styled.div`
   display: flex;
@@ -94,7 +96,6 @@ const Thumbnail = styled.img`
   margin-bottom: 10px;
 `;
 
-
 const Checkout = () => {
   const { cartItems, clearCart } = useCart();
   const [name, setName] = useState("");
@@ -102,6 +103,9 @@ const Checkout = () => {
   const [screenshot, setScreenshot] = useState(null);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+
+  const user = getCurrentUser();
+  const isLocalUser = user?.source === "local";
 
   const hasPaidCourse = cartItems.some(
     (course) =>
@@ -113,8 +117,9 @@ const Checkout = () => {
     return isNaN(price) ? acc : acc + price;
   }, 0);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
 
     if (!name || !email) {
       setError("Please fill in all required fields.");
@@ -126,16 +131,57 @@ const Checkout = () => {
       return;
     }
 
-    cartItems.forEach((course) => {
-      enrollCourse({
-        course,
-        student: name,
-        email,
-      });
-    });
+    try {
+      if (isLocalUser) {
+        cartItems.forEach((course) =>
+          enrollCourseLocal({ course, student: name, email })
+        );
+      } else {
+        // ✅ Step 1: Create order first
+        const formData = new FormData();
+formData.append("full_name", name);
+formData.append("email", email);
+formData.append("total_amount", total.toFixed(2)); // optional if backend expects it
 
-    clearCart();
-    navigate("/student/courses");
+// Append each course UUID as an item (ListField expects multiple "items" keys)
+cartItems.forEach((course) => {
+  formData.append("items", course.course_id || course.id); // UUID expected
+});
+
+if (screenshot) {
+  formData.append("payment_screenshot", screenshot);
+}
+
+const orderRes = await API.post("users/checkout/", formData, {
+  headers: {
+    Authorization: `Bearer ${getAccessToken()}`,
+    "Content-Type": "multipart/form-data",
+  },
+});
+
+
+        const orderId = orderRes.data.order_id;
+
+        // ✅ Step 2: Enroll each course
+        await Promise.all(
+          cartItems.map((course) =>
+            enrollCourse({
+              course,
+              student: name,
+              email,
+              screenshot,
+              orderId,
+            })
+          )
+        );
+      }
+
+      clearCart();
+      navigate("/student/courses");
+    } catch (err) {
+      console.error("❌ Enrollment failed:", err);
+      setError("Something went wrong during enrollment.");
+    }
   };
 
   return (
@@ -174,7 +220,6 @@ const Checkout = () => {
           <Title style={{ marginTop: "30px" }}>Your Courses</Title>
           {cartItems.map((course) => (
             <CourseBox key={course.id}>
-              
               <strong>{course.title}</strong>
               <br />
               <small>{course.instructor}</small>
@@ -196,33 +241,32 @@ const Checkout = () => {
       <Right>
         <Title>Order Summary</Title>
         {cartItems.map((course) => (
-  <CourseBox key={course.id}>
-    <Thumbnail src={course.image || course.thumbnail} alt={course.title} />
-    <strong>{course.title}</strong>
-    <br />
-    <small>{course.instructor}</small>
-    <div>
-      Price:{" "}
-      {isNaN(course.price) || course.price.toLowerCase() === "free"
-        ? "Free"
-        : `$${parseFloat(course.price).toFixed(2)}`}
-    </div>
-  </CourseBox>
-))}
+          <CourseBox key={course.id}>
+            <Thumbnail src={course.image || course.thumbnail} alt={course.title} />
+            <strong>{course.title}</strong>
+            <br />
+            <small>{course.instructor}</small>
+            <div>
+              Price:{" "}
+              {isNaN(course.price) || course.price.toLowerCase() === "free"
+                ? "Free"
+                : `$${parseFloat(course.price).toFixed(2)}`}
+            </div>
+          </CourseBox>
+        ))}
+
         <SummaryItem>
           <div>Subtotal</div>
-          <div>
-            {total === 0 ? "Free" : `$${total.toFixed(2)}`}
-          </div>
+          <div>{total === 0 ? "Free" : `$${total.toFixed(2)}`}</div>
         </SummaryItem>
         <SummaryItem>
           <div>Tax (10%)</div>
-          <div>${(total * 0.1).toFixed(2)}</div>        
+          <div>${(total * 0.1).toFixed(2)}</div>
         </SummaryItem>
         <SummaryItem>
           <div>Discount</div>
           <div>${(total * 0.05).toFixed(2)}</div>
-        </SummaryItem> 
+        </SummaryItem>
 
         <hr />
         <SummaryItem>

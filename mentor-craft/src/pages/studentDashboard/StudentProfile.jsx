@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getCurrentUser } from '../../contexts/authUtils';
-import studentData from '../../contexts/studentData'; // adjust path as needed
+import { getAccessToken } from '../../contexts/authUtils';
 
 const StudentProfile = () => {
   const [profile, setProfile] = useState({
@@ -15,41 +14,27 @@ const StudentProfile = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-  const user = getCurrentUser();
-  if (!user) return;
+    const token = getAccessToken(); // ✅ use your utility function
 
-  const savedProfile = localStorage.getItem('studentProfile');
+    if (!token) return;
 
-  if (savedProfile) {
-    setProfile(JSON.parse(savedProfile));
-  } else {
-    // Try to match with studentData
-    const matchedStudent = studentData.find(
-      (s) => s.email.toLowerCase() === user.email.toLowerCase()
-    );
-
-    // If found in studentData, use it
-    if (matchedStudent) {
-      setProfile({
-        name: matchedStudent.name,
-        email: matchedStudent.email,
-        phone: matchedStudent.phone || '',
-        bio: matchedStudent.bio || '',
-        image: matchedStudent.image || '',
+    fetch('http://localhost:8000/api/student/profile/', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to fetch profile');
+        return res.json();
+      })
+      .then((data) => {
+        setProfile(data);
+      })
+      .catch((err) => {
+        console.error('Error fetching student profile:', err);
       });
-    } else {
-      // Otherwise, use only current user details
-      setProfile({
-        name: user.name || '',
-        email: user.email || '',
-        phone: '',
-        bio: '',
-        image: '',
-      });
-    }
-  }
-}, []);
-
+  }, []);
 
   return (
     <div style={styles.container}>

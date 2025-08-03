@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { getEnrollments } from '../../components/enrollmentUtils';
 import { Link } from 'react-router-dom';
 import '../../styles/studentDashboard/StudentOverview.css';
 import studentData from '../../contexts/studentData';
 import courseData from '../../components/courseData';
+import { fetchEnrollmentsFromBackend } from '../../components/enrollmentUtils';
 
 const PageWrapper = styled.div`
   padding: 50px 30px;
@@ -130,31 +130,28 @@ const StudentDashboard = () => {
   const email = localStorage.getItem('studentEmail');
 
   useEffect(() => {
-    const enrolled = getEnrollments(email) || [];
+  const loadEnrolledCourses = async () => {
+    try {
+      const backendEnrollments = await fetchEnrollmentsFromBackend();
 
-    const student = studentData.find((s) => s.email === email);
-    const assignedCourseIds = student?.enrolledCourses || [];
+      const mappedCourses = backendEnrollments.map((item) => ({
+        id: item.course_id,
+        title: item.course_title,
+        instructor: item.instructor,
+        image: item.course_image,
+        enrolledAt: item.enrolled_at,
+        orderId: item.order_id,
+      }));
 
-    const assignedCourses = assignedCourseIds
-      .map((id) => courseData.find((c) => c.id === id))
-      .filter(Boolean);
+      setCourses(mappedCourses);
+      setFilteredCourses(mappedCourses);
+    } catch (err) {
+      console.error("❌ Failed to load enrollments from backend", err);
+    }
+  };
 
-    const allCoursesMap = {};
-
-    [...enrolled, ...assignedCourses].forEach((course) => {
-      if (course && course.id) {
-        allCoursesMap[course.id] = {
-          ...course,
-          enrolledAt: course.enrolledAt || new Date().toISOString(),
-          orderId: course.orderId || `ASSIGNED-${course.id}`,
-        };
-      }
-    });
-
-    const allCourses = Object.values(allCoursesMap);
-    setCourses(allCourses);
-    setFilteredCourses(allCourses);
-  }, [email]);
+  loadEnrolledCourses();
+}, []);
 
   // Filtering + Sorting
   useEffect(() => {

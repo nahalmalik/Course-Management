@@ -1,3 +1,4 @@
+# user/views.py
 from rest_framework import generics, permissions
 from .serializers import RegisterSerializer
 from django.contrib.auth import get_user_model
@@ -10,6 +11,16 @@ import uuid
 from users.models import CustomUser
 from rest_framework.views import APIView
 from .serializers import StudentSignupSerializer, InstructorSignupSerializer
+from .models import Order, Enrollment
+from .serializers import (
+    OrderSerializer,
+    EnrollmentSerializer,
+    ReceiptSerializer,
+    InstructorEnrollmentSerializer,
+)
+from rest_framework.permissions import IsAuthenticated
+from django.shortcuts import get_object_or_404
+
 
 User = get_user_model()
 
@@ -86,3 +97,48 @@ class InstructorSignupView(APIView):
             }, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class CheckoutView(generics.CreateAPIView):
+    serializer_class = OrderSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+class EnrolledCoursesView(generics.ListAPIView):
+    serializer_class = EnrollmentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Enrollment.objects.filter(user=self.request.user).select_related('course', 'order')
+    
+class EnrollmentCreateView(generics.CreateAPIView):
+    serializer_class = EnrollmentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class ReceiptView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, order_id):
+        order = get_object_or_404(Order, order_id=order_id, user=request.user)
+        serializer = ReceiptSerializer(order)
+        return Response(serializer.data)
+
+class StudentEnrollmentListView(generics.ListAPIView):
+    serializer_class = EnrollmentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Enrollment.objects.filter(user=self.request.user).select_related('course', 'order')
+    
+class InstructorCourseEnrollmentsView(generics.ListAPIView):
+    serializer_class = InstructorEnrollmentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Enrollment.objects.filter(course__instructor_email=user.email).select_related('course', 'user')

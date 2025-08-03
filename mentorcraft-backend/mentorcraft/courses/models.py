@@ -84,3 +84,4 @@ class QuizOption(models.Model):
     question = models.ForeignKey(QuizQuestion, on_delete=models.CASCADE, related_name='options')
     text = models.CharField(max_length=255)
     is_correct = models.BooleanField(default=False)
+

@@ -1,0 +1,63 @@
+/* Custom Admin Colors */
+:root {
+  --primary: #1E3A8A;
+  --main: #4EB4F6;
+  --secondary: #3B82F6;
+  --background: #FFFFFF;
+  --text-primary: #1F2937;
+  --text-secondary: #6B7280;
+  --accent: #EF4444;
+  --dark-blue: #0A1F44;
+  --light-blue: #4A90E2;
+}
+
+/* General background and text */
+body, .dashboard #content {
+  background-color: var(--background);
+  color: var(--text-primary);
+}
+
+a {
+  color: var(--secondary);
+}
+
+a:hover {
+  color: var(--main);
+}
+
+/* Header */
+#header {
+  background-color: var(--primary);
+  color: #fff;
+}
+
+#header a {
+  color: #fff;
+}
+
+/* Sidebar */
+#branding h1 {
+  color: var(--light-blue);
+}
+
+.module caption, .module h2 {
+  background-color: var(--main);
+  color: white;
+}
+
+/* Buttons */
+.button, input[type=submit], input[type=button] {
+  background-color: var(--secondary);
+  border-color: var(--secondary);
+  color: white;
+}
+
+.button:hover, input[type=submit]:hover, input[type=button]:hover {
+  background-color: var(--main);
+  border-color: var(--main);
+}
+
+/* Accents (like delete) */
+.deletelink {
+  color: var(--accent);
+}

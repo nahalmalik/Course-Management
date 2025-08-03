@@ -1,117 +1,86 @@
 import React, { useEffect, useState } from 'react';
-import { getCurrentUser } from '../contexts/authUtils';
-import {
-  getQuizAttempts,
-  updateQuizGrade,
-  getUnseenInstructorAttempts,
-  markAttemptsSeenByInstructor
-} from '../contexts/quizUtils';
-import { generateSampleQuizAttemptsForAllCourses } from '../contexts/quizUtils';
-import courseData from '../components/courseData';
+import axios from 'axios';
+import { getAccessToken } from '../contexts/authUtils';
 import toast from 'react-hot-toast';
 
 const InstructorQuizAttempts = () => {
+  const [quizzes, setQuizzes] = useState([]);
   const [attempts, setAttempts] = useState([]);
-  const [instructorEmail, setInstructorEmail] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-useEffect(() => {
-  generateSampleQuizAttemptsForAllCourses(courseData); // 👈 ADD THIS LINE
+  const token = getAccessToken();
 
-  const user = getCurrentUser();
-  if (user) {
-    setInstructorEmail(user.email);
-    const data = getQuizAttempts().filter(a => a.instructorEmail === user.email);
-    setAttempts(data);
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-    const unseen = getUnseenInstructorAttempts(user.email);
-    if (unseen.length > 0) {
-      toast.success(`🔔 ${unseen.length} new quiz attempt(s) received!`);
-      markAttemptsSeenByInstructor(user.email);
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const quizRes = await axios.get('http://localhost:8000/api/instructor/quizzes/', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const attemptRes = await axios.get('http://localhost:8000/api/instructor/quiz-attempts/', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      setQuizzes(quizRes.data);
+      setAttempts(attemptRes.data);
+    } catch (err) {
+      console.error(err);
+      toast.error('Error fetching quiz data.');
     }
-  }
-}, []);
-
-  const handleGradeChange = (id, grade) => {
-    const updated = attempts.map(attempt =>
-      attempt.id === id ? { ...attempt, grade } : attempt
-    );
-    setAttempts(updated);
+    setLoading(false);
   };
 
-  const handleSubmitGrade = (id) => {
-    const attempt = attempts.find(a => a.id === id);
-    if (!attempt || !attempt.grade) {
-      toast.error("Please assign a grade before submitting.");
-      return;
-    }
-    updateQuizGrade(id, attempt.grade);
-    toast.success("Quiz graded and sent to student.");
-    setAttempts(getQuizAttempts().filter(a => a.instructorEmail === instructorEmail));
+  const renderAttemptsTable = (quizId) => {
+    const related = attempts.filter(attempt => attempt.quiz === quizId);
+    if (related.length === 0) return <p style={styles.empty}>No attempts yet.</p>;
+
+    return (
+      <table style={styles.table}>
+        <thead>
+          <tr>
+            <th style={styles.th}>Student Name</th>
+            <th style={styles.th}>Email</th>
+            <th style={styles.th}>Score</th>
+            <th style={styles.th}>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {related.map(attempt => (
+            <tr key={attempt.id} style={styles.row}>
+              <td style={styles.td}>{attempt.student_name}</td>
+              <td style={styles.td}>{attempt.student_email}</td>
+              <td style={styles.td}>{attempt.score}%</td>
+              <td style={styles.td}>
+                {attempt.completed_at ? '✅ Submitted' : '⌛ In Progress'}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
   };
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.heading}>📝 Student Quiz Attempts</h2>
-      {attempts.length === 0 ? (
-        <p style={styles.empty}>No quiz attempts yet.</p>
+      <h2 style={styles.heading}>📊 Instructor Quiz Attempts</h2>
+      {loading ? (
+        <p>Loading...</p>
       ) : (
-        <table style={styles.table}>
-          <thead>
-            <tr>
-              <th style={styles.th}>Student</th>
-              <th style={styles.th}>Course</th>
-              <th style={styles.th}>Quiz</th>
-              <th style={styles.th}>Score</th>
-              <th style={styles.th}>Status</th>
-              <th style={styles.th}>Grade</th>
-              <th style={styles.th}>Submission</th>
-              <th style={styles.th}>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {attempts.map(a => (
-              <tr key={a.id} style={styles.row}>
-                <td style={styles.td}>{a.studentName}</td>
-                <td style={styles.td}>{a.course}</td>
-                <td style={styles.td}>{a.quizTitle}</td>
-                <td style={styles.td}>{a.score}</td>
-                <td style={styles.td}>
-                  <span style={{
-                    ...styles.badge,
-                    background: a.status === 'graded' ? '#4caf50' : '#ff9800'
-                  }}>
-                    {a.status}
-                  </span>
-                </td>
-                <td style={styles.td}>
-                  <input
-                    type="text"
-                    value={a.grade || ''}
-                    onChange={(e) => handleGradeChange(a.id, e.target.value)}
-                    placeholder="A / B / 85%..."
-                    style={styles.input}
-                  />
-                </td>
-                <td style={styles.td}>
-                  <a
-                    href="/sample-submissions/submission-123.pdf"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    download
-                    style={styles.downloadLink}
-                  >
-                    📄 View
-                  </a>
-                </td>
-                <td style={styles.td}>
-                  <button onClick={() => handleSubmitGrade(a.id)} style={styles.button}>
-                    Submit
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        quizzes.map((quiz) => (
+          <div key={quiz.id} style={styles.assignmentCard}>
+            <h3 style={styles.assignmentTitle}>{quiz.title}</h3>
+            <p><strong>Attempts Allowed:</strong> {quiz.attempts_allowed}</p>
+            <p><strong>Time Limit:</strong> {quiz.time_limit} minutes</p>
+            <div style={{ marginTop: '20px' }}>
+              <h4>🧑‍🎓 Student Attempts</h4>
+              {renderAttemptsTable(quiz.id)}
+            </div>
+          </div>
+        ))
       )}
     </div>
   );
@@ -128,57 +97,33 @@ const styles = {
     fontFamily: "'Segoe UI', sans-serif",
   },
   heading: {
-    fontSize: '30px',
+    fontSize: '26px',
     fontWeight: '600',
-    marginBottom: '25px',
+    marginBottom: '30px',
     color: '#20818f',
-    borderBottom: '2px solid #eee',
-    paddingBottom: '10px',
+  },
+  assignmentCard: {
+    padding: '20px',
+    marginBottom: '40px',
+    background: '#f9f9f9',
+    borderRadius: '12px',
+    boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+  },
+  assignmentTitle: {
+    color: '#1e3a8a',
+    marginBottom: '10px',
   },
   table: {
     width: '100%',
     borderCollapse: 'collapse',
-    background: '#fefefe',
+    background: '#fff',
     borderRadius: '10px',
     overflow: 'hidden',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
+    boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+    marginTop: '10px'
   },
   row: {
     borderBottom: '1px solid #f0f0f0'
-  },
-  badge: {
-    padding: '6px 14px',
-    borderRadius: '25px',
-    color: '#fff',
-    fontSize: '13px',
-    fontWeight: '500',
-    display: 'inline-block',
-    textTransform: 'capitalize',
-    background: '#aaa'
-  },
-  input: {
-    padding: '7px 12px',
-    borderRadius: '8px',
-    border: '1px solid #ccc',
-    width: '100px',
-    outline: 'none',
-    fontSize: '14px',
-  },
-  button: {
-    background: '#20818f',
-    color: '#fff',
-    padding: '8px 16px',
-    border: 'none',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    transition: 'all 0.3s ease',
-    fontSize: '14px',
-  },
-  empty: {
-    padding: '30px',
-    textAlign: 'center',
-    color: '#666',
-    fontStyle: 'italic'
   },
   th: {
     backgroundColor: '#20818f',
@@ -192,14 +137,10 @@ const styles = {
     fontSize: '14px',
     color: '#333',
   },
-  downloadLink: {
-    backgroundColor: '#eee',
-    color: '#20818f',
-    padding: '6px 12px',
-    borderRadius: '6px',
-    fontSize: '13px',
-    textDecoration: 'none',
-    fontWeight: 'bold'
+  empty: {
+    padding: '10px',
+    fontStyle: 'italic',
+    color: '#666',
   }
 };
 

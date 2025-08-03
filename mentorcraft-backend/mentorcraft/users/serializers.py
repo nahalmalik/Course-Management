@@ -1,8 +1,12 @@
+# user/serializers.py
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth import get_user_model
-from .models import CustomUser
+from .models import CustomUser,Order, OrderItem, Enrollment
 from .utils import get_tokens_for_user  
+from courses.models import Course
+from users.models import CustomUser
+
 
 User = get_user_model()
 
@@ -118,3 +122,104 @@ class InstructorSignupSerializer(serializers.ModelSerializer):
         )
         return user
 
+class OrderItemSerializer(serializers.ModelSerializer):
+    course_title = serializers.CharField(source='course.title', read_only=True)
+    course_id = serializers.UUIDField(source='course.course_id', read_only=True)
+    instructor = serializers.CharField(source='course.instructor', read_only=True)
+    course_image = serializers.ImageField(source='course.image', read_only=True)
+
+    class Meta:
+        model = OrderItem
+        fields = ['id', 'course_id', 'course_title', 'instructor', 'course_image']
+
+class OrderSerializer(serializers.ModelSerializer):
+    items = serializers.ListField(
+        child=serializers.UUIDField(), write_only=True
+    )
+    payment_screenshot = serializers.ImageField(required=False)
+
+    class Meta:
+        model = Order
+        fields = [
+            'id', 'order_id', 'user', 'full_name', 'email',
+            'payment_screenshot', 'total_amount', 'created_at', 'items'
+        ]
+        read_only_fields = ['id', 'order_id', 'created_at', 'user']
+
+    def create(self, validated_data):
+        items_data = validated_data.pop('items')  # UUID list
+        request = self.context.get('request')
+        user = request.user if request else None
+
+        # ✅ Create the order (exclude 'user' if it's already injected)
+        # Clean validated_data to avoid duplicate 'user'
+        validated_data.pop('user', None)  # 👈 this is important
+        order = Order.objects.create(user=user, **validated_data)
+
+
+        # ✅ Create OrderItems and Enrollments for each course
+        for course_id in items_data:
+            try:
+                course = Course.objects.get(course_id=course_id)
+                OrderItem.objects.create(order=order, course=course)
+                Enrollment.objects.create(user=user, course=course, order=order)
+            except Course.DoesNotExist:
+                continue  # Skip invalid courses
+
+        return order
+
+
+class ReceiptSerializer(serializers.ModelSerializer):
+    items = OrderItemSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Order
+        fields = [
+            'order_id', 'full_name', 'email', 'total_amount',
+            'created_at', 'payment_screenshot', 'items'
+        ]
+
+class EnrollmentSerializer(serializers.ModelSerializer):
+    course_title = serializers.CharField(source='course.title', read_only=True)
+    course_image = serializers.ImageField(source='course.image', read_only=True)
+    instructor = serializers.CharField(source='course.instructor', read_only=True)
+    order_id = serializers.CharField(source='order.order_id', read_only=True)
+
+    # ✅ Accept UUIDs using slug fields
+    course = serializers.SlugRelatedField(
+        queryset=Course.objects.all(),
+        slug_field='course_id',
+        write_only=True
+    )
+    order = serializers.SlugRelatedField(
+        queryset=Order.objects.all(),
+        slug_field='order_id',
+        write_only=True
+    )
+
+    class Meta:
+        model = Enrollment
+        fields = [
+            'id',
+            'course', 'order',           # ✅ writable
+            'course_title', 'course_image', 'instructor',
+            'order_id', 'enrolled_at'    # ✅ readable
+        ]
+
+class InstructorEnrollmentSerializer(serializers.ModelSerializer):
+    course_title = serializers.CharField(source='course.title', read_only=True)
+    student_name = serializers.CharField(source='user.first_name', read_only=True)
+    student_email = serializers.EmailField(source='user.email', read_only=True)
+    price = serializers.DecimalField(source='course.price', max_digits=8, decimal_places=2, read_only=True)
+    enrolled_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
+
+    class Meta:
+        model = Enrollment
+        fields = [
+            'id',
+            'course_title',
+            'student_name',
+            'student_email',
+            'price',
+            'enrolled_at'
+        ]

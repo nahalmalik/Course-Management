@@ -1,116 +1,135 @@
-import React, { useEffect, useState } from 'react';
-import { getCurrentUser } from '../contexts/authUtils';
-import { getPurchases } from '../contexts/purchaseUtils'; // ⛔ Removed generateSamplePurchases
-import courseData from '../components/courseData';
+import React, { useEffect, useState } from "react";
+import {fetchInstructorSales } from "../components/enrollmentUtils";
+import styled from "styled-components";
+
+const Wrapper = styled.div`
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 20px;
+  font-family: "Segoe UI", sans-serif;
+  color: #333;
+`;
+
+const Title = styled.h2`
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 25px;
+  color: #205d67;
+  text-align: center;
+`;
+
+const TableWrapper = styled.div`
+  overflow-x: auto;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  background: #fff;
+`;
+
+const Table = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 700px;
+`;
+
+const Thead = styled.thead`
+  background-color: #eaf5f8;
+  text-align: left;
+`;
+
+const Th = styled.th`
+  padding: 16px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 1px solid #ddd;
+`;
+
+const Td = styled.td`
+  padding: 14px 20px;
+  font-size: 14px;
+  color: #444;
+  border-bottom: 1px solid #f0f0f0;
+`;
+
+const Tr = styled.tr`
+  transition: background 0.2s ease-in-out;
+  &:hover {
+    background-color: #f9f9f9;
+  }
+`;
+
+const NoData = styled.p`
+  text-align: center;
+  color: #666;
+  font-size: 16px;
+  margin-top: 30px;
+`;
 
 const InstructorPurchaseHistory = () => {
-  const [purchases, setPurchases] = useState([]);
+  const [enrollments, setEnrollments] = useState([]);
 
   useEffect(() => {
-    const user = getCurrentUser();
-    if (user) {
-      const all = getPurchases();
-      console.log("✅ All purchases:", all);
-      console.log("✅ Current instructor email:", user.email);
+    const loadData = async () => {
+      try {
+        const data = await fetchInstructorSales();
 
-      const mine = all.filter(p => p.instructorEmail === user.email);
-      console.log("🔍 Looping all purchases:");
-all.forEach(p => {
-  console.log(`Instructor: ${p.instructorEmail}, Course: ${p.courseTitle}`);
-});
-
-      console.log("✅ Matched purchases:", mine);
-
-      setPurchases(mine);
-    }
+        setEnrollments(data);
+      } catch (err) {
+        console.error("Failed to load enrollments:", err);
+      }
+    };
+    loadData();
   }, []);
 
+  // Filter only those courses where the instructor is the current user
+ const instructorCourses = enrollments;
+
   return (
-    <div style={styles.container}>
-      <h2 style={styles.heading}>💰 Purchase History</h2>
+    <Wrapper>
+      <Title>🧾 Instructor Course Sales</Title>
 
-      {purchases.length === 0 ? (
-        <p style={styles.empty}>No purchases found for your courses.</p>
+      {instructorCourses.length === 0 ? (
+        <NoData>No enrollments for your courses yet.</NoData>
       ) : (
-        <table style={styles.table}>
-          <thead>
-            <tr>
-              <th style={styles.th}>Student</th>
-              <th style={styles.th}>Email</th>
-              <th style={styles.th}>Course</th>
-              <th style={styles.th}>Price</th>
-              <th style={styles.th}>Date</th>
-              
-            </tr>
-          </thead>
-          <tbody>
-            {purchases.map(p => (
-              <tr key={p.id}>
-                <td style={styles.td}>{p.studentName}</td>
-                <td style={styles.td}>{p.studentEmail}</td>
-                <td style={styles.td}>{p.courseTitle}</td>
-                <td style={styles.td}>{p.price}</td>
-                <td style={styles.td}>{new Date(p.purchasedAt).toLocaleDateString()}</td>
-                
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <TableWrapper>
+          <Table>
+            <Thead>
+              <Tr>
+                <Th>Course</Th>
+                <Th>Student</Th>
+                <Th>Purchase Date</Th>
+                <Th>Price</Th>
+              </Tr>
+            </Thead>
+            <tbody>
+              {instructorCourses.map((enroll, index) => (
+                <Tr key={index}>
+                  <Td>{enroll.course_title}</Td>
+                  <Td>
+                    {enroll.student_name || enroll.user_fullname || "Student"}<br />
+                    <small>{enroll.student_email || enroll.user_email}</small>
+                  </Td>
+                  <Td>
+                    {new Date(enroll.enrolled_at).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </Td>
+                  <Td>
+                    $
+                    {enroll.course?.price
+                      ? parseFloat(enroll.course.price).toFixed(2)
+                      : "0.00"}
+                  </Td>
+                </Tr>
+              ))}
+            </tbody>
+          </Table>
+        </TableWrapper>
       )}
-    </div>
+    </Wrapper>
   );
-};
-
-const styles = {
-  container: {
-    padding: '40px',
-    maxWidth: '95%',
-    margin: 'auto',
-    background: '#fff',
-    borderRadius: '16px',
-    boxShadow: '0 8px 20px rgba(0,0,0,0.06)',
-    fontFamily: "'Segoe UI', sans-serif",
-  },
-  heading: {
-    fontSize: '28px',
-    fontWeight: 600,
-    marginBottom: '25px',
-    color: '#20818f'
-  },
-  table: {
-    width: '100%',
-    borderCollapse: 'collapse',
-    background: '#fefefe',
-    borderRadius: '10px',
-    overflow: 'hidden',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
-  },
-  th: {
-    backgroundColor: '#20818f',
-    color: '#fff',
-    padding: '12px',
-    fontSize: '14px',
-    textAlign: 'left',
-  },
-  td: {
-    padding: '12px',
-    fontSize: '14px',
-    color: '#333',
-  },
-  empty: {
-    padding: '30px',
-    textAlign: 'center',
-    color: '#777',
-    fontStyle: 'italic'
-  },
-  linkBtn: {
-    padding: '6px 14px',
-    background: '#20818f',
-    color: '#fff',
-    borderRadius: '6px',
-    textDecoration: 'none',
-    fontSize: '13px'
-  }
 };
 
 export default InstructorPurchaseHistory;
