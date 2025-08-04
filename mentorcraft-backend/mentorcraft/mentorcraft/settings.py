@@ -1,7 +1,7 @@
 from pathlib import Path
 import os
 from datetime import timedelta
-import dj_database_url  # ✅ Required for Render DB
+import dj_database_url
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -9,10 +9,10 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Secret key & debug from environment
-SECRET_KEY = os.getenv('SECRET_KEY', 'your-default-secret-key')
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
+# Security
+SECRET_KEY = os.getenv('SECRET_KEY')
 
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',') if not DEBUG else ['*']
 
 # Custom User Model
@@ -41,7 +41,7 @@ INSTALLED_APPS = [
 # Middleware
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # ✅ for static file serving
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Serve static files
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -51,8 +51,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# URLs and WSGI
 ROOT_URLCONF = 'mentorcraft.urls'
+WSGI_APPLICATION = 'mentorcraft.wsgi.application'
 
+# Templates
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -68,12 +71,10 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'mentorcraft.wsgi.application'
-
-# DATABASE (uses DATABASE_URL if provided)
+# Database: PostgreSQL via DATABASE_URL, fallback to SQLite for local dev
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.getenv('DATABASE_URL', f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
         conn_max_age=600,
     )
 }
@@ -102,12 +103,13 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+# Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CORS
-CORS_ALLOW_ALL_ORIGINS = True  # For production, replace with your frontend domain
+CORS_ALLOW_ALL_ORIGINS = True
 
-# REST Framework & JWT
+# DRF and JWT
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
