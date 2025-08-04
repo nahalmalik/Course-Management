@@ -1,6 +1,7 @@
+#instructor/urls.py
 from django.urls import path
 from .views import InstructorProfileView,AnnouncementListCreateView, AnnouncementDeleteView, InstructorAnalyticsListView, SyncAnalyticsView, AnalyticsListView,InstructorAssignmentListView,InstructorAssignmentUpdateView
-from .views import InstructorOwnAssignmentsView,InstructorOwnQuizzesView,InstructorQuizAttemptsListView
+from .views import InstructorOwnAssignmentsView,InstructorOwnQuizzesView,InstructorQuizAttemptsListView,InstructorStatsView
 
 urlpatterns = [
     path('profile/', InstructorProfileView.as_view(), name='instructor-profile'),
@@ -14,4 +15,5 @@ urlpatterns = [
     path('assignments/', InstructorOwnAssignmentsView.as_view(), name='instructor-own-assignments'),
      path('quizzes/', InstructorOwnQuizzesView.as_view(), name='instructor-own-quizzes'),
     path('quiz-attempts/', InstructorQuizAttemptsListView.as_view(), name='instructor-quiz-attempts'),
+     path('dashboard-stats/', InstructorStatsView.as_view(), name='instructor-dashboard-stats'),
 ]

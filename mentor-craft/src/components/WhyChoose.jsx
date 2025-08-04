@@ -21,7 +21,7 @@ const Container = styled.div`
 const Title = styled.h2`
   text-align: center;
   font-size: 32px;
-  color: rgb(42, 98, 113);
+  color: #1E3A8A;
   margin-bottom: 10px;
 `;
 
@@ -64,7 +64,7 @@ const Feature = styled.div`
   }
 
   .iconWrapper {
-    background-color: rgb(32, 125, 140);
+    background-color: #1E3A8A;
     color: white;
     border-radius: 50%;
     width: 50px;
@@ -79,7 +79,7 @@ const Feature = styled.div`
   .text {
     h4 {
       font-size: 18px;
-      color: rgb(42, 98, 113);
+      color: #1E3A8A;
       margin-bottom: 8px;
     }
 

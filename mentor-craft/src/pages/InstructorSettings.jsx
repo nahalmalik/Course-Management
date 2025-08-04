@@ -225,7 +225,7 @@ const styles = {
   heading: {
     fontSize: "24px",
     fontWeight: "600",
-    color: "#20818f",
+    color: "#1E3A8A",
     marginBottom: "25px",
   },
   form: {
@@ -260,7 +260,7 @@ const styles = {
   },
   saveBtn: {
     marginTop: "10px",
-    background: "#20818f",
+    background: "#1E3A8A",
     color: "#fff",
     padding: "10px 20px",
     border: "none",

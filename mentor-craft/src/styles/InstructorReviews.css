@@ -6,7 +6,7 @@
 
 .page-title {
   font-size: 28px;
-  color: #207d8c;
+  color: #1E3A8A;
   margin-bottom: 2rem;
 }
 
@@ -19,9 +19,9 @@
 .toggle-btn {
   padding: 8px 16px;
   border-radius: 8px;
-  border: 2px solid #207d8c;
+  border: 2px solid #1E3A8A;
   background-color: white;
-  color: #207d8c;
+  color: #1E3A8A;
   cursor: pointer;
   transition: 0.3s;
   position: relative;
@@ -29,7 +29,7 @@
 
 .toggle-btn.active,
 .toggle-btn:hover {
-  background-color: #207d8c;
+  background-color: #1E3A8A;
   color: white;
 }
 
@@ -77,7 +77,7 @@
   background: #eef8f9;
   padding: 10px;
   margin-top: 12px;
-  border-left: 3px solid #207d8c;
+  border-left: 3px solid #1E3A8A;
   border-radius: 4px;
 }
 
@@ -87,7 +87,7 @@
 
 .btn-reply,
 .btn-mark {
-  background-color: #207d8c;
+  background-color: #1E3A8A;
   color: white;
   border: none;
   padding: 8px 16px;

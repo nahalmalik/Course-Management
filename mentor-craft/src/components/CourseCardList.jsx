@@ -12,7 +12,7 @@ const Card = styled.div`
   box-shadow: 0 3px 8px rgba(0,0,0,0.06);
   transition: 0.3s;
   text-decoration: none;
-  color: inherit;
+  color: inherit;a
 
   &:hover {
     transform: translateY(-4px);
@@ -40,7 +40,7 @@ const Info = styled.div`
 `;
 
 const Title = styled.h3`
-  color: rgb(42, 98, 113);
+  color: #1E3A8A;
   margin: 0 0 10px;
 `;
 
@@ -63,7 +63,7 @@ const Rating = styled.div`
 
 const Price = styled.div`
   font-weight: bold;
-  color: rgb(32, 125, 140);
+  color: #1E3A8A;
 `;
 
 const Badge = styled.span`

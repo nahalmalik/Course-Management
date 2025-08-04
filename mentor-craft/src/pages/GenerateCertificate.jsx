@@ -113,7 +113,7 @@ console.log(`📨 Email simulation: Certificate sent to ${selectedStudent.email}
 
      {previewData && (
   <div style={styles.previewBox}>
-    <h4 style={{ color: "#20818f" }}>Preview:</h4>
+    <h4 style={{ color: "#1E3A8A" }}>Preview:</h4>
     <div style={styles.certificateWrapper}>
       <img src={certTemplate} alt="Certificate" style={styles.certBackground} />
       <div style={styles.overlay}>
@@ -147,7 +147,7 @@ const styles = {
     fontSize: '26px',
     fontWeight: '600',
     marginBottom: '30px',
-    color: '#20818f',
+    color: '#1E3A8A',
   },
   formRow: {
     marginBottom: '20px',
@@ -168,7 +168,7 @@ const styles = {
   },
   button: {
     padding: '12px 18px',
-    backgroundColor: '#20818f',
+    backgroundColor: '#1E3A8A',
     color: 'white',
     border: 'none',
     borderRadius: '8px',
@@ -191,7 +191,7 @@ const styles = {
     marginTop: '10px',
     padding: '10px 16px',
     fontSize: '14px',
-    backgroundColor: '#297b83',
+    backgroundColor: '#1E3A8A',
     color: 'white',
     border: 'none',
     borderRadius: '6px',
@@ -222,7 +222,7 @@ const styles = {
   name: {
     fontSize: '28px',
     fontWeight: '700',
-    color: '#1f4b57',
+    color: '#1E3A8A',
     margin: '0',
   },
   course: {

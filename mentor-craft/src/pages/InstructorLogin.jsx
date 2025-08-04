@@ -47,8 +47,8 @@ const containerStyle = { maxWidth: '420px', margin: '60px auto', padding: '30px 
 const logoStyle = { width: '80px', marginBottom: '10px' };
 const titleStyle = { fontSize: '22px', color: '#333', marginBottom: '20px' };
 const inputStyle = { width: '85%', padding: '12px', margin: '10px 0', border: '1px solid #ccc', borderRadius: '6px', fontSize: '15px' };
-const buttonStyle = { width: '85%', padding: '12px', marginTop: '10px', backgroundColor: 'rgb(32, 125, 140)', color: 'white', fontWeight: 'bold', border: 'none', borderRadius: '6px', fontSize: '15px', cursor: 'pointer' };
-const linkStyle = { marginTop: '12px', fontSize: '14px', color: 'rgb(42, 98, 113)', textDecoration: 'none', display: 'block' };
+const buttonStyle = { width: '85%', padding: '12px', marginTop: '10px', backgroundColor: '#1E3A8A', color: 'white', fontWeight: 'bold', border: 'none', borderRadius: '6px', fontSize: '15px', cursor: 'pointer' };
+const linkStyle = { marginTop: '12px', fontSize: '14px', color: '#1E3A8A', textDecoration: 'none', display: 'block' };
 const errorStyle = { color: 'red', fontSize: '14px', marginBottom: '10px' };
 
 export default InstructorLogin;

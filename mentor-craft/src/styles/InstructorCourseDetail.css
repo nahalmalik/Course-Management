@@ -14,7 +14,7 @@
   padding: 24px;
   margin-bottom: 30px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
-  border: 1px solid rgba(32,125,140, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.1);
   transition: 0.3s ease;
 }
 
@@ -23,7 +23,7 @@
   font-weight: 600;
   margin-bottom: 16px;
   cursor: pointer;
-  color: rgb(32,125,140);
+  color: #3B82F6;
 }
 
 /* === Fade Slide Animation === */
@@ -55,13 +55,13 @@
 }
 
 .input-float:focus {
-  border-color: rgb(32,125,140);
+  border-color: #3B82F6;
   outline: none;
 }
 
 /* === Buttons === */
 .glass-button {
-  background: linear-gradient(to right, #207d8c, #2a6271);
+  background: linear-gradient(to right, #3B82F6, #2563EB);
   color: white;
   padding: 10px 20px;
   border-radius: 8px;
@@ -72,11 +72,11 @@
   margin-top: 10px;
   margin-right: 10px;
   transition: all 0.3s ease;
-  box-shadow: 0 3px 12px rgba(32,125,140, 0.3);
+  box-shadow: 0 3px 12px rgba(59, 130, 246, 0.3);
 }
 
 .glass-button:hover {
-  background: linear-gradient(to right, #2a6271, #207d8c);
+  background: linear-gradient(to right, #2563EB, #3B82F6);
   transform: scale(1.03);
 }
 
@@ -91,7 +91,7 @@
 
 .preview-section h4 {
   font-size: 17px;
-  color: #2a6271;
+  color: #2563EB;
   margin-bottom: 10px;
 }
 
@@ -112,7 +112,7 @@
 
 /* === Section Title === */
 .section-title {
-  color: rgb(32,125,140);
+  color: #3B82F6;
   margin-bottom: 20px;
   font-size: 24px;
   font-weight: 600;

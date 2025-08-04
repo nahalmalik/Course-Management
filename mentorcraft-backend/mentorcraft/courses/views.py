@@ -1,3 +1,4 @@
+#courses/views.py
 from rest_framework import generics,viewsets,permissions
 from .models import Course,Assignment,Note,Lecture,Quiz
 from .serializers import CourseSerializer,NoteSerializer,AssignmentSerializer,QuizSerializer,LectureSerializer,QuizCreateSerializer

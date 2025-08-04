@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 
 const Banner = styled.section`
-  background-color: rgb(32, 125, 140);
+  background-color: #0A1F44;
   padding: 80px 20px;
   text-align: center;
   color: #fff;

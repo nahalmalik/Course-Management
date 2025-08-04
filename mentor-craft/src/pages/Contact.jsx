@@ -23,7 +23,7 @@ const ContactUs = () => {
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         padding: '100px 20px',
-        color: 'white',
+        color: '#1E3A8A',
         textAlign: 'center'
       }}>
         <h1 style={{ fontSize: '3em', marginBottom: 10 }}>Get In Touch</h1>
@@ -33,7 +33,7 @@ const ContactUs = () => {
       {/* Contact Form */}
       <div style={{ maxWidth: 900, margin: '50px auto', display: 'flex', gap: 40, flexWrap: 'wrap', padding: '0 20px' }}>
         <div style={{ flex: '1 1 400px' }}>
-          <h2 style={{ color: 'rgb(32,125,140)', marginBottom: 20 }}>Send a Message</h2>
+          <h2 style={{ color: '#1E3A8A', marginBottom: 20 }}>Send a Message</h2>
           {success && <p style={{ color: 'green', fontWeight: 'bold' }}>{success}</p>}
           <form onSubmit={handleSubmit}>
             <input type="text" name="name" value={form.name} onChange={handleChange} placeholder="Your Name" required
@@ -45,7 +45,7 @@ const ContactUs = () => {
             <textarea name="message" value={form.message} onChange={handleChange} placeholder="Your Message" rows="6" required
               style={{ width: '100%', padding: 12, marginBottom: 12, border: '1px solid #ccc', borderRadius: 4 }}></textarea>
             <button type="submit" style={{
-              backgroundColor: 'rgb(32,125,140)', color: 'white', border: 'none',
+              backgroundColor: '#1E3A8A', color: 'white', border: 'none',
               padding: '12px 24px', borderRadius: 4, cursor: 'pointer'
             }}>
               Submit
@@ -55,7 +55,7 @@ const ContactUs = () => {
 
         {/* Contact Info */}
         <div style={{ flex: '1 1 300px' }}>
-          <h2 style={{ color: 'rgb(32,125,140)', marginBottom: 20 }}>Contact Info</h2>
+          <h2 style={{ color: '#1E3A8A', marginBottom: 20 }}>Contact Info</h2>
           <p><strong>Email:</strong> support@mentorcraft.com</p>
           <p><strong>Phone:</strong> +1 (234) 567-8901</p>
           <p><strong>Address:</strong><br />123 Learning St.<br />Skill City, SC 56789</p>

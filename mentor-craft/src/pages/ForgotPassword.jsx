@@ -56,7 +56,7 @@ const ForgotPassword = () => {
     width: '85%',
     padding: '12px',
     marginTop: '10px',
-    backgroundColor: 'rgb(32, 125, 140)',
+    backgroundColor: '#1E3A8A',
     color: 'white',
     fontWeight: 'bold',
     border: 'none',
@@ -68,7 +68,7 @@ const ForgotPassword = () => {
   const linkStyle = {
     marginTop: '15px',
     fontSize: '14px',
-    color: 'rgb(42, 98, 113)',
+    color: '#1E3A8A)',
     textDecoration: 'none',
     display: 'block'
   };

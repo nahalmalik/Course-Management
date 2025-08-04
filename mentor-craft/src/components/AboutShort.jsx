@@ -1,10 +1,11 @@
+/* about */
 import React from "react";
 import styled from "styled-components";
 import aboutImage from "../assets/about-us.jpg";
 
 const Section = styled.section`
   padding: 60px 30px;
-  background-color: #f9f9f9;
+  background-color: #FFFFFF; /* background */
 `;
 
 const Container = styled.div`
@@ -36,13 +37,13 @@ const Text = styled.div`
 
   h2 {
     font-size: 28px;
-    color: rgb(42, 98, 113);
+    color: #1E3A8A; /* primary */
     margin-bottom: 20px;
   }
 
   p {
     font-size: 16px;
-    color: #444;
+    color: #1F2937; /* textPrimary */
     line-height: 1.7;
     margin-bottom: 20px;
   }
@@ -50,7 +51,7 @@ const Text = styled.div`
   ul {
     list-style: disc;
     padding-left: 20px;
-    color: rgb(32, 125, 140);
+    color: #3B82F6; /* secondary */
     font-size: 15px;
 
     li {

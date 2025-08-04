@@ -15,10 +15,10 @@ const Btn = styled.button`
   transition: 0.3s;
 
   &.add {
-    background: #205a61;
+    background: #1E3A8A;
     color: #fff;
     &:hover {
-      background: #163f45;
+      background: #3B82F6;
     }
   }
 

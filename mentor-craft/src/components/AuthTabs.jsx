@@ -6,7 +6,7 @@ const AuthTabs = ({ studentForm, instructorForm }) => {
   const buttonStyle = (isActive) => ({
     flex: 1,
     padding: '10px',
-    background: isActive ? 'rgb(32, 125, 140)' : '#ddd',
+    background: isActive ? '#1E3A8A' : '#E5E7EB', 
     color: isActive ? 'white' : 'black',
     border: 'none',
     cursor: 'pointer',

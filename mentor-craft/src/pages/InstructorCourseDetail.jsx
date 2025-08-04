@@ -98,7 +98,7 @@ const handleNoteUpload = async () => {
   return (
     <div className="instructor-detail-wrapper">
       <ToastContainer />
-      <h2 style={{ color: 'rgb(32,125,140)', marginBottom: 20 }}>{course.title}</h2>
+      <h2 style={{ color: '#1E3A8A', marginBottom: 20 }}>{course.title}</h2>
 
       {/* 📚 Curriculum */}
       <details open className="accordion-card fade-slide-up">

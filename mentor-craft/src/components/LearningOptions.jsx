@@ -9,7 +9,7 @@ const Section = styled.section`
 
 const Title = styled.h2`
   text-align: center;
-  color: rgb(42, 98, 113);
+  color: #1E3A8A;
   font-size: 30px;
   margin-bottom: 40px;
 `;
@@ -39,12 +39,12 @@ const Card = styled.div`
   svg {
     font-size: 40px;
     margin-bottom: 20px;
-    color: rgb(32, 125, 140);
+    color: #1E3A8A;
   }
 
   h4 {
     font-size: 20px;
-    color: rgb(42, 98, 113);
+    color: #1E3A8A;
     margin-bottom: 12px;
   }
 

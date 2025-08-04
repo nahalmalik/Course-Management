@@ -7,7 +7,7 @@ import logo from "../assets/logo.png";
 const HeaderWrapper = styled.header`
   top: 0;
   z-index: 1000;
-  background-color: rgb(32, 125, 140);
+  background-color: #1E3A8A ;
   padding: 18px 30px;
   display: flex;
   align-items: center;
@@ -136,11 +136,8 @@ const Header = () => {
           </DropdownContent>
         </DropdownWrapper>
 
-        <NavLink to="/instructor-dashboard">Instructor Dashboard</NavLink>
-        <NavLink to="/student/overview">Student Dashboard</NavLink>
-
         <IconGroup>
-          <FaSearch />
+          
           <NavLink to="/cart"><FaShoppingCart /></NavLink>
         </IconGroup>
       </Nav>

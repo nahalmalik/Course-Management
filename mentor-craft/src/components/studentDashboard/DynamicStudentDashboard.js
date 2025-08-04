@@ -3,6 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import LearningProgressChart from './LearningProgressChart';
 import { FaUserGraduate, FaBookOpen, FaCheckCircle } from 'react-icons/fa';
 
+// Dummy notifications only
+const dummyNotifications = {
+  announcements: [
+    { id: 1, course: 101, message: "Welcome to the React course!" }
+  ],
+  assignments: [
+    { id: 2, course: 101, title: "Build a Todo App" }
+  ],
+  quizzes: [
+    { id: 3, course: 102, title: "Python Basics Quiz" }
+  ]
+};
+
 const DynamicStudentDashboard = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -17,12 +30,11 @@ const DynamicStudentDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       const token = localStorage.getItem('accessToken');
-      const headers = {
-        Authorization: `Bearer ${token}`
-      };
+      const headers = { Authorization: `Bearer ${token}` };
+
       try {
         const [profileRes, enrolledRes] = await Promise.all([
-          fetch('http://localhost:8000/api/users/me/', { headers }), // assuming this gives current user
+          fetch('http://localhost:8000/api/users/me/', { headers }),
           fetch('http://localhost:8000/api/users/enrollments/', { headers })
         ]);
 
@@ -30,37 +42,27 @@ const DynamicStudentDashboard = () => {
         const enrolledData = await enrolledRes.json();
 
         setUser(userData);
-        setEnrolledCourses(enrolledData.map(item => item.course)); // assuming `item.course` is full course object
+        const courses = enrolledData.map(item => item.course);
+        setEnrolledCourses(courses);
       } catch (err) {
-        console.error("Failed to load profile or enrollments:", err);
+        console.error("Error fetching user data:", err);
       }
     };
+
     fetchData();
   }, []);
 
   useEffect(() => {
-    const fetchContent = async () => {
-      try {
-        const res = await Promise.all([
-          fetch('http://localhost:8000/api/instructor/announcements/'),
-          fetch('http://localhost:8000/api/courses/assignments/'),
-          fetch('http://localhost:8000/api/courses/quizzes/'),
-          fetch('http://localhost:8000/api/courses/lectures/'),
-          fetch('http://localhost:8000/api/courses/notes/'),
-          fetch('http://localhost:8000/api/courses/reviews/')
-        ]);
-        const data = await Promise.all(res.map(r => r.json()));
-        const enrolledIds = enrolledCourses.map(c => c.id);
-        const filter = arr => arr.filter(item => enrolledIds.includes(item.course));
-        setAnnouncements(filter(data[0]));
-        setAssignments(filter(data[1]));
-        setQuizzes(filter(data[2]));
-        setLectures(filter(data[3]));
-        setNotes(filter(data[4]));
-        setReviews(filter(data[5]));
-      } catch (err) {
-        console.error("Failed to load dashboard content:", err);
-      }
+    const fetchContent = () => {
+      const enrolledIds = enrolledCourses.map(c => c.id);
+      const filter = arr => arr.filter(item => enrolledIds.includes(item.course));
+
+      setAnnouncements(filter(dummyNotifications.announcements));
+      setAssignments(filter(dummyNotifications.assignments));
+      setQuizzes(filter(dummyNotifications.quizzes));
+      setLectures([]);
+      setNotes([]);
+      setReviews([]);
     };
 
     if (enrolledCourses.length > 0) fetchContent();
@@ -88,8 +90,7 @@ const DynamicStudentDashboard = () => {
         </div>
 
         <div style={styles.statsRow}>
-          {[
-            { icon: <FaUserGraduate />, label: 'Total', value: total },
+          {[{ icon: <FaUserGraduate />, label: 'Total', value: total },
             { icon: <FaBookOpen />, label: 'Active', value: active },
             { icon: <FaCheckCircle />, label: 'Completed', value: completed }
           ].map((s, i) => (
@@ -112,7 +113,7 @@ const DynamicStudentDashboard = () => {
         <div style={styles.courseGrid}>
           {recentCourses.map(course => (
             <div key={course.id} style={styles.courseCard}>
-              <img src={course.image} alt="" style={styles.courseImg} />
+              <img src={course.image || "https://via.placeholder.com/300x180.png?text=Course+Image"} alt="" style={styles.courseImg} />
               <h4>{course.title}</h4>
               <div style={styles.progressTrack}>
                 <div style={{ ...styles.progressFill, width: `0%` }} />

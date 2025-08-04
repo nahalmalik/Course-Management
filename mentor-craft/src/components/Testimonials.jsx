@@ -11,7 +11,7 @@ const Section = styled.section`
 
 const Title = styled.h2`
   font-size: 32px;
-  color: rgb(42, 98, 113);
+  color: #1E3A8A;
   text-align: center;
   margin-bottom: 40px;
 `;
@@ -35,12 +35,12 @@ const Card = styled.div`
     border-radius: 50%;
     object-fit: cover;
     margin-bottom: 15px;
-    border: 3px solid rgb(32, 125, 140);
+    border: 3px solid #1E3A8A;
   }
 
   h4 {
     margin: 10px 0 5px;
-    color: rgb(32, 125, 140);
+    color: #1E3A8A;
     font-size: 18px;
   }
 

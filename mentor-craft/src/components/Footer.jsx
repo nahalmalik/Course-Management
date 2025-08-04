@@ -4,7 +4,7 @@ import { FaFacebookF, FaTwitter, FaLinkedinIn, FaInstagram } from "react-icons/f
 import logo from "../assets/logo.png"; // Use your actual logo path
 
 const FooterWrapper = styled.footer`
-  background-color: rgb(42, 98, 113);
+  background-color: #1E3A8A;
   color: #fff;
   padding: 60px 30px 20px;
 `;
@@ -76,7 +76,7 @@ const SocialIcons = styled.div`
 
   a {
     color: white;
-    background: rgb(32, 125, 140);
+    background: #3B82F6;
     padding: 10px;
     border-radius: 50%;
     display: inline-flex;
@@ -85,7 +85,7 @@ const SocialIcons = styled.div`
 
     &:hover {
       background: #fff;
-      color: rgb(32, 125, 140);
+      color: #4EB4F6;
     }
   }
 `;
@@ -127,17 +127,16 @@ const Footer = () => {
             <h4>Links</h4>
             <a href="/about">About Us</a>
             <a href="/contact">Contact</a>
-            <a href="/shop">Shop</a>
-            <a href="/pricing">Pricing Table</a>
+            <a href="/courses">Purchase Courses</a>
           </LinkGroup>
         </Column>
 
         {/* Class Links */}
         <Column>
           <LinkGroup>
-            <h4>Class</h4>
-            <a href="/courses">Courses</a>
-            <a href="/student-dashboard">Student Panel</a>
+            <h4>Quick Access</h4>
+            <a href="/login/instructor">Teachers Panel </a>
+            <a href="/login/student">Students Panel</a>
             <a href="/become-instructor">Become Instructor</a>
           </LinkGroup>
         </Column>
@@ -156,7 +155,7 @@ const Footer = () => {
 
       {/* Bottom Copyright */}
       <BottomBar>
-        © {new Date().getFullYear()} Mentor Craft | Developed with 💻
+        © {new Date().getFullYear()} Mentor Craft | FYP
       </BottomBar>
     </FooterWrapper>
   );

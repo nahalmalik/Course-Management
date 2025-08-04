@@ -13,7 +13,7 @@ const Section = styled.div`
 
 const Title = styled.h4`
   font-size: 16px;
-  color: rgb(42, 98, 113);
+  color: #1E3A8A;
   margin-bottom: 10px;
 `;
 

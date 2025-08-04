@@ -37,7 +37,7 @@ const Header = styled.div`
 
 const Title = styled.h2`
   font-size: 26px;
-  color: rgb(42, 98, 113);
+  color: #1E3A8A;
 `;
 
 const ToggleButtons = styled.div`
@@ -55,7 +55,7 @@ const ToggleButtons = styled.div`
     transition: 0.2s;
 
     &.active {
-      background: rgb(32, 125, 140);
+      background: #1E3A8A;
       color: white;
     }
   }
@@ -92,7 +92,7 @@ const Pagination = styled.div`
     color: #444;
 
     &.active {
-      background: rgb(32, 125, 140);
+      background: #1E3A8A;
       color: white;
     }
 

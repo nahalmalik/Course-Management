@@ -6,7 +6,7 @@ const NotificationCard = ({ notification }) => {
   const { type, title, message, course, date } = notification;
 
   const badgeColor = {
-    announcement: '#208080',
+    announcement: '#1E3A8A',
     quiz: '#ff9800',
     assignment: '#3f51b5',
   }[type] || '#555';

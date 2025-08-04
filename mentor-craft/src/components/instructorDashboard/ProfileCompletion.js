@@ -37,7 +37,7 @@ const ProfileCompletion = ({ percent = 40, onCompleteProfile }) => {
   const buttonStyle = {
     marginTop: 15,
     padding: '10px 20px',
-    backgroundColor: 'rgb(32,125,140)',
+    backgroundColor: '#1E3A8A',
     color: '#fff',
     border: 'none',
     borderRadius: '6px',

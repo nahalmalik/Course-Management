@@ -29,7 +29,7 @@ const Content = styled.div`
 const Title = styled.h3`
   font-size: 18px;
   margin-bottom: 10px;
-  color: rgb(42, 98, 113);
+  color: #1E3A8A;// Secondary color
 `;
 
 const Instructor = styled.p`
@@ -39,7 +39,7 @@ const Instructor = styled.p`
 `;
 
 const Badge = styled.span`
-  background: rgb(32, 125, 140);
+  background: #1E3A8A; // Primary color
   color: white;
   padding: 4px 10px;
   border-radius: 20px;
@@ -65,15 +65,19 @@ const CourseCardGrid = ({ course }) => {
     <Link to={`/courses/${course.id}`} style={{ textDecoration: "none" }}>
       <Card>
         <img
-  src={
-    course.thumbnail?.startsWith('data:image')
-      ? course.thumbnail
-      : course.image || course.thumbnail || '/assets/default-course.jpg'
-  }
-  alt={course.title}
-  style={{ width: '100%', height: '200px', objectFit: 'cover', borderRadius: '8px' }}
-/>
-
+          src={
+            course.thumbnail?.startsWith("data:image")
+              ? course.thumbnail
+              : course.image || course.thumbnail || "/assets/default-course.jpg"
+          }
+          alt={course.title}
+          style={{
+            width: "100%",
+            height: "200px",
+            objectFit: "cover",
+            borderRadius: "8px"
+          }}
+        />
         <Content>
           <Badge>{course.category}</Badge>
           <Title>{course.title}</Title>
@@ -95,4 +99,5 @@ const CourseCardGrid = ({ course }) => {
     </Link>
   );
 };
+
 export default CourseCardGrid;

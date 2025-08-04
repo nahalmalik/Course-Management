@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'student',
     'courses',
     'firebase_sync',
+    'achievements',
 ]
 
 # Middleware

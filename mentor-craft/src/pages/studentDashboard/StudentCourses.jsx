@@ -21,7 +21,7 @@ const TitleRow = styled.div`
 
 const Title = styled.h2`
   font-size: 28px;
-  color: rgb(42, 98, 113);
+  color: #1E3A8A;
 `;
 
 const Filters = styled.div`
@@ -67,7 +67,7 @@ const CardBody = styled.div`
 
 const CourseTitle = styled.h4`
   font-size: 18px;
-  color: rgb(32, 125, 140);
+  color: #1E3A8A;
   margin-bottom: 10px;
 `;
 
@@ -86,7 +86,7 @@ const ButtonGroup = styled.div`
 
 const ViewButton = styled(Link)`
   padding: 8px 14px;
-  background: rgb(32, 125, 140);
+  background: #1E3A8A;
   color: white;
   text-decoration: none;
   border-radius: 6px;
@@ -94,7 +94,7 @@ const ViewButton = styled(Link)`
   transition: background 0.2s ease;
 
   &:hover {
-    background: rgb(42, 98, 113);
+    background: #1E3A8A;
   }
 `;
 
@@ -113,7 +113,7 @@ const Pagination = styled.div`
     transition: background 0.2s ease;
 
     &.active {
-      background: rgb(32, 125, 140);
+      background: #1E3A8A;
       color: white;
     }
   }
@@ -132,16 +132,21 @@ const StudentDashboard = () => {
   useEffect(() => {
   const loadEnrolledCourses = async () => {
     try {
+      ;
+
       const backendEnrollments = await fetchEnrollmentsFromBackend();
 
-      const mappedCourses = backendEnrollments.map((item) => ({
-        id: item.course_id,
-        title: item.course_title,
-        instructor: item.instructor,
-        image: item.course_image,
-        enrolledAt: item.enrolled_at,
-        orderId: item.order_id,
-      }));
+const mappedCourses = backendEnrollments.map((item) => ({
+  id: item.course_id, // ✅ UUID used for routing
+  title: item.course_title,
+  instructor: item.instructor,
+  image: item.course_image,
+  enrolledAt: item.enrolled_at,
+  orderId: item.order_id,
+}));
+
+
+
 
       setCourses(mappedCourses);
       setFilteredCourses(mappedCourses);
@@ -208,10 +213,11 @@ const StudentDashboard = () => {
                 <Meta>Instructor: {course.instructor}</Meta>
                 <Meta>Enrolled on: {new Date(course.enrolledAt).toLocaleDateString()}</Meta>
                 <ButtonGroup>
-                  <ViewButton to={`/courses/${course.id}`}>View Course</ViewButton>
-                  {course.orderId?.startsWith('ASSIGNED-') ? null : (
-                    <ViewButton to={`/receipt/${course.orderId}`}>View Receipt</ViewButton>
-                  )}
+              <ViewButton to={`/student/course-details/${course.id}`}>View Course</ViewButton>
+{typeof course.orderId === 'string' && !course.orderId.startsWith('ASSIGNED-') ? (
+  <ViewButton to={`/receipt/${course.orderId}`}>View Receipt</ViewButton>
+) : null}
+
                 </ButtonGroup>
               </CardBody>
             </Card>

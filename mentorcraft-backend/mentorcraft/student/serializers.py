@@ -187,3 +187,32 @@ class StudentDiscussionSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['student', 'created_at']
 
+from courses.models import Course, Lecture, Note
+from users.models import CustomUser, Enrollment
+from rest_framework import serializers
+
+class LectureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Lecture
+        fields = ['id', 'title', 'description', 'duration', 'icon', 'video']
+
+class NoteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Note
+        fields = ['id', 'title', 'description', 'file', 'uploaded_at']
+
+class EnrolledUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'first_name', 'last_name', 'email']
+
+class StudentCourseDetailSerializer(serializers.ModelSerializer):
+    instructor_name = serializers.SerializerMethodField()
+    course_id = serializers.UUIDField(read_only=True)
+
+    class Meta:
+        model = Course
+        fields = ['id', 'course_id', 'title', 'description', 'image', 'duration', 'instructor_name']
+
+    def get_instructor_name(self, obj):
+        return obj.instructor  # stored as name string in your model

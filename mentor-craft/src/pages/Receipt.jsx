@@ -41,7 +41,7 @@ const Breadcrumbs = styled.div`
   margin-bottom: 25px;
   color: #555;
   a {
-    color: rgb(42, 98, 113);
+    color: #1E3A8A;
     text-decoration: none;
     font-weight: 500;
   }
@@ -56,7 +56,7 @@ const Logo = styled.img`
 const Heading = styled.h1`
   text-align: center;
   font-size: 28px;
-  color: rgb(32, 125, 140);
+  color: #1E3A8A;
   margin-bottom: 30px;
 `;
 
@@ -116,7 +116,7 @@ const BackLink = styled(Link)`
   display: inline-block;
   margin-top: 10px;
   font-size: 14px;
-  color: rgb(42, 98, 113);
+  color: #1E3A8A;
   text-decoration: none;
 
   &:hover {
@@ -158,7 +158,7 @@ const ButtonRow = styled.div`
 const PrintButton = styled.button`
   padding: 10px 16px;
   font-size: 14px;
-  background-color: rgb(32, 125, 140);
+  background-color:#1E3A8A;
   color: white;
   border: none;
   border-radius: 6px;
@@ -166,7 +166,7 @@ const PrintButton = styled.button`
   font-weight: 500;
 
   &:hover {
-    background-color: rgb(42, 98, 113);
+    background-color: #1E3A8A;
   }
 `;
 
@@ -174,7 +174,7 @@ const ThankYou = styled.p`
   text-align: center;
   margin-top: 50px;
   font-size: 16px;
-  color: rgb(42, 98, 113);
+  color: #1E3A8A;
   font-weight: 500;
 `;
 

@@ -54,6 +54,8 @@ import StudentReviewPage from "./pages/studentDashboard/StudentReviewPage";
 import StudentAssignmentPage from "./pages/studentDashboard/StudentAssignmentPage";
 import StudentQuizPage from "./pages/studentDashboard/StudentQuizPage";
 import StudentDiscussions from "./pages/studentDashboard/StudentDiscussions";
+import StudentCourseDetailPage from "./pages/studentDashboard/StudentCourseDetailPage";
+import StudentAchievementsPage from "./pages/studentDashboard/StudentAchievementsPage";
 
 // Protected Route
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -123,12 +125,15 @@ function App() {
               <Route path="overview" element={<StudentOverview />} />
                 <Route path="profile" element={<StudentProfile />} />
                 <Route path="reviews" element={<StudentReviewPage/>}/>
+                <Route path="course-details/:courseId" element={<StudentCourseDetailPage />} />
+                <Route path="studentcoursedetail" element={<StudentCourseDetailPage/>}/>
                 <Route path="courses" element={<StudentCourses />} />
                 <Route path="enrollment-history" element={<StudentEnrollmentHistory />} />
                 <Route path="quiz-results" element={<StudentQuizResults />} />
                 <Route path="settings" element={<StudentSettings />} />
                 <Route path="assignment-submit" element={<StudentAssignmentPage/>}/>
                 <Route path="quizzes" element={<StudentQuizPage/>}/>
+                <Route path="achievements" element={<StudentAchievementsPage/>}/>
                 <Route path="discussion" element={<StudentDiscussions/>}/>
               </Route>
             </Route>

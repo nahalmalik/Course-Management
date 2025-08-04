@@ -11,7 +11,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #207d8c;
+  background-color: #1E3A8A;
   color: #fff;
   padding: 20px 30px;
 }
@@ -28,7 +28,7 @@
 
 .create-course-btn {
   background-color: #ffffff;
-  color: #207d8c;
+  color: #1E3A8A;
   border: none;
   padding: 8px 16px;
   font-weight: bold;
@@ -84,7 +84,7 @@
 /* === SIDEBAR === */
 .sidebar {
   width: 200px;
-  background-color: #2a6271;
+  background-color: #1E3A8A;
   color: white;
   padding-top: 30px;
   min-height: 100%;
@@ -103,7 +103,7 @@
 
 .sidebar li:hover,
 .sidebar li.active {
-  background-color: #1d4752;
+  background-color: #1E3A8A;
 }
 
 /* === MAIN SECTION === */
@@ -122,7 +122,7 @@
 
 .my-courses-header h2 {
   margin: 0;
-  color: #2a6271;
+  color: #1E3A8A;
 }
 
 .view-toggle {
@@ -137,7 +137,7 @@
 .view-toggle button {
   background-color: transparent;
   border: none;
-  color: #2a6271;
+  color: #1E3A8A;
   font-weight: 500;
   font-size: 14px;
   padding: 8px 18px;
@@ -148,11 +148,11 @@
 
 .view-toggle button:hover {
   background-color: #d3eef2;
-  color: #1d4752;
+  color: #1E3A8A;
 }
 
 .view-toggle button.active {
-  background-color: #207d8c;
+  background-color: #1E3A8A;
   color: white;
   font-weight: 600;
 }
@@ -218,8 +218,8 @@
 }
 
 .course-list-item img {
-  width: 160px;
-  height: 100%;
+  width: 100px;
+  height: 50%;
   object-fit: cover;
 }
 
@@ -230,7 +230,7 @@
 
 .course-info h4 {
   margin-top: 0;
-  color: #2a6271;
+  color: #1E3A8A;
 }
 
 .course-info p {
@@ -246,7 +246,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: #207d8c;
+  color: #1E3A8A;
   font-size: 14px;
 }
 .course-actions button:hover {
@@ -270,9 +270,9 @@
 }
 
 .view-toggle .active {
-  background: rgb(32,125,140);
+  background: #1E3A8A;
   color: white;
-  border: 1px solid rgb(32,125,140);
+  border: 1px solid #1E3A8A;
 }
 
 .courses-grid {
@@ -349,5 +349,5 @@
 }
 
 .create-course-btn:hover {
-  background: rgb(9, 103, 129);
+  background: #1E3A8A;
 }

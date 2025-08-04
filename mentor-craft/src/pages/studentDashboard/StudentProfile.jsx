@@ -101,12 +101,12 @@ const styles = {
   },
   heading: {
     fontSize: '28px',
-    color: '#20818f',
+    color: '#1E3A8A',
     fontWeight: '600',
   },
   editBtn: {
     padding: '10px 16px',
-    backgroundColor: '#20818f',
+    backgroundColor: '#1E3A8A',
     color: '#fff',
     border: 'none',
     borderRadius: '6px',
@@ -135,7 +135,7 @@ const styles = {
     height: '200px',
     borderRadius: '50%',
     objectFit: 'cover',
-    border: '4px solid #20818f',
+    border: '4px solid #1E3A8A',
     marginBottom: '10px',
   },
   placeholder: {

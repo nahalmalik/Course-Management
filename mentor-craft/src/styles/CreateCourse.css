@@ -28,7 +28,7 @@
   font-size: 26px;
   margin-bottom: 8px;
   font-weight: 600;
-  color: #20647f;
+  color: #1E3A8A;
 }
 
 .create-course-subtitle {
@@ -136,7 +136,7 @@
 /* Tag Style */
 .tag {
   display: inline-block;
-  background: #20647f;
+  background: #1E3A8A;
   color: white;
   padding: 6px 12px;
   margin: 5px 6px 0 0;
@@ -154,9 +154,9 @@
 .course-tips-box {
   flex: 1;
   background: linear-gradient(135deg, #e6f9fb, #f2fcfd);
-  border-left: 4px solid #207d8c;
+  border-left: 4px solid #1E3A8A;
   padding: 24px 22px;
-  border-left: 4px solid #207d8c;
+  border-left: 4px solid #1E3A8A;
   border-radius: 14px;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
   top: 40px;
@@ -167,7 +167,7 @@
 .course-tips-box h4 {
   font-size: 17px;
   font-weight: 700;
-  color: #1e6c77;
+  color: #1E3A8A;
   margin-bottom: 16px;
   display: flex;
   align-items: center;
@@ -185,7 +185,7 @@
   background: #ffffff;
   border-radius: 8px;
   margin-bottom: 10px;
-  border-left: 4px solid #1f8b9d;
+  border-left: 4px solid #1E3A8A;
   color: #333;
   font-size: 14px;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.04);
@@ -212,7 +212,7 @@
 /* Submit Button */
 .submit-btn {
   padding: 12px 20px;
-  background-color: #20647f;
+  background-color: #1E3A8A;
   color: white;
   font-size: 15px;
   font-weight: 500;
@@ -224,7 +224,7 @@
 }
 
 .submit-btn:hover {
-  background-color: #1a5067;
+  background-color: #1E3A8A;
 }
 
 /* Preview */

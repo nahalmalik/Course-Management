@@ -7,12 +7,12 @@ import { Link } from "react-router-dom";
 
 const Section = styled.section`
   padding: 60px 30px;
-  background-color: #f9f9f9;
+  background-color: #FFFFFF; /* background */
 `;
 
 const Title = styled.h2`
   text-align: center;
-  color: rgb(42, 98, 113);
+  color: #1E3A8A; /* primary */
   font-size: 30px;
   margin-bottom: 40px;
 `;
@@ -49,13 +49,13 @@ const Card = styled.div`
 
     h4 {
       font-size: 18px;
-      color: rgb(32, 125, 140);
+      color: #3B82F6; /* secondary */
       margin-bottom: 10px;
     }
 
     p {
       font-size: 14px;
-      color: #555;
+      color: #6B7280; /* textSecondary */
       margin-bottom: 15px;
     }
 
@@ -63,7 +63,7 @@ const Card = styled.div`
       font-weight: bold;
       font-size: 14px;
       text-decoration: none;
-      color: rgb(42, 98, 113);
+      color: #1E3A8A; /* primary */
 
       &:hover {
         text-decoration: underline;

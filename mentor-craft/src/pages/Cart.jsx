@@ -14,7 +14,7 @@ const Container = styled.div`
 const Title = styled.h2`
   font-size: 28px;
   margin-bottom: 30px;
-  color: rgb(42, 98, 113);
+  color: #1E3A8A;
   text-align: center;
 `;
 
@@ -26,7 +26,7 @@ const Table = styled.table`
 `;
 
 const Thead = styled.thead`
-  background: rgb(32, 125, 140);
+  background: #1E3A8A;
   color: white;
 `;
 
@@ -80,7 +80,7 @@ const Row = styled.div`
 const Total = styled.div`
   font-size: 20px;
   font-weight: bold;
-  color: #205a61;
+  color: #1E3A8A;
 `;
 
 const Button = styled.button`
@@ -116,7 +116,7 @@ const RecommendedSection = styled.div`
 
 const RecommendedTitle = styled.h3`
   font-size: 22px;
-  color: #205a61;
+  color: #1E3A8A;
   margin-bottom: 20px;
   text-align: center;
 `;

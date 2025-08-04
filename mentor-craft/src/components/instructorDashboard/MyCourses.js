@@ -12,17 +12,38 @@ const MyCourses = ({ courses }) => {
   return (
     <div style={{ background: '#fff', padding: 30, borderRadius: 12, boxShadow: '0 6px 15px rgba(0,0,0,0.06)' }}>
       <h3 style={{ marginBottom: 20 }}>My Courses</h3>
-      <div style={{ display: 'grid', gap: 20, gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
-        {courses.slice(0, 3).map(course => (
+
+      <div
+  style={{
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+    gap: 20,
+    justifyContent: 'center',         // 👈 prevents full-stretch
+    alignItems: 'start'
+  }}
+>
+
+        {courses.map(course => (
           <div
             key={course.id}
-            style={{ borderRadius: 10, padding: 16, boxShadow: '0 2px 8px rgba(0,0,0,0.06)', cursor: 'pointer' }}
+            style={{
+              borderRadius: 10,
+              padding: 16,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+              cursor: 'pointer'
+            }}
             onClick={() => navigate(`/instructor/courses/${course.id}`)}
           >
             <img
               src={renderImage(course)}
               alt={course.title}
-              style={{ width: '100%', height: 120, objectFit: 'cover', borderRadius: 6, marginBottom: 10 }}
+              style={{
+                width: '100%',
+                height: 120,
+                objectFit: 'cover',
+                borderRadius: 6,
+                marginBottom: 10
+              }}
             />
             <h4>{course.title}</h4>
             <p style={{ fontSize: 14 }}>{course.duration} · {course.lessons} lessons</p>
@@ -31,11 +52,18 @@ const MyCourses = ({ courses }) => {
         ))}
       </div>
 
-      {courses.length > 3 && (
+      {courses.length > 6 && (
         <div style={{ textAlign: 'center', marginTop: 20 }}>
           <button
             onClick={() => navigate('/instructor/mycourses')}
-            style={{ background: 'rgb(32,125,140)', color: '#fff', border: 'none', padding: '10px 20px', fontWeight: 'bold', borderRadius: 6 }}
+            style={{
+              background: '#1E3A8A',
+              color: '#fff',
+              border: 'none',
+              padding: '10px 20px',
+              fontWeight: 'bold',
+              borderRadius: 6
+            }}
           >
             👀 View All Courses
           </button>

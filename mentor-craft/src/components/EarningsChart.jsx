@@ -58,8 +58,8 @@ const EarningsChart = ({ zero = false }) => {
   const gradientDefs = (
     <defs>
       <linearGradient id="earnGradient" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor="#208088" stopOpacity={0.8} />
-        <stop offset="100%" stopColor="#208088" stopOpacity={0.2} />
+        <stop offset="0%" stopColor="#4EB4F6" stopOpacity={0.8} />
+        <stop offset="100%" stopColor="#4EB4F6" stopOpacity={0.2} />
       </linearGradient>
     </defs>
   );
@@ -156,7 +156,7 @@ const EarningsChart = ({ zero = false }) => {
 
   const buttonStyle = {
     padding: '8px 16px',
-    background: 'rgb(32,125,140)',
+    background: '#1E3A8A',
     color: '#fff',
     border: 'none',
     borderRadius: '6px',

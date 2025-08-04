@@ -13,7 +13,7 @@ const Section = styled.section`
 
 const Title = styled.h2`
   text-align: center;
-  color: rgb(42, 98, 113);
+  color: #1E3A8A ;
   font-size: 30px;
   margin-bottom: 40px;
 `;
@@ -31,7 +31,7 @@ const Grid = styled.div`
   }
 
   &::-webkit-scrollbar-thumb {
-    background: rgb(32, 125, 140);
+    background: #1E3A8A ;
     border-radius: 4px;
   }
 `;
@@ -62,7 +62,7 @@ const Card = styled.div`
 
   h4 {
     font-size: 16px;
-    color: rgb(32, 125, 140);
+    color: #1E3A8A ;
     margin-bottom: 5px;
   }
 
@@ -79,7 +79,7 @@ const Card = styled.div`
   }
 
   .socials a {
-    color: rgb(42, 98, 113);
+    color: #1E3A8A;
     font-size: 14px;
     transition: 0.3s;
   }

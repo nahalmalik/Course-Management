@@ -1,0 +1,162 @@
+:root {
+  --primary: #1E3A8A;
+  --main: #4EB4F6;
+  --secondary: #3B82F6;
+  --background: #FFFFFF;
+  --textPrimary: #1F2937;
+  --textSecondary: #6B7280;
+  --accent: #EF4444;
+  --darkBlue: #0A1F44;
+}
+
+.page {
+  padding: 2rem;
+  background: var(--background);
+  color: var(--textPrimary);
+}
+
+.course-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.course-thumb {
+  width: 120px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-right: 1rem;
+}
+
+.heading {
+  font-size: 2rem;
+  color: var(--primary);
+  margin: 0;
+}
+
+.instructor {
+  color: var(--textSecondary);
+  margin-top: 0.4rem;
+}
+
+.progress-bar-container {
+  height: 12px;
+  background: #eee;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--main);
+  transition: width 0.4s;
+}
+
+.section {
+  margin-bottom: 2rem;
+}
+
+.lecture-list {
+  list-style: none;
+  padding: 0;
+}
+
+.lecture-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.note-card {
+  background: var(--background);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+.notes-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.button {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  margin-top: 0.5rem;
+  transition: background 0.3s;
+}
+
+.button:hover {
+  background: var(--darkBlue);
+}
+
+.button-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.discussion-btn {
+  margin-left: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  background: var(--main);
+  color: white;
+  text-align: left;
+  padding: 0.8rem;
+}
+
+.table td {
+  padding: 0.8rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.modal-overlay {
+  position: fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background: rgba(0,0,0,0.5);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:1000;
+}
+
+.modal-content {
+  background:white;
+  width:90%;
+  max-width:600px;
+  padding:1.5rem;
+  border-radius:6px;
+}
+
+.modal-footer {
+  text-align:right;
+  margin-top:1rem;
+}
+
+.loading {
+  text-align:center;
+  padding:3rem;
+  font-size:1.3rem;
+  color: var(--textSecondary);
+}

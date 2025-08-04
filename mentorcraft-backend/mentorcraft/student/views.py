@@ -1,3 +1,4 @@
+#student/views.py
 from rest_framework import generics, permissions
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import ListAPIView, ListCreateAPIView, CreateAPIView, RetrieveUpdateAPIView
@@ -228,3 +229,59 @@ def EnrolledCoursesView(request):
     serializer = MinimalCourseSerializer(courses, many=True)
     return Response(serializer.data)
 
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.generics import RetrieveAPIView, ListAPIView
+from .serializers import (
+    StudentCourseDetailSerializer,
+    LectureSerializer,
+    NoteSerializer,
+    EnrolledUserSerializer
+)
+from courses.models import Course, Lecture, Note
+from users.models import Enrollment, CustomUser
+from rest_framework.exceptions import PermissionDenied
+
+def check_enrollment(user, course_id):
+    if not Enrollment.objects.filter(user=user, course__course_id=course_id).exists():
+        raise PermissionDenied("You are not enrolled in this course.")
+
+class StudentCourseDetailView(RetrieveAPIView):
+    serializer_class = StudentCourseDetailSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        # After (correct)
+        course_id = self.kwargs['course_id']
+        check_enrollment(self.request.user, course_id)
+        return Course.objects.get(course_id=course_id)
+
+
+class StudentCourseLecturesView(ListAPIView):
+    serializer_class = LectureSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        course_id = self.kwargs['course_id']
+        check_enrollment(self.request.user, course_id)
+        return Lecture.objects.filter(course__course_id=course_id)
+
+
+
+class StudentCourseNotesView(ListAPIView):
+    serializer_class = NoteSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        course_id = self.kwargs['course_id']
+        check_enrollment(self.request.user, course_id)
+        return Note.objects.filter(course__course_id=course_id)
+
+
+class EnrolledUsersView(ListAPIView):
+    serializer_class = EnrolledUserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        course_id = self.kwargs['course_id']
+        check_enrollment(self.request.user, course_id)
+        return CustomUser.objects.filter(enrollments__course__course_id=course_id)

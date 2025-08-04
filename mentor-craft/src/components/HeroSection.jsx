@@ -1,75 +1,94 @@
 import React from "react";
 import styled from "styled-components";
-import heroImg from "../assets/hero-img.png"; // Add an image similar to the template
+import heroImg from "../assets/hero-img.png"; // Update this with your own image
 
 const Wrapper = styled.section`
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  padding: 60px 30px;
-  background-color: #f9f9f9;
+  position: relative;
+  width: 100%;
+  height: 90vh;
+  overflow: hidden;
 `;
 
-const Left = styled.div`
-  flex: 1;
-  min-width: 300px;
+const BackgroundImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(40%) contrast(1.1) brightness(0.9);
+`;
+
+const Overlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.45); /* dark overlay for readability */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const Content = styled.div`
+  color: white;
+  text-align: center;
+  max-width: 800px;
+  padding: 20px;
 
   h1 {
-    font-size: 48px;
-    color: rgb(32, 125, 140);
+    font-size: 52px;
     margin-bottom: 20px;
+    color: #ffffffff ;
   }
 
   p {
-    font-size: 18px;
-    color: #444;
+    font-size: 20px;
     margin-bottom: 30px;
+    color: #e0e0e0;
   }
 
   button {
-    margin-right: 15px;
-    padding: 12px 24px;
+    margin: 0 10px;
+    padding: 12px 26px;
     font-size: 16px;
-    border: none;
     border-radius: 6px;
+    border: none;
     cursor: pointer;
+    transition: 0.3s ease;
   }
 
   .get-started {
-    background-color: rgb(32, 125, 140);
+    background-color: #1E3A8A ;
     color: white;
   }
 
-  .view-courses {
-    background-color: #eee;
-    color: rgb(32, 125, 140);
+  .get-started:hover {
+    background-color: #f0f0f0;
+    color: #1E3A8A;
   }
-`;
 
-const Right = styled.div`
-  flex: 1;
-  min-width: 300px;
-  text-align: center;
+  .view-courses {
+    background-color: #f0f0f0;
+    color: #1E3A8A;
+  }
 
-  img {
-    max-width: 100%;
-    height: auto;
+  .view-courses:hover {
+    background-color: #1E3A8A ;
+    color:#f0f0f0;
   }
 `;
 
 const HeroSection = () => {
   return (
     <Wrapper>
-      <Left>
-        <h1>Learn from the Best with Mentor Craft</h1>
-        <p>Build skills with online courses from top instructors. Anytime, anywhere.</p>
-        <button className="get-started">Get Started</button>
-        <button className="view-courses">View Courses</button>
-      </Left>
-      <Right>
-        <img src={heroImg} alt="Online Learning" />
-      </Right>
+      <BackgroundImage src={heroImg} alt="Online Learning" />
+      <Overlay>
+        <Content>
+          <h1>Learn from the Best with Mentor Craft</h1>
+          <p>Build skills with online courses from top instructors. Anytime, anywhere.</p>
+          <button className="get-started">Get Started</button>
+          <button className="view-courses">View Courses</button>
+        </Content>
+      </Overlay>
     </Wrapper>
   );
 };

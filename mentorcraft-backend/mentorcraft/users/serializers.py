@@ -183,7 +183,7 @@ class EnrollmentSerializer(serializers.ModelSerializer):
     course_title = serializers.CharField(source='course.title', read_only=True)
     course_image = serializers.ImageField(source='course.image', read_only=True)
     instructor = serializers.CharField(source='course.instructor', read_only=True)
-    order_id = serializers.CharField(source='order.order_id', read_only=True)
+    course_id = serializers.UUIDField(source='course.course_id')
 
     # ✅ Accept UUIDs using slug fields
     course = serializers.SlugRelatedField(
@@ -200,7 +200,7 @@ class EnrollmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Enrollment
         fields = [
-            'id',
+            'id','course_id',
             'course', 'order',           # ✅ writable
             'course_title', 'course_image', 'instructor',
             'order_id', 'enrolled_at'    # ✅ readable

@@ -10,7 +10,7 @@ const Section = styled.section`
 
 const Title = styled.h2`
   text-align: center;
-  color: rgb(42, 98, 113);
+  color: #1E3A8A;
   font-size: 30px;
   margin-bottom: 40px;
 `;
@@ -46,7 +46,7 @@ const CategoryCard = styled.div`
   min-height: 170px;
 
   &:hover {
-    background-color: rgb(32, 125, 140);
+    background-color: #1E3A8A;
     color: white;
 
     h4, a {
@@ -60,21 +60,21 @@ const CategoryCard = styled.div`
 
   svg {
     font-size: 30px;
-    color: rgb(32, 125, 140);
+    color: #1E3A8A;
     margin-bottom: 10px;
     transition: 0.3s;
   }
 
   h4 {
     font-size: 16px;
-    color: rgb(42, 98, 113);
+    color: #1E3A8A;
     margin-bottom: 10px;
     transition: 0.3s;
   }
 
   a {
     font-size: 14px;
-    color: rgb(32, 125, 140);
+    color: #1E3A8A);
     text-decoration: none;
     display: inline-flex;
     align-items: center;

@@ -15,7 +15,7 @@ const Container = styled.div`
 const Title = styled.h2`
   text-align: center;
   font-size: 30px;
-  color: rgb(42, 98, 113);
+  color: #1E3A8A;
   margin-bottom: 40px;
 `;
 
@@ -41,14 +41,14 @@ const Card = styled.div`
   svg {
     font-size: 36px;
     margin-bottom: 15px;
-    color: rgb(32, 125, 140);
+    color: #1E3A8A;
     transition: 0.3s;
   }
 
   h3 {
     font-size: 20px;
     margin-bottom: 10px;
-    color: rgb(42, 98, 113);
+    color: #1E3A8A;
   }
 
   p {

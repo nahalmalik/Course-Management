@@ -15,7 +15,7 @@ const Title = styled.h2`
   font-size: 28px;
   font-weight: 600;
   margin-bottom: 25px;
-  color: #205d67;
+  color: #1E3A8A;
   text-align: center;
 `;
 
@@ -60,7 +60,7 @@ const Tr = styled.tr`
 `;
 
 const ReceiptButton = styled(Link)`
-  background-color: #207d8c;
+  background-color: #1E3A8A;
   color: white;
   padding: 8px 14px;
   border-radius: 6px;
@@ -70,7 +70,7 @@ const ReceiptButton = styled(Link)`
   display: inline-block;
 
   &:hover {
-    background-color: #2a6271;
+    background-color: #1E3A8A;
   }
 `;
 

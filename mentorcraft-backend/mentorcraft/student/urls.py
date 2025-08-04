@@ -1,3 +1,4 @@
+#student/urls.py
 from django.urls import path
 from .views import EnrolledCoursesView
 from .views import (
@@ -24,6 +25,12 @@ from .views import (
 
     #StudentDiscussion
     StudentDiscussionListCreateView,
+
+    #Course Detail for Students
+    StudentCourseDetailView,
+    StudentCourseLecturesView,
+    StudentCourseNotesView,
+    EnrolledUsersView
 )
 
 urlpatterns = [
@@ -53,4 +60,13 @@ urlpatterns = [
 
     # ──────── Student Discussion ────────
     path('discussions/', StudentDiscussionListCreateView.as_view(), name='student-discussions'),
+
+    # ──────── Course Detail for Students ────────    
+path('course-details/<uuid:course_id>/', StudentCourseDetailView.as_view(), name='student-course-detail'),
+path('course-details/<uuid:course_id>/lectures/', StudentCourseLecturesView.as_view(), name='student-course-lectures'),
+path('course-details/<uuid:course_id>/notes/', StudentCourseNotesView.as_view(), name='student-course-notes'),
+path('course-details/<uuid:course_id>/enrolled-users/', EnrolledUsersView.as_view(), name='enrolled-users'),
+
 ]
+
+

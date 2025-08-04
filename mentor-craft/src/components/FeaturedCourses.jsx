@@ -11,7 +11,7 @@ const Section = styled.section`
 
 const Title = styled.h2`
   font-size: 32px;
-  color: rgb(42, 98, 113);
+  color: #1E3A8A;
   text-align: center;
   margin-bottom: 40px;
 `;
@@ -44,7 +44,7 @@ const Card = styled.div`
     padding: 20px;
 
     h3 {
-      color: rgb(32, 125, 140);
+      color: #1E3A8A;
       font-size: 20px;
       margin-bottom: 10px;
     }
@@ -56,13 +56,13 @@ const Card = styled.div`
 
     .price {
       font-weight: bold;
-      color: rgb(42, 98, 113);
+      color: #4A90E2 ;
       margin-bottom: 10px;
     }
 
     a {
       display: inline-block;
-      background-color: rgb(32, 125, 140);
+      background-color:#1E3A8A;
       color: white;
       border: none;
       padding: 10px 18px;
@@ -72,7 +72,7 @@ const Card = styled.div`
       transition: background 0.3s ease;
 
       &:hover {
-        background-color: rgb(42, 98, 113);
+        background-color: #4A90E2 ;
       }
     }
   }

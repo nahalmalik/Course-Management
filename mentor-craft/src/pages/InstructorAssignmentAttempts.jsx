@@ -126,7 +126,7 @@ const styles = {
     borderBottom: '1px solid #f0f0f0'
   },
   th: {
-    backgroundColor: '#20818f',
+    backgroundColor: '#1E3A8A',
     color: '#fff',
     padding: '12px',
     fontSize: '14px',
@@ -138,7 +138,7 @@ const styles = {
     color: '#333',
   },
   fileLink: {
-    color: '#20818f',
+    color: '#1E3A8A',
     fontSize: '14px',
     textDecoration: 'underline',
   },

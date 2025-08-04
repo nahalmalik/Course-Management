@@ -1,3 +1,4 @@
+#users/urls.py
 from django.urls import path
 from .views import RegisterView, CustomTokenObtainPairView,StudentTokenView, InstructorTokenView,StudentSignupView,InstructorSignupView
 from rest_framework_simplejwt.views import TokenRefreshView

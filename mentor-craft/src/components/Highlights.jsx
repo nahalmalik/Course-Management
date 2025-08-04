@@ -24,7 +24,7 @@ const Box = styled.div`
   transition: 0.3s;
 
   &:hover {
-    background: rgb(32, 125, 140);
+    background: #1E3A8A ;
     color: white;
 
 
@@ -35,7 +35,7 @@ const Box = styled.div`
 
   svg {
     font-size: 32px;
-    color: rgb(42, 98, 113);
+    color: #1E3A8A ;
     margin-bottom: 15px;
     transition: 0.3s;
   }
@@ -48,6 +48,7 @@ const Box = styled.div`
   p {
     font-size: 14px;
     color: #666;
+    
   }
 `;
 

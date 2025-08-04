@@ -28,7 +28,7 @@ const Banner = styled.div`
   align-items: center;
   gap: 30px;
   padding: 40px 30px;
-  background: rgb(32, 125, 140);
+  background: #0A1F44;
   color: white;
   border-radius: 0 0 20px 20px;
   flex-wrap: wrap;
@@ -71,7 +71,7 @@ const BackButton = styled(Link)`
   display: inline-flex;
   align-items: center;
   font-size: 14px;
-  color: rgb(32, 125, 140);
+  color: #1E3A8A;
   margin: 20px 30px 0;
   text-decoration: none;
   font-weight: 500;
@@ -88,7 +88,7 @@ const Breadcrumb = styled.div`
   font-size: 14px;
   color: #777;
   a {
-    color: rgb(32, 125, 140);
+    color: #1E3A8A;
     text-decoration: none;
   }
   a:hover {
@@ -126,7 +126,7 @@ const RightSidebar = styled.div`
 
 const PriceBadge = styled.div`
   display: inline-block;
-  background: rgb(32, 125, 140);
+  background: #1E3A8A;
   color: white;
   padding: 6px 12px;
   border-radius: 20px;
@@ -136,7 +136,7 @@ const PriceBadge = styled.div`
   transition: transform 0.3s ease, background 0.3s ease;
 
   &:hover {
-    background: rgb(42, 98, 113);
+    background: #1E3A8A;
     transform: scale(1.05);
   }
 `;
@@ -173,12 +173,12 @@ const TabNav = styled.div`
     transition: all 0.3s ease;
 
     &.active {
-      background: rgb(32, 125, 140);
+      background: #1E3A8A;
       color: white;
     }
 
     &:hover {
-      background: rgb(42, 98, 113);
+      background: #1E3A8A;
       color: white;
     }
   }
@@ -225,7 +225,7 @@ const RelatedSection = styled.div`
 
 const RelatedTitle = styled.h3`
   font-size: 22px;
-  color: rgb(42, 98, 113);
+  color: #1E3A8A;
   margin-bottom: 25px;
 `;
 

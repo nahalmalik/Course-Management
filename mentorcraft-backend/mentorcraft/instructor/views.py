@@ -129,3 +129,39 @@ class InstructorQuizAttemptsListView(generics.ListAPIView):
         return QuizAttempt.objects.filter(
             quiz__course__instructor_email=self.request.user.email
         )
+    
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from users.models import Enrollment
+from student.models import Review
+from .models import InstructorCourseAnalytics
+from courses.models import Course
+
+class InstructorStatsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+
+        # Get all analytics objects for this instructor
+        analytics = InstructorCourseAnalytics.objects.filter(instructor=user)
+
+        total_earnings = sum([a.earnings for a in analytics])
+        total_enrollments = sum([a.enrollments for a in analytics])
+
+        # Get all students enrolled in instructor's courses
+        instructor_courses = Course.objects.filter(instructor=user)
+        enrollments = Enrollment.objects.filter(course__in=instructor_courses)
+        unique_students = enrollments.values('user').distinct().count()
+
+        # Get all reviews for instructor's courses
+        reviews = Review.objects.filter(course__in=instructor_courses)
+        total_reviews = reviews.count()
+
+        return Response({
+            "earnings": total_earnings,
+            "enrollments": total_enrollments,
+            "students": unique_students,
+            "reviews": total_reviews
+        })
