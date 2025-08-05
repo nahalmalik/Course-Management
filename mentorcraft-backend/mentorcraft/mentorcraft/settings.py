@@ -3,7 +3,8 @@ import os
 from datetime import timedelta
 
 # Base directory
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-z&-5&r#-jn+@ec&v+e-zj=5#ak8cx5vttxxkca6-7v=($$rbwq'

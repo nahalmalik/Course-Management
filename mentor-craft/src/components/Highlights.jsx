@@ -5,6 +5,10 @@ import { FaUsers, FaChalkboardTeacher, FaLaptop, FaHeadset } from "react-icons/f
 const Section = styled.section`
   padding: 60px 30px;
   background-color: #fff;
+
+  @media (max-width: 768px) {
+    padding: 40px 16px;
+  }
 `;
 
 const Grid = styled.div`
@@ -13,7 +17,18 @@ const Grid = styled.div`
   gap: 30px;
   max-width: 1000px;
   margin: 0 auto;
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
 `;
+
 
 const Box = styled.div`
   background: white;
@@ -24,9 +39,8 @@ const Box = styled.div`
   transition: 0.3s;
 
   &:hover {
-    background: #1E3A8A ;
+    background: #1e3a8a;
     color: white;
-
 
     svg {
       color: white;
@@ -35,7 +49,7 @@ const Box = styled.div`
 
   svg {
     font-size: 32px;
-    color: #1E3A8A ;
+    color: #1e3a8a;
     margin-bottom: 15px;
     transition: 0.3s;
   }
@@ -43,12 +57,19 @@ const Box = styled.div`
   h4 {
     font-size: 18px;
     margin-bottom: 5px;
+
+    @media (max-width: 480px) {
+      font-size: 16px;
+    }
   }
 
   p {
     font-size: 14px;
     color: #666;
-    
+
+    @media (max-width: 480px) {
+      font-size: 13px;
+    }
   }
 `;
 

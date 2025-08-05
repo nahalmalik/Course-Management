@@ -1,19 +1,27 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { FaSearch, FaShoppingCart, FaUser } from "react-icons/fa";
+import { FaSearch, FaShoppingCart, FaUser, FaBars, FaTimes } from "react-icons/fa";
 import logo from "../assets/logo.png";
 
+// Header Wrapper
 const HeaderWrapper = styled.header`
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 1000;
-  background-color: #1E3A8A ;
-  padding: 18px 30px;
+  background-color: #1E3A8A;
+  padding: 12px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   color: #fff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  @media (max-width: 786) {
+    padding: 10px 16px;
+  }
 `;
 
 const LogoLink = styled(Link)`
@@ -24,20 +32,37 @@ const LogoLink = styled(Link)`
 `;
 
 const LogoImg = styled.img`
-  height: 55px;
-  margin-right: 12px;
+  height: 50px;
+  margin-right: 10px;
 `;
 
 const LogoText = styled.span`
-  font-size: 24px;
+  font-size: 20px;
   font-weight: bold;
   letter-spacing: 0.5px;
+
+  @media (max-width: 480px) {
+    font-size: 18px;
+  }
 `;
 
+// Nav styles
 const Nav = styled.nav`
   display: flex;
   gap: 20px;
   align-items: center;
+
+  @media (max-width: 768px) {
+    display: ${({ open }) => (open ? "flex" : "none")};
+    flex-direction: column;
+    position: absolute;
+    top: 70px;
+    right: 0;
+    width: 75%;
+    background-color: #1E3A8A;
+    padding: 20px;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+  }
 `;
 
 const NavLink = styled(Link)`
@@ -56,7 +81,6 @@ const IconGroup = styled.div`
   font-size: 18px;
 `;
 
-// Dropdown styles
 const DropdownWrapper = styled.div`
   position: relative;
   display: inline-block;
@@ -73,7 +97,6 @@ const DropdownContent = styled.div`
   visibility: ${({ open }) => (open ? 'visible' : 'hidden')};
   transform: ${({ open }) => (open ? 'translateY(0)' : 'translateY(-10px)')};
   transition: all 0.25s ease;
-  
   position: absolute;
   background-color: white;
   color: black;
@@ -96,13 +119,26 @@ const DropdownItem = styled(Link)`
   }
 `;
 
+// Toggle button
+const ToggleBtn = styled.button`
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 22px;
+
+  @media (max-width: 768px) {
+    display: block;
+  }
+`;
+
 const Header = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const dropdownRef = useRef();
 
-  const toggleDropdown = () => {
-    setDropdownOpen(prev => !prev);
-  };
+  const toggleDropdown = () => setDropdownOpen(prev => !prev);
+  const toggleMenu = () => setMenuOpen(prev => !prev);
 
   const handleClickOutside = (event) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -121,13 +157,17 @@ const Header = () => {
         <LogoImg src={logo} alt="Mentor Craft Logo" />
         <LogoText>Mentor Craft</LogoText>
       </LogoLink>
-      <Nav>
-        <NavLink to="/">Home</NavLink>
-        <NavLink to="/courses">Courses</NavLink>
-        <NavLink to="/about">About</NavLink>
-        <NavLink to="/contact">Contact</NavLink>
 
-        {/* USER DROPDOWN */}
+      <ToggleBtn onClick={toggleMenu}>
+        {menuOpen ? <FaTimes /> : <FaBars />}
+      </ToggleBtn>
+
+      <Nav open={menuOpen}>
+        <NavLink to="/" onClick={() => setMenuOpen(false)}>Home</NavLink>
+        <NavLink to="/courses" onClick={() => setMenuOpen(false)}>Courses</NavLink>
+        <NavLink to="/about" onClick={() => setMenuOpen(false)}>About</NavLink>
+        <NavLink to="/contact" onClick={() => setMenuOpen(false)}>Contact</NavLink>
+
         <DropdownWrapper ref={dropdownRef}>
           <DropdownIcon onClick={toggleDropdown}><FaUser /></DropdownIcon>
           <DropdownContent open={dropdownOpen}>
@@ -137,7 +177,6 @@ const Header = () => {
         </DropdownWrapper>
 
         <IconGroup>
-          
           <NavLink to="/cart"><FaShoppingCart /></NavLink>
         </IconGroup>
       </Nav>

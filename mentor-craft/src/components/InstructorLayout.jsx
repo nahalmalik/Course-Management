@@ -16,6 +16,14 @@ const InstructorLayout = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [expandedSection, setExpandedSection] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+useEffect(() => {
+  const handleResize = () => setIsMobile(window.innerWidth <= 768);
+  window.addEventListener('resize', handleResize);
+  return () => window.removeEventListener('resize', handleResize);
+}, []);
+
 
   useEffect(() => {
     const userData = getCurrentUser();
