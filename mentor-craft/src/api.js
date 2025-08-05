@@ -1,8 +1,12 @@
 import axios from 'axios';
-import { getAccessToken } from './contexts/authUtils'; 
+import { getAccessToken } from './contexts/authUtils';
+
+const BASE_URL =
+  process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000/api/';
+console.log('BASE_URL:', process.env.REACT_APP_API_BASE_URL);
 
 const API = axios.create({
-  baseURL: 'http://localhost:8000/api/',
+  baseURL: BASE_URL,
 });
 
 // --- STUDENT CART & ENROLLMENT RELATED API CALLS ---

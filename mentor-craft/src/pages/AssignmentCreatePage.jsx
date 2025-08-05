@@ -13,7 +13,7 @@ const AssignmentCreatePage = () => {
 
   const fetchCourses = async () => {
     try {
-      const res = await api.get('/courses/'); // Adjust if needed
+      const res = await api.get('https://course-management-production-204c.up.railway.app/courses/'); // Adjust if needed
       setCourses(res.data);
     } catch (err) {
       console.error('Error fetching courses:', err);

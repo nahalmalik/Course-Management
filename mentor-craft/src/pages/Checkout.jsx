@@ -35,7 +35,7 @@ const Right = styled.div`
 
 const Title = styled.h2`
   font-size: 22px;
-  color: #1E3A8A;
+  color: #205a61;
   margin-bottom: 25px;
 `;
 
