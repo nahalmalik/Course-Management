@@ -18,8 +18,13 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
+from django.http import HttpResponse
+
+def test_home(request):
+    return HttpResponse("✅ Django backend is working on Railway!")
 
 urlpatterns = [
+    path('', test_home),
     path('admin/', admin.site.urls),
     path('api/courses/', include('courses.urls')),
     path('api/users/', include('users.urls')),
