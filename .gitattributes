@@ -1,3 +1,5 @@
 # Auto detect text files and perform LF normalization
 * text=auto
 .env
+# Firebase private key
+firebase_sync/firebase_config.json

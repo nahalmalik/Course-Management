@@ -1,10 +1,14 @@
+# users/admin.py
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser,Order, OrderItem, Enrollment
+from .models import CustomUser, Order, OrderItem, Enrollment
+from .forms import CustomUserChangeForm  # 🔁 NEW
 from firebase_sync.firebase_helpers import is_user_synced_to_firebase
 
 @admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
+    form = CustomUserChangeForm  # 🔁 Use custom change form
+
     list_display = ('email', 'username', 'get_role', 'is_active', 'is_staff', 'synced_to_firebase')
     list_filter = ('role', 'is_staff', 'is_superuser')
 
@@ -30,8 +34,9 @@ class CustomUserAdmin(UserAdmin):
 
     def synced_to_firebase(self, obj):
         return is_user_synced_to_firebase(obj)
-    synced_to_firebase.boolean = True  # ✅ Shows as ✅ or ❌ in admin list
+    synced_to_firebase.boolean = True
     synced_to_firebase.short_description = "Synced to Firebase"
+
 admin.site.register(Order)
 admin.site.register(OrderItem)
 admin.site.register(Enrollment)
