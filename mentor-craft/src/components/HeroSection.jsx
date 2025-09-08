@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";  // ✅ Import navigation
 import heroImg from "../assets/hero-img.png";
 
 const Wrapper = styled.section`
@@ -7,7 +8,6 @@ const Wrapper = styled.section`
   width: 100%;
   height: 60vh;
   
-  margin-top: 74px; /* Add space for header */
 
   @media (max-width: 768px) {
     height: 70vh;
@@ -100,6 +100,8 @@ const Content = styled.div`
 `;
 
 const HeroSection = () => {
+  const navigate = useNavigate(); // ✅ Hook for navigation
+
   return (
     <Wrapper>
       <BackgroundImage src={heroImg} alt="Online Learning" />
@@ -107,8 +109,21 @@ const HeroSection = () => {
         <Content>
           <h1>Learn from the Best with Mentor Craft</h1>
           <p>Build skills with online courses from top instructors. Anytime, anywhere.</p>
-          <button className="get-started">Get Started</button>
-          <button className="view-courses">View Courses</button>
+          
+          {/* ✅ Navigation added */}
+          <button
+            className="get-started"
+            onClick={() => navigate("/login/student")}
+          >
+            Get Started
+          </button>
+
+          <button
+            className="view-courses"
+            onClick={() => navigate("/courses")}
+          >
+            View Courses
+          </button>
         </Content>
       </Overlay>
     </Wrapper>
