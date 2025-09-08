@@ -5,10 +5,12 @@ import heroImg from "../assets/hero-img.png";
 const Wrapper = styled.section`
   position: relative;
   width: 100%;
-  height: 60vh; /* reduced height */
+  height: 60vh;
+  
+  margin-top: 74px; /* Add space for header */
 
   @media (max-width: 768px) {
-    height: 70vh; /* slightly taller on small screens */
+    height: 70vh;
   }
 `;
 
@@ -40,7 +42,6 @@ const Content = styled.div`
   color: white;
   text-align: center;
   max-width: 800px;
-  padding: 0 20px;
 
   h1 {
     font-size: 42px;
