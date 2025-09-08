@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { FaTrophy, FaCertificate, FaChartLine, FaMedal, FaDownload } from 'react-icons/fa';
+import reactCert from '../../assets/certificate-template.png';
+import djangoCert from '../../assets/certificate-template 2.png';
+
 
 const dummyBadges = [
   { id: 1, name: "Quiz Master", description: "Completed 5 quizzes", icon: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png" },
@@ -8,9 +11,12 @@ const dummyBadges = [
 ];
 
 const dummyCertificates = [
-  { id: 1, course_title: "React for Beginners", file: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" },
-  { id: 2, course_title: "Django Essentials", file: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" }
+  { id: 1, course_title: "React for Beginners", file: reactCert },
+  { id: 2, course_title: "Django Essentials", file: djangoCert }
 ];
+
+
+
 
 const dummyActivities = [
   { id: 1, timestamp: new Date().toISOString(), action: "Completed Quiz", xp_earned: 30 },

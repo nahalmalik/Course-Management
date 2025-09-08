@@ -11,14 +11,17 @@ const AssignmentCreatePage = () => {
     file: null,
   });
 
-  const fetchCourses = async () => {
-    try {
-      const res = await api.get('https://course-management-production-204c.up.railway.app/courses/'); // Adjust if needed
-      setCourses(res.data);
-    } catch (err) {
-      console.error('Error fetching courses:', err);
-    }
-  };
+const fetchCourses = async () => {
+  try {
+    const res = await api.get('/courses/'); // relative URL
+    // Check response structure
+    console.log('Courses fetched:', res.data);
+    setCourses(res.data);
+  } catch (err) {
+    console.error('Error fetching courses:', err);
+  }
+};
+
 
   useEffect(() => {
     fetchCourses();

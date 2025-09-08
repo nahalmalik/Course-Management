@@ -117,72 +117,63 @@ const Checkout = () => {
     return isNaN(price) ? acc : acc + price;
   }, 0);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError("");
 
-    if (!name || !email) {
-      setError("Please fill in all required fields.");
+  if (!name || !email) {
+    setError("Please fill in all required fields.");
+    return;
+  }
+
+  if (hasPaidCourse && !screenshot) {
+    setError("Upload payment screenshot for paid courses.");
+    return;
+  }
+
+  try {
+    const backendCourses = cartItems.filter(course => course.course_id);
+
+    if (!backendCourses.length) {
+      setError("No valid courses to enroll.");
       return;
     }
 
-    if (hasPaidCourse && !screenshot) {
-      setError("Upload payment screenshot for paid courses.");
-      return;
-    }
+    const formData = new FormData();
+    formData.append("full_name", name);
+    formData.append("email", email);
+    formData.append("total_amount", total.toFixed(2));
 
-    try {
-      if (isLocalUser) {
-        cartItems.forEach((course) =>
-          enrollCourseLocal({ course, student: name, email })
-        );
-      } else {
-        // ✅ Step 1: Create order first
-        const formData = new FormData();
-formData.append("full_name", name);
-formData.append("email", email);
-formData.append("total_amount", total.toFixed(2)); // optional if backend expects it
+    // ✅ Append the UUID array as JSON string
+    const uuidArray = backendCourses.map(c => c.course_id);
+    formData.append("items", JSON.stringify(uuidArray));
 
-// Append each course UUID as an item (ListField expects multiple "items" keys)
-cartItems.forEach((course) => {
-  formData.append("items", course.course_id || course.id); // UUID expected
-});
+    if (screenshot) formData.append("payment_screenshot", screenshot);
 
-if (screenshot) {
-  formData.append("payment_screenshot", screenshot);
-}
+    // Send order
+    const orderRes = await API.post("users/checkout/", formData, {
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
 
-const orderRes = await API.post("users/checkout/", formData, {
-  headers: {
-    Authorization: `Bearer ${getAccessToken()}`,
-    "Content-Type": "multipart/form-data",
-  },
-});
+    const orderId = orderRes.data.order_id;
 
+    // ✅ No need to call EnrollmentCreateView manually
+    // DRF OrderSerializer already creates Enrollments in `create()`
 
-        const orderId = orderRes.data.order_id;
-
-        // ✅ Step 2: Enroll each course
-        await Promise.all(
-          cartItems.map((course) =>
-            enrollCourse({
-              course,
-              student: name,
-              email,
-              screenshot,
-              orderId,
-            })
-          )
-        );
-      }
-
-      clearCart();
-      navigate("/student/courses");
-    } catch (err) {
-      console.error("❌ Enrollment failed:", err);
+    clearCart();
+    navigate("/student/courses");
+  } catch (err) {
+    console.error("❌ Enrollment failed:", err.response || err);
+    if (err.response?.data) {
+      setError(JSON.stringify(err.response.data));
+    } else {
       setError("Something went wrong during enrollment.");
     }
-  };
+  }
+};
 
   return (
     <Wrapper>

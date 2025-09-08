@@ -123,11 +123,11 @@ const StudentCourseDetailPage = () => {
 )}
 
       {openTab==='quizzes' && <CenterPanel>
-        <ActionButton onClick={()=>navigate(`/student/quizzes/${courseId}`)}>Go to Quiz</ActionButton>
+        <ActionButton onClick={()=>navigate(`/student/quizzes`)}>Go to Quiz</ActionButton>
       </CenterPanel>}
 
       {openTab==='assignments' && <CenterPanel>
-        <ActionButton onClick={()=>navigate(`/student/assignments/${courseId}`)}>Go to Assignment</ActionButton>
+        <ActionButton onClick={()=>navigate(`/student/assignments`)}>Go to Assignment</ActionButton>
       </CenterPanel>}
 
       {openTab === 'students' && (
