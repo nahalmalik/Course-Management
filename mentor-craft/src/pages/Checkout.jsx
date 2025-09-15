@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { useCart } from "../contexts/CartContext";
 import { useNavigate } from "react-router-dom";
-import { enrollCourse, enrollCourseLocal } from "../components/enrollmentUtils";
 import { getCurrentUser, getAccessToken } from "../contexts/authUtils";
-import API from "../api"; 
+import API from "../api";
+
+
 
 const Wrapper = styled.div`
   display: flex;
@@ -88,6 +89,7 @@ const Total = styled.div`
   font-weight: bold;
   color: #205a61;
 `;
+
 const Thumbnail = styled.img`
   width: 100px;
   height: 70px;
@@ -117,7 +119,7 @@ const Checkout = () => {
     return isNaN(price) ? acc : acc + price;
   }, 0);
 
-const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
   e.preventDefault();
   setError("");
 
@@ -132,9 +134,8 @@ const handleSubmit = async (e) => {
   }
 
   try {
-    const backendCourses = cartItems.filter(course => course.course_id);
-
-    if (!backendCourses.length) {
+    const validCourses = cartItems.filter(c => c.course_id);
+    if (!validCourses.length) {
       setError("No valid courses to enroll.");
       return;
     }
@@ -144,25 +145,19 @@ const handleSubmit = async (e) => {
     formData.append("email", email);
     formData.append("total_amount", total.toFixed(2));
 
-    // ✅ Append the UUID array as JSON string
-    const uuidArray = backendCourses.map(c => c.course_id);
-    formData.append("items", JSON.stringify(uuidArray));
+    // ✅ Append UUIDs individually
+    validCourses.forEach((c) => formData.append("items", c.course_id));
 
     if (screenshot) formData.append("payment_screenshot", screenshot);
 
-    // Send order
-    const orderRes = await API.post("users/checkout/", formData, {
+    const res = await API.post("/users/checkout/", formData, {
       headers: {
         Authorization: `Bearer ${getAccessToken()}`,
         "Content-Type": "multipart/form-data",
       },
     });
 
-    const orderId = orderRes.data.order_id;
-
-    // ✅ No need to call EnrollmentCreateView manually
-    // DRF OrderSerializer already creates Enrollments in `create()`
-
+    console.log("✅ Enrollment successful:", res.data);
     clearCart();
     navigate("/student/courses");
   } catch (err) {
@@ -174,6 +169,7 @@ const handleSubmit = async (e) => {
     }
   }
 };
+
 
   return (
     <Wrapper>
@@ -210,7 +206,7 @@ const handleSubmit = async (e) => {
 
           <Title style={{ marginTop: "30px" }}>Your Courses</Title>
           {cartItems.map((course) => (
-            <CourseBox key={course.id}>
+            <CourseBox key={course.course_id || course.id}>
               <strong>{course.title}</strong>
               <br />
               <small>{course.instructor}</small>
@@ -232,7 +228,7 @@ const handleSubmit = async (e) => {
       <Right>
         <Title>Order Summary</Title>
         {cartItems.map((course) => (
-          <CourseBox key={course.id}>
+          <CourseBox key={course.course_id || course.id}>
             <Thumbnail src={course.image || course.thumbnail} alt={course.title} />
             <strong>{course.title}</strong>
             <br />

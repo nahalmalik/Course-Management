@@ -20,6 +20,7 @@ from .serializers import (
 )
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
+from .serializers import EnrollmentReceiptSerializer
 
 
 User = get_user_model()
@@ -142,3 +143,10 @@ class InstructorCourseEnrollmentsView(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         return Enrollment.objects.filter(course__instructor_email=user.email).select_related('course', 'user')
+
+class StudentReceiptsView(generics.ListAPIView):
+    serializer_class = EnrollmentReceiptSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Enrollment.objects.filter(user=self.request.user).order_by('-enrolled_at')

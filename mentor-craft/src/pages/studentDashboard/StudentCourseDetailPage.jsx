@@ -77,7 +77,16 @@ const StudentCourseDetailPage = () => {
           <span>{l.title}</span>
           <span>{l.duration}</span>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            <Button onClick={() => setModalLecture(l)}>Start</Button>
+            {/* 🎥 Lecture button (YouTube) */}
+            {(l.video?.includes("youtube.com") || l.video?.includes("youtu.be")) && (
+              <Button onClick={() => setModalLecture(l)}>Lecture</Button>
+            )}
+            {/* 🚀 Join Class button (Google Meet) */}
+            {l.video?.includes("meet.google.com") && (
+              <Button as="a" href={l.video} target="_blank" rel="noopener noreferrer">
+                Join Class
+              </Button>
+            )}
             <ToggleDesc onClick={() => setDescOpen(d => ({ ...d, [l.id]: !d[l.id] }))}>
               {descOpen[l.id] ? <FaChevronUp /> : <FaChevronDown />}
             </ToggleDesc>
@@ -127,7 +136,7 @@ const StudentCourseDetailPage = () => {
       </CenterPanel>}
 
       {openTab==='assignments' && <CenterPanel>
-        <ActionButton onClick={()=>navigate(`/student/assignments`)}>Go to Assignment</ActionButton>
+        <ActionButton onClick={()=>navigate(`/student/assignment-submit`)}>Go to Assignment</ActionButton>
       </CenterPanel>}
 
       {openTab === 'students' && (
@@ -151,16 +160,36 @@ const StudentCourseDetailPage = () => {
 )}
 
 
-      {modalLecture && (
+            {modalLecture && (
         <ModalOverlay onClick={()=>setModalLecture(null)}>
           <ModalContent onClick={e=>e.stopPropagation()}>
             <h3>{modalLecture.title}</h3>
             <p>{modalLecture.description}</p>
-            {modalLecture.video && <VideoFrame src={modalLecture.video} allowFullScreen />}
+
+            {modalLecture.video && (
+              <>
+                {modalLecture.video.includes("youtube.com") || modalLecture.video.includes("youtu.be") ? (
+                  <VideoFrame
+                    src={
+                      modalLecture.video.includes("watch?v=")
+                        ? modalLecture.video.replace("watch?v=", "embed/")
+                        : modalLecture.video.includes("youtu.be")
+                        ? `https://www.youtube.com/embed/${modalLecture.video.split("youtu.be/")[1]}`
+                        : modalLecture.video
+                    }
+                    allowFullScreen
+                  />
+                ) : (
+                  <p>⚠️ Unsupported video link</p>
+                )}
+              </>
+            )}
+
             <Button onClick={()=>setModalLecture(null)}>Close</Button>
           </ModalContent>
         </ModalOverlay>
       )}
+
     </Container>
   );
 };

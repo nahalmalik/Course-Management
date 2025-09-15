@@ -1,13 +1,13 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
-import { fetchOrderReceipt } from "../components/enrollmentUtils";
 import styled from "styled-components";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { QRCodeCanvas as QRCode } from "qrcode.react";
 import logo from "../assets/logo.png";
+import { fetchOrderReceipt } from "../components/enrollmentUtils"; // Make sure this function points to /api/receipt/:orderId/
 
-// Styled Components (keep all your existing styles below unchanged)
+// Styled Components
 const Wrapper = styled.div`
   max-width: 750px;
   margin: 50px auto;
@@ -180,11 +180,12 @@ const ThankYou = styled.p`
 
 // ✅ Receipt Component
 const Receipt = () => {
-  const { orderId } = useParams();
+  const { orderId } = useParams(); // UUID of the purchased course/order
   const receiptRef = useRef();
   const [receipt, setReceipt] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Fetch receipt from backend
   useEffect(() => {
     const loadReceipt = async () => {
       try {
@@ -254,13 +255,13 @@ const Receipt = () => {
         <Value>{new Date(receipt.created_at).toLocaleString()}</Value>
       </ReceiptRow>
 
-      {/* ✅ Show all purchased courses */}
-      {receipt.items.map((item, idx) => (
-        <ReceiptRow key={idx}>
-          <Label>Course:</Label>
-          <Value>{item.course_title} (Instructor: {item.instructor})</Value>
-        </ReceiptRow>
-      ))}
+      {/* Only show the purchased course */}
+      <ReceiptRow>
+        <Label>Course:</Label>
+        <Value>
+          {receipt.items[0]?.course_title} (Instructor: {receipt.items[0]?.instructor})
+        </Value>
+      </ReceiptRow>
 
       <FooterSection>
         <div>

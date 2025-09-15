@@ -10,9 +10,10 @@ const dummyBadges = [
   { id: 2, name: "Streak Star", description: "7-day login streak", icon: "https://cdn-icons-png.flaticon.com/512/4825/4825041.png" }
 ];
 
+
 const dummyCertificates = [
-  { id: 1, course_title: "React for Beginners", file: reactCert },
-  { id: 2, course_title: "Django Essentials", file: djangoCert }
+  { id: 1, course_title: "React for Beginners", file: "https://www.simplecert.net/api/recipients/7786869/pdf?type=stream&t=1757987080000" },
+  { id: 2, course_title: "Django Essentials", file: "https://mentorcraft.simplecert.net/api/get-certificate?r=7786854&t=8950c517ed8859374b0d39a1a2e3fb6128f8a8d5db41fcf4a3182b9d0a5cb17f" }
 ];
 
 
@@ -34,6 +35,11 @@ const StudentAchievementsPage = () => {
   const currentLevelXP = xpData.xp - ((xpData.level - 1) * 100);
   const nextLevelXP = xpThreshold(xpData.level);
   const xpPercent = Math.min(100, (currentLevelXP / nextLevelXP) * 100) + '%';
+
+  const shareOnLinkedIn = (certUrl, courseTitle) => {
+  const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(certUrl)}`;
+  window.open(linkedInUrl, "_blank");
+};
 
   return (
     <Container>
@@ -98,16 +104,31 @@ const StudentAchievementsPage = () => {
       </Section>
 
       {selectedCert && (
-        <ModalOverlay onClick={() => setSelectedCert(null)}>
-          <ModalContent onClick={e => e.stopPropagation()}>
-            <h3>{selectedCert.course_title}</h3>
-            <iframe src={selectedCert.file} width="100%" height="400px" title="Certificate" />
-            <DownloadButton onClick={() => window.open(selectedCert.file, '_blank')}>
-              <FaDownload /> Download Certificate
-            </DownloadButton>
-          </ModalContent>
-        </ModalOverlay>
+  <ModalOverlay onClick={() => setSelectedCert(null)}>
+    <ModalContent onClick={e => e.stopPropagation()}>
+      <h3>{selectedCert.course_title}</h3>
+      
+      {/* Show preview if image, otherwise embed URL */}
+      {selectedCert.file.endsWith(".png") || selectedCert.file.endsWith(".jpg") ? (
+        <img src={selectedCert.file} alt="Certificate" width="100%" />
+      ) : (
+        <iframe src={selectedCert.file} width="100%" height="400px" title="Certificate" />
       )}
+
+      <DownloadButton onClick={() => window.open(selectedCert.file, "_blank")}>
+        <FaDownload /> Download Certificate
+      </DownloadButton>
+
+      <DownloadButton
+        style={{ background: "#0077b5", marginLeft: "10px" }}
+        onClick={() => shareOnLinkedIn(selectedCert.file, selectedCert.course_title)}
+      >
+        <FaCertificate /> Share on LinkedIn
+      </DownloadButton>
+    </ModalContent>
+  </ModalOverlay>
+)}
+
     </Container>
   );
 };

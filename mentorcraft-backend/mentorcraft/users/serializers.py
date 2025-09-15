@@ -223,3 +223,36 @@ class InstructorEnrollmentSerializer(serializers.ModelSerializer):
             'price',
             'enrolled_at'
         ]
+
+class EnrollmentReceiptSerializer(serializers.ModelSerializer):
+    course_title = serializers.CharField(source='course.title', read_only=True)
+    course_image = serializers.ImageField(source='course.image', read_only=True)
+    instructor = serializers.CharField(source='course.instructor', read_only=True)
+    order_id = serializers.CharField(source='order.order_id', read_only=True)
+    order_total = serializers.DecimalField(source='order.total_amount', max_digits=10, decimal_places=2, read_only=True)
+    order_items = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Enrollment
+        fields = [
+            'id',
+            'course_title',
+            'course_image',
+            'instructor',
+            'enrolled_at',
+            'order_id',
+            'order_total',
+            'order_items',
+        ]
+
+    def get_order_items(self, obj):
+        items = obj.order.items.all() if obj.order else []
+        return [
+            {
+                "course_title": item.course.title,
+                "course_id": item.course.course_id,
+                "course_image": self.context['request'].build_absolute_uri(item.course.image.url) if item.course.image else None,
+                "instructor": item.course.instructor
+            }
+            for item in items
+        ]

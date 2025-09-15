@@ -1,9 +1,39 @@
 import staticCourseData from '../components/courseData';
 import courseData from '../components/courseData';
 import { getAccessToken } from './authUtils';
+import api from '../api';
+import axios from "axios";
 // =======================
 // --- Core Course Storage
 // =======================
+
+export const getLectures = async (courseId) => {
+  const token = getAccessToken();
+  const config = { headers: { Authorization: `Bearer ${token}` } };
+  const res = await axios.get(
+    `http://localhost:8000/api/courses/lectures/?course_id=${courseId}`,
+    config
+  );
+  return res.data;
+};
+
+export async function deleteLecture(lectureId) {
+  const token = localStorage.getItem("token"); // or your auth method
+
+  const res = await fetch(`http://localhost:8000/api/lectures/${lectureId}/`, {
+    method: "DELETE",
+    headers: {
+      "Authorization": `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.detail || "Failed to delete lecture");
+  }
+  return true;
+}
+
 
 // Helper to get courses from localStorage
 const getCoursesFromStorage = () => {

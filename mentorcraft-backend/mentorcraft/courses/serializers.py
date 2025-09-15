@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Course, Note, Assignment, Lecture, Quiz, QuizQuestion, QuizOption
 
-# Course Serializer with image URL
+
 class CourseSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
 
@@ -11,9 +11,10 @@ class CourseSerializer(serializers.ModelSerializer):
 
     def get_image(self, obj):
         request = self.context.get('request')
-        if obj.image and hasattr(obj.image, 'url'):
+        if obj.image:
             return request.build_absolute_uri(obj.image.url)
         return None
+
 
 # Notes, Assignments, Lectures
 class NoteSerializer(serializers.ModelSerializer):
@@ -31,13 +32,13 @@ class LectureSerializer(serializers.ModelSerializer):
         model = Lecture
         fields = '__all__'
 
-# ✅ Student-Facing Option Serializer (no correct answer revealed)
+
 class QuizOptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = QuizOption
         fields = ['id', 'text']
 
-# ✅ Student-Facing Question Serializer
+
 class QuizQuestionSerializer(serializers.ModelSerializer):
     options = QuizOptionSerializer(many=True, read_only=True)
 
@@ -45,9 +46,9 @@ class QuizQuestionSerializer(serializers.ModelSerializer):
         model = QuizQuestion
         fields = ['id', 'question_text', 'explanation', 'question_type', 'points', 'options']
 
-# ✅ Student-Facing Quiz Serializer (used in views and frontend)
+
 class QuizSerializer(serializers.ModelSerializer):
-    questions = QuizQuestionSerializer(many=True, read_only=True)  # ✅ this uses related_name
+    questions = QuizQuestionSerializer(many=True, read_only=True)  
 
     class Meta:
         model = Quiz
@@ -57,13 +58,12 @@ class QuizSerializer(serializers.ModelSerializer):
         ]
 
 
-# ✅ Instructor-Facing Option Serializer (for write)
 class QuizOptionCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = QuizOption
         fields = ['text', 'is_correct']
 
-# ✅ Instructor-Facing Question Serializer (for write)
+
 class QuizQuestionCreateSerializer(serializers.ModelSerializer):
     options = QuizOptionCreateSerializer(many=True)
 
@@ -71,7 +71,7 @@ class QuizQuestionCreateSerializer(serializers.ModelSerializer):
         model = QuizQuestion
         fields = ['question_text', 'explanation', 'question_type', 'points', 'options']
 
-# ✅ Instructor-Facing Quiz Creation Serializer
+
 class QuizCreateSerializer(serializers.ModelSerializer):
     questions = QuizQuestionCreateSerializer(many=True)
 

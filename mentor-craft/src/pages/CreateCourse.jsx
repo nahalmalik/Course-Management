@@ -7,6 +7,7 @@ import '../styles/CreateCourse.css';
 
 const CreateCourse = () => {
   const navigate = useNavigate();
+
   const handleDragOver = (e) => e.preventDefault();
 
   const [user, setUser] = useState(null);
@@ -15,29 +16,27 @@ const CreateCourse = () => {
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState('');
 
- // ✅ FIXED field names in courseData state
-const [courseData, setCourseData] = useState({
-  title: '',
-  description: '',
-  category: '',
-  level: '',
-  language: '',
-  price: '',
-  discount_price: '', // ✅ not discountPrice
-  duration: '',
-  lessons: '',
-  curriculum_intro: '', // ✅ not curriculumIntro
-  faqs: '', // ✅ not faq
-  seo_title: '', // ✅ not seoTitle
-  seo_keywords: '', // ✅ not seoKeywords
-  seo_description: '', // ✅ not seoDescription
-  has_expiration: false,
-  image: null,
-  video_file: null, 
-  thumbnailPreview: null,
-  videoPreview: null,
-});
-
+  const [courseData, setCourseData] = useState({
+    title: '',
+    description: '',
+    category: '',
+    level: '',
+    language: '',
+    price: '',
+    discount_price: '', 
+    duration: '',
+    lessons: '',
+    curriculum_intro: '', 
+    faqs: '', 
+    seo_title: '', 
+    seo_keywords: '',
+    seo_description: '', 
+    has_expiration: false,
+    image: null,
+    video_file: null, 
+    thumbnailPreview: null,
+    videoPreview: null,
+  });
 
   useEffect(() => {
     const currentUser = getCurrentUser();
@@ -118,18 +117,18 @@ const [courseData, setCourseData] = useState({
     for (let key in courseData) {
       if (key === 'image' && courseData.image) {
         formData.append('image', courseData.image);
-      } else if (key === 'video' && courseData.video) {
+      } else if (key === 'video_file' && courseData.video_file) {
         formData.append('video_file', courseData.video_file); 
       } else if (key !== 'thumbnailPreview' && key !== 'videoPreview') {
         formData.append(key, courseData[key]);
       }
     }
-const sampleFaqs = [
-  { question: "What is this course about?", answer: "It's a test FAQ." },
-  { question: "Is it beginner friendly?", answer: "Yes." }
-];
 
-formData.append('faqs', JSON.stringify(sampleFaqs));
+    const sampleFaqs = [
+      { question: "What is this course about?", answer: "It's a test FAQ." },
+      { question: "Is it beginner friendly?", answer: "Yes." }
+    ];
+    formData.append('faqs', JSON.stringify(sampleFaqs));
 
     formData.append('instructor', instructorName);
     formData.append('instructor_email', instructorEmail);
@@ -143,18 +142,27 @@ formData.append('faqs', JSON.stringify(sampleFaqs));
 
       if (!res.ok) throw new Error('Failed to create course');
 
+      const data = await res.json();
+
+      // ✅ Update courseData with backend URLs
+      setCourseData((prev) => ({
+        ...prev,
+        image: data.image,
+        thumbnailPreview: data.image,
+        video_file: data.video_file,
+        videoPreview: data.video_file,
+      }));
+
       setToastVisible(true);
       setTimeout(() => {
         setToastVisible(false);
         navigate('/instructor/dashboard', { state: { courseCreated: true } });
-
       }, 2000);
     } catch (err) {
       console.error('❌ Course upload failed:', err);
       alert('Failed to upload. Please check backend.');
     }
   };
-  
 
   const toggleAccordion = (section) => {
     setActiveAccordion((prev) => (prev === section ? '' : section));
@@ -163,7 +171,6 @@ formData.append('faqs', JSON.stringify(sampleFaqs));
   return (
     <div className="instructor-dashboard">
       <main className="main-section">
-        {/* Sidebar Tips */}
         <aside className="course-tips-box">
           <h4>💡 Course Upload Tips</h4>
           <ul>
@@ -178,170 +185,169 @@ formData.append('faqs', JSON.stringify(sampleFaqs));
         <h2 className="create-course-heading">🛠️ Create a New Course</h2>
         <p className="create-course-subtitle">Fill out the details below to publish your course.</p>
 
-
         <form className="create-form" onSubmit={handleSubmit}>
           <div className="accordion">
-{/* COURSE INFO */}
-<div className={`accordion-item ${activeAccordion === 'info' ? 'active' : ''}`}>
-  <div className="accordion-title" onClick={() => toggleAccordion('info')}>📘 Course Info</div>
-  <div className="accordion-content">
-    <div className="floating-input">
-      <input type="text" name="title" value={courseData.title} onChange={handleChange} required maxLength={100} />
-      <label>Course Title</label>
-    </div>
+            {/* COURSE INFO */}
+            <div className={`accordion-item ${activeAccordion === 'info' ? 'active' : ''}`}>
+              <div className="accordion-title" onClick={() => toggleAccordion('info')}>📘 Course Info</div>
+              <div className="accordion-content">
+                <div className="floating-input">
+                  <input type="text" name="title" value={courseData.title} onChange={handleChange} required maxLength={100} />
+                  <label>Course Title</label>
+                </div>
 
-    <div className="floating-input">
-      <textarea name="description" value={courseData.description} onChange={handleChange} required maxLength={300} />
-      <label>Course Description</label>
-      <div style={{ fontSize: '12px', color: '#888' }}>{(courseData.description || '').length}/300 characters
-</div>
-    </div>
+                <div className="floating-input">
+                  <textarea name="description" value={courseData.description} onChange={handleChange} required maxLength={300} />
+                  <label>Course Description</label>
+                  <div style={{ fontSize: '12px', color: '#888' }}>{(courseData.description || '').length}/300 characters</div>
+                </div>
 
-    <div className="floating-input">
-      <input type="text" value={user?.name || ''} readOnly />
-      <label>Instructor Name</label>
-    </div>
-<div className="floating-input">
-      <input type="email" value={user?.name || ''} readOnly />
-      <label>Instructor Email</label>
-    </div>
-    <div className="floating-input">
-      <input type="text" name="category" value={courseData.category} onChange={handleChange} required />
-      <label>Category</label>
-    </div>
+                <div className="floating-input">
+                  <input type="text" value={user?.name || ''} readOnly />
+                  <label>Instructor Name</label>
+                </div>
 
-    <div className="floating-input">
-      <select name="level" value={courseData.level} onChange={handleChange} required>
-        <option value="">Select Level</option>
-        <option value="Beginner">Beginner</option>
-        <option value="Intermediate">Intermediate</option>
-        <option value="Expert">Expert</option>
-      </select>
-      <label>Level</label>
-    </div>
+                <div className="floating-input">
+                  <input type="email" value={user?.email || ''} readOnly />
+                  <label>Instructor Email</label>
+                </div>
 
-    <div className="floating-input">
-      <select name="language" value={courseData.language} onChange={handleChange} required>
-        <option value="">Select Language</option>
-        <option value="English">English</option>
-        <option value="Urdu">Urdu</option>
-        <option value="Arabic">Arabic</option>
-      </select>
-      <label>Language</label>
-    </div>
+                <div className="floating-input">
+                  <input type="text" name="category" value={courseData.category} onChange={handleChange} required />
+                  <label>Category</label>
+                </div>
 
-    <div className="floating-input">
-      <input type="text" name="price" value={courseData.price} onChange={handleChange} required />
-      <label>Price (e.g. $49 or Free)</label>
-    </div>
+                <div className="floating-input">
+                  <select name="level" value={courseData.level} onChange={handleChange} required>
+                    <option value="">Select Level</option>
+                    <option value="Beginner">Beginner</option>
+                    <option value="Intermediate">Intermediate</option>
+                    <option value="Expert">Expert</option>
+                  </select>
+                  <label>Level</label>
+                </div>
 
-    <div className="floating-input">
-      <input type="text" name="discount_price" value={courseData.discount_price} onChange={handleChange} />
-      <label>Discounted Price (optional)</label>
-    </div>
+                <div className="floating-input">
+                  <select name="language" value={courseData.language} onChange={handleChange} required>
+                    <option value="">Select Language</option>
+                    <option value="English">English</option>
+                    <option value="Urdu">Urdu</option>
+                    <option value="Arabic">Arabic</option>
+                  </select>
+                  <label>Language</label>
+                </div>
 
-    <div className="floating-input">
-      <input type="text" name="duration" value={courseData.duration} onChange={handleChange} required />
-      <label>Duration (e.g. 6 weeks)</label>
-    </div>
+                <div className="floating-input">
+                  <input type="text" name="price" value={courseData.price} onChange={handleChange} required />
+                  <label>Price (e.g. $49 or Free)</label>
+                </div>
 
-    <div className="floating-input">
-      <input type="number" name="lessons" value={courseData.lessons} onChange={handleChange} required />
-      <label>Number of Lessons</label>
-    </div>
+                <div className="floating-input">
+                  <input type="text" name="discount_price" value={courseData.discount_price} onChange={handleChange} />
+                  <label>Discounted Price (optional)</label>
+                </div>
 
-    <div
-  className="floating-input dropzone"
-  onDrop={handleDrop}
-  onDragOver={handleDragOver}
-  style={{ border: '2px dashed #ccc', padding: '20px', textAlign: 'center' }}
->
-  <input type="file" accept="image/*" onChange={handleImageUpload} />
-  <label style={{ top: '-10px', fontSize: '13px', color: '#777' }}>Drag or Click to Upload Thumbnail</label>
-  {courseData.image && (
-    <img
-      src={courseData.image}
-      alt="Thumbnail"
-      style={{ marginTop: '10px', width: '200px', borderRadius: '8px' }}
-    />
-  )}
-</div>
+                <div className="floating-input">
+                  <input type="text" name="duration" value={courseData.duration} onChange={handleChange} required />
+                  <label>Duration (e.g. 6 weeks)</label>
+                </div>
 
+                <div className="floating-input">
+                  <input type="number" name="lessons" value={courseData.lessons} onChange={handleChange} required />
+                  <label>Number of Lessons</label>
+                </div>
 
-    {/* Tags */}
-    <div className="floating-input tag-input">
-      <input
-        type="text"
-        placeholder="Enter tag and press Enter"
-        value={tagInput}
-        onChange={(e) => setTagInput(e.target.value)}
-        onKeyDown={(e) => e.key === 'Enter' && handleTagAdd(e)}
-      />
-      <label>Course Tags</label>
-      <div className="tag-list">
-        {tags.map((tag, index) => (
-          <span key={index} className="tag" onClick={() => removeTag(tag)}>{tag} ✕</span>
-        ))}
-      </div>
-    </div>
+                {/* Image Upload */}
+                <div
+                  className="floating-input dropzone"
+                  onDrop={handleDrop}
+                  onDragOver={handleDragOver}
+                  style={{ border: '2px dashed #ccc', padding: '20px', textAlign: 'center' }}
+                >
+                  <input type="file" accept="image/*" onChange={handleImageUpload} />
+                  <label style={{ top: '-10px', fontSize: '13px', color: '#777' }}>Drag or Click to Upload Thumbnail</label>
+                  {courseData.thumbnailPreview && (
+                    <img
+                      src={courseData.thumbnailPreview}
+                      alt="Thumbnail"
+                      style={{ marginTop: '10px', width: '200px', borderRadius: '8px' }}
+                    />
+                  )}
+                </div>
 
-    {/* Expiration Toggle */}
-    <div className="checkbox">
-      <input type="checkbox" name="hasExpiration" checked={courseData.has_expiration} onChange={handleChange} />
-      <label>Limit course access (expire after duration)</label>
-    </div>
-  </div>
-</div>
-{/* Curriculum Tab */}
-<div className={`accordion-item ${activeAccordion === 'curriculum' ? 'active' : ''}`}>
-  <div className="accordion-title" onClick={() => toggleAccordion('curriculum')}>📚 Curriculum</div>
-  <div className="accordion-content">
-    <div className="floating-input">
-     <textarea
-  name="curriculum_intro"
-  value={courseData.curriculum_intro}
-  onChange={handleChange}
-  required
-  maxLength={400}
-/>
+                {/* Tags */}
+                <div className="floating-input tag-input">
+                  <input
+                    type="text"
+                    placeholder="Enter tag and press Enter"
+                    value={tagInput}
+                    onChange={(e) => setTagInput(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleTagAdd(e)}
+                  />
+                  <label>Course Tags</label>
+                  <div className="tag-list">
+                    {tags.map((tag, index) => (
+                      <span key={index} className="tag" onClick={() => removeTag(tag)}>{tag} ✕</span>
+                    ))}
+                  </div>
+                </div>
 
-      <label>Curriculum Introduction</label>
-      <div style={{ fontSize: '12px', color: '#888' }}>{(courseData.curriculum_intro || '').length}/400 characters
-</div>
-    </div>
-  </div>
-</div>
-{/* FAQ Tab */}
-<div className={`accordion-item ${activeAccordion === 'faq' ? 'active' : ''}`}>
-  <div className="accordion-title" onClick={() => toggleAccordion('faq')}>❓ FAQ</div>
-  <div className="accordion-content">
-    <div className="floating-input">
-     <textarea
-  name="faqs"
-  value={courseData.faqs}
-  onChange={handleChange}
-  required
-/>
+                {/* Expiration Toggle */}
+                <div className="checkbox">
+                  <input type="checkbox" name="hasExpiration" checked={courseData.has_expiration} onChange={handleChange} />
+                  <label>Limit course access (expire after duration)</label>
+                </div>
+              </div>
+            </div>
 
-      <label>Frequently Asked Questions</label>
-    </div>
-  </div>
-</div>
-{/* Media Link Tab */}
-<div className={`accordion-item ${activeAccordion === 'media' ? 'active' : ''}`}>
-  <div className="accordion-title" onClick={() => toggleAccordion('media')}>🎥 Media Upload</div>
-  <div className="accordion-content">
-    <label>Upload Course Video</label>
-    <input type="file" accept="video/*" onChange={handleVideoUpload} />
+            {/* Curriculum Tab */}
+            <div className={`accordion-item ${activeAccordion === 'curriculum' ? 'active' : ''}`}>
+              <div className="accordion-title" onClick={() => toggleAccordion('curriculum')}>📚 Curriculum</div>
+              <div className="accordion-content">
+                <div className="floating-input">
+                  <textarea
+                    name="curriculum_intro"
+                    value={courseData.curriculum_intro}
+                    onChange={handleChange}
+                    required
+                    maxLength={400}
+                  />
+                  <label>Curriculum Introduction</label>
+                  <div style={{ fontSize: '12px', color: '#888' }}>{(courseData.curriculum_intro || '').length}/400 characters</div>
+                </div>
+              </div>
+            </div>
 
-    {courseData.video_file && (
-      <video controls width="100%" style={{ marginTop: '10px', borderRadius: '8px' }}>
-        <source src={courseData.video_file} type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
-    )}
-  </div>
-</div>
+            {/* FAQ Tab */}
+            <div className={`accordion-item ${activeAccordion === 'faq' ? 'active' : ''}`}>
+              <div className="accordion-title" onClick={() => toggleAccordion('faq')}>❓ FAQ</div>
+              <div className="accordion-content">
+                <div className="floating-input">
+                  <textarea
+                    name="faqs"
+                    value={courseData.faqs}
+                    onChange={handleChange}
+                    required
+                  />
+                  <label>Frequently Asked Questions</label>
+                </div>
+              </div>
+            </div>
+
+            {/* Media Tab */}
+            <div className={`accordion-item ${activeAccordion === 'media' ? 'active' : ''}`}>
+              <div className="accordion-title" onClick={() => toggleAccordion('media')}>🎥 Media Upload</div>
+              <div className="accordion-content">
+                <label>Upload Course Video</label>
+                <input type="file" accept="video/*" onChange={handleVideoUpload} />
+                {courseData.videoPreview && (
+                  <video controls width="100%" style={{ marginTop: '10px', borderRadius: '8px' }}>
+                    <source src={courseData.videoPreview} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                )}
+              </div>
+            </div>
           </div> {/* End of .accordion */}
 
           {/* Submit Button */}
@@ -350,7 +356,7 @@ formData.append('faqs', JSON.stringify(sampleFaqs));
           </div>
         </form>
 
- {/* Live Preview */}
+        {/* Live Preview */}
         <div className="preview-section">
           <h3 style={{ marginBottom: '10px' }}>🧪 Live Course Preview</h3>
           <div className="course-card preview-card">

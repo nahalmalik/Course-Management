@@ -10,7 +10,7 @@ def course_video_upload_path(instance, filename):
 
 class Course(models.Model):
     course_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, blank=False, null=False)
     description = models.TextField(blank=True)
     category = models.CharField(max_length=100)
     level = models.CharField(max_length=50)
@@ -61,7 +61,7 @@ class Lecture(models.Model):
     description = models.TextField(blank=True)
     duration = models.CharField(max_length=50, help_text="e.g., 10 min")
     icon = models.CharField(max_length=100, blank=True)
-    video = models.URLField(blank=True, help_text="YouTube embed link")
+    video = models.URLField(blank=True, help_text="Google Meet link")
 
 class Quiz(models.Model):
     course = models.ForeignKey('courses.Course', on_delete=models.CASCADE, related_name='quizzes')

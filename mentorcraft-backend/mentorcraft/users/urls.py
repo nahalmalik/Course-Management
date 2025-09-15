@@ -9,6 +9,7 @@ from .views import (
     EnrollmentCreateView,
     StudentEnrollmentListView,
     InstructorCourseEnrollmentsView,
+    StudentReceiptsView,
 )
 
 urlpatterns = [
@@ -23,6 +24,7 @@ urlpatterns = [
     path('enrollments/', EnrolledCoursesView.as_view(), name='enrolled-courses'),
     path('enrollments/Lists/', StudentEnrollmentListView.as_view(), name='student-enrollments'),
     path('enrollments/create/', EnrollmentCreateView.as_view(), name='enrollment-create'),
-    path('receipt/<str:order_id>/', ReceiptView.as_view(), name='receipt'),
+    path('receipt/<uuid:order_id>/', ReceiptView.as_view(), name='receipt-detail'),
+    path('student/receipts/', StudentReceiptsView.as_view(), name='student-receipts'),
      path('enrollments/instructor-sales/', InstructorCourseEnrollmentsView.as_view(), name='instructor-sales'),
 ]

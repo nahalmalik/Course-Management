@@ -135,3 +135,60 @@ input[type="date"] {
   margin-bottom: 14px;
   background: #fff;
 }
+/* Existing Lectures Section */
+.lecture-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.lecture-item {
+  background: #f9fafb; /* light gray */
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.lecture-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.lecture-item strong {
+  font-size: 1.1rem;
+  color: #1e3a8a;
+}
+
+.lecture-item p {
+  margin: 6px 0;
+  font-size: 0.95rem;
+  color: #374151;
+}
+
+.lecture-item .glass-button {
+  font-size: 0.9rem;
+  padding: 6px 12px;
+  border-radius: 8px;
+}
+
+/* Video preview link */
+.video-preview a {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 6px 12px;
+  background: #2563eb;
+  color: white;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.video-preview a:hover {
+  background: #1e40af;
+}

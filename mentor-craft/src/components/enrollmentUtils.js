@@ -41,15 +41,24 @@ export const enrollCourse = async ({ course, student, email, screenshot, orderId
 
   return response.data;
 };
+// enrollmentUtils.js
 export const fetchOrderReceipt = async (orderId) => {
-  const token = getAccessToken();
-  const response = await API.get(`users/receipt/${orderId}/`, {
+  const token = localStorage.getItem("access_token"); // JWT
+  const response = await fetch(`http://127.0.0.1:8000/api/receipt/${orderId}/`, {
     headers: {
-      Authorization: `Bearer ${token}`
-    }
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
   });
-  return response.data;
+
+  if (!response.ok) {
+    console.error(await response.text());
+    throw new Error("Failed to fetch receipt");
+  }
+  const data = await response.json();
+  return data;
 };
+
 
 export const fetchInstructorSales = async () => {
   const token = getAccessToken();

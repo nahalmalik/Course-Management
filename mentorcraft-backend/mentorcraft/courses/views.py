@@ -1,8 +1,9 @@
 #courses/views.py
-from rest_framework import generics,viewsets,permissions
+from rest_framework import generics,viewsets,permissions,status
 from .models import Course,Assignment,Note,Lecture,Quiz
 from .serializers import CourseSerializer,NoteSerializer,AssignmentSerializer,QuizSerializer,LectureSerializer,QuizCreateSerializer
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 class CourseListCreateView(generics.ListCreateAPIView):
     serializer_class = CourseSerializer
@@ -51,6 +52,9 @@ class LectureViewSet(viewsets.ModelViewSet):
         if course_id:
             return Lecture.objects.filter(course__id=course_id)
         return Lecture.objects.none()
+    
+        
+
 
 class QuizViewSet(viewsets.ModelViewSet):
     queryset = Quiz.objects.all()
